@@ -1824,7 +1824,7 @@ function uChgPw(){const un=NSU&&uKey(NSU.name),C=ucGet(),c=C[un];if(!c){toast('L
    +(old?'<button class=lk type=button onclick="lgnShowOld(\'login\')">Use old PIN</button>':''));
   setTimeout(function(){var i=document.getElementById(lu?'lus':'lun');if(i)i.focus()},60)};
  window.lCont=function(){var b=document.getElementById('lpwb'),f=document.getElementById('lfg'),bt=document.getElementById('lbtn'),c=document.getElementById('lchg'),g=document.getElementById('lgg2');
-  if(b)b.style.display='';if(f)f.style.display='';if(c)c.style.display='none';if(g)g.textContent='Enter your password to continue';
+  if(b)b.style.display='';if(f)f.style.display='';if(c)c.style.display='';if(g)g.textContent='Enter your password to continue';
   var l=document.getElementById('lus');if(l){l.onclick=null;l.removeAttribute('onclick');l.removeAttribute('tabindex');l.style.cursor='default';var ar=l.querySelector('.lar');if(ar)ar.style.display='none';var sb=l.querySelector('.lsb');if(sb)sb.textContent='Enter your password'}if(bt){bt.style.display='';bt.textContent='Login';bt.setAttribute('onclick','doLogin2()')}
   var i=document.getElementById('lpw');if(i)i.focus()};
  window.uChg=function(){var w=document.getElementById('lunw'),l=document.getElementById('lus'),i=document.getElementById('lun'),g=document.getElementById('lgg2'),g1=document.getElementById('lgg1');if(g1)g1.textContent=greet()+'!';var lb=document.getElementById('lbtn');if(lb){lb.style.display='';lb.textContent='Login';lb.setAttribute('onclick','doLogin2()')}var lc=document.getElementById('lchg');if(lc)lc.style.display='none';var pb=document.getElementById('lpwb');if(pb)pb.style.display='';var fg=document.getElementById('lfg');if(fg)fg.style.display='';
@@ -1999,4 +1999,14 @@ window.OTT=function(T,L,ur,rows,tr,sp){
  if(w&&i&&w.style.display=='none'){try{var lu=localStorage.getItem('nslu');if(lu)i.value=lu}catch(_){}}
  return d0.apply(this,arguments)};LA=doLogin2})();
 </script>
+<style>
+/* ===== Dashboard hero: smaller bar, clearer greeting ===== */
+.hero{padding:10px 18px;margin-bottom:10px;border-radius:16px}
+.hero .ht small{font-size:18px;font-weight:700;letter-spacing:.3px;text-shadow:0 1px 3px #0003}
+.hero .ht h2{font-size:21px;margin:0 0 2px}
+.hero .ht p{font-size:13px}
+.hero .ht p.htl{margin-top:6px;padding-top:6px;font-size:11.5px;line-height:1.4}
+.hero .hsv{width:min(300px,40%);margin:-2px 0 -8px}
+@media(max-width:620px){.hero{flex-direction:row;text-align:left;padding:10px 12px;gap:6px}.hero .hsv{width:42%;min-width:120px;margin:0 0 -6px}.hero .ht small{font-size:17px}.hero .ht h2{font-size:18px}.hero .ht p.htl{font-size:10.5px;max-width:none}}
+</style>
 </body></html>
