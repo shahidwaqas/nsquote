@@ -1013,17 +1013,19 @@ function newLogin(msg){const e=lgnEl();LA=doLogin2;let lu='';try{lu=localStorage
  setTimeout(()=>{const i=document.getElementById(lu?'lpw':'lun');if(i)i.focus()},60)}
 function uChg(){const w=document.getElementById('lunw'),l=document.getElementById('lus'),i=document.getElementById('lun');if(w)w.style.display='';if(l)l.style.display='none';var cb=document.getElementById('lchg');if(cb)cb.style.display='none';if(i){i.value='';i.focus()}}
 async function uAllowed(em){const r=await fsReq('GET','ns_users/'+encodeURIComponent(em));return !!r}
+function lgSpinGo(){let o=document.getElementById('lgspin');if(!o){o=document.createElement('div');o.id='lgspin';o.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(255,255,255,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:600 14px -apple-system,Arial,sans-serif;color:#b3261e';o.innerHTML='<style>@keyframes lgsp{to{transform:rotate(360deg)}}</style><div style="width:46px;height:46px;border:5px solid #f3c9c6;border-top-color:#b3261e;border-radius:50%;animation:lgsp .8s linear infinite"></div><div>Logging in...</div>';document.body.appendChild(o)}
+ setTimeout(()=>{try{o.remove()}catch(_){}unlock(false)},2000)}
 async function doLogin2(){const w=thr();if(w){lgErr('Too many attempts. Try again in '+w+' sec');return}
  const un=uKey(document.getElementById('lun').value),pw=document.getElementById('lpw').value;
  if(!un||!pw){lgErr('Enter username and password');return}
  const C=ucGet(),c=C[un];
- if(c&&hs(c.s,pw)===c.p){goodTry();try{localStorage.setItem('nslu',un)}catch(_){}setUser(un,c.adm);unlock(false);return}
+ if(c&&hs(c.s,pw)===c.p){goodTry();try{localStorage.setItem('nslu',un)}catch(_){}setUser(un,c.adm);lgSpinGo();return}
  const b=document.getElementById('lbtn');if(b)b.disabled=true;lgErr('Checking...');
  try{await cldLoad();await firebase.auth().signInWithEmailAndPassword(uMail(un),pw);CL.user=firebase.auth().currentUser;
   const em=(CL.user.email||'').toLowerCase(),adm=em==ADM;
   if(!adm&&!(await uAllowed(em))){try{await firebase.auth().signOut()}catch(_){}CL.user=null;lgErr('This user is not allowed. Ask the admin.');if(b)b.disabled=false;return}
   const s=rnd(16,'0123456789abcdef');C[un]={s,p:hs(s,pw),adm:adm?1:0};ucSet(C);
-  goodTry();try{localStorage.setItem('nslu',un)}catch(_){}setUser(un,adm);unlock(false);return
+  goodTry();try{localStorage.setItem('nslu',un)}catch(_){}setUser(un,adm);lgSpinGo();return
  }catch(e){const code=(e&&e.code)||'';if(/invalid|wrong-password|user-not-found/.test(code)){badTry();lgErr('Wrong username or password')}else lgErr(cldErr(e)+(c?'':' (first login on a device needs internet)'))}
  if(b)b.disabled=false}
 async function uForgot(){const un=uKey(document.getElementById('lun').value);if(!un){lgErr('Enter your username first');return}
