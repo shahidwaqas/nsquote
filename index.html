@@ -254,7 +254,7 @@ $('#nav').innerHTML=[['doc','Home'],['cli','Client List'],['cpa','Cost/Profit An
 const V={
 doc(){if(!D){const q=DB.docs.filter(d=>d.type=='Quotation').length,b=DB.docs.filter(d=>d.type=='Bill');return`<div class=st><div><b>${q}</b><span>Quotations</span></div><div><b>${b.length}</b><span>Bills</span></div><div><b>${f(b.reduce((s,d)=>s+dt(d),0))}</b><span>Billed (Rs)</span></div></div><div class=card><h4>Create New</h4><button onclick="newDoc('Quotation')">+ New Quotation</button><button class=o onclick="newDoc('Bill')">+ New Bill</button></div><div class=card style="padding:0;overflow-x:auto"><h4 style="margin:10px 12px 8px">Recent (Last 2 Days)</h4>${xlTbl(recentDocs(),'home','No quotation / bill created in the last 2 days')}</div>`}
 const r=D.rows.map((x,i)=>rowCard(x,i)).join('');
-return`<div class=card><h4><span><button class=r type=button onclick="goHome()" style="margin:0 8px 0 0">&#8592; Home</button>${D.type}${D.cust?' - '+E(D.cust):''}</span></h4></div><div class=card><h4>Customer Details</h4><div class=g>${inp('Date','date',D.date).replace('<input','<input type=date')}${inp('Customer Name','cust',D.cust)}${inp('Contact No','phone',D.phone)}${inp('Location','loc',D.loc)}<label>Document Language<select onchange="D.lang=this.value;nsLangUi()"><option value="en" ${D.lang!='ur'?'selected':''}>English</option><option value="ur" ${D.lang=='ur'?'selected':''}>اردو (Urdu)</option></select></label></div></div>${sysCard()}${r}<button class=o onclick="addRowKey()">+ Add Product</button>
+return`<div class=card><h4><span><button class=r type=button onclick="goHome()" style="margin:0 8px 0 0">&#8592; Home</button>${D.type}${D.cust?' - '+E(D.cust):''}</span></h4></div><div class=card><h4>Customer Details</h4><div class=g>${inp('Date','date',D.date).replace('<input','<input type=date')}${inp('Customer Name','cust',D.cust)}${inp('Contact No','phone',D.phone)}${inp('Location','loc',D.loc)}<label>Document Language<select onchange="D.lang=this.value;nsLangUi()"><option value="en" ${D.lang!='ur'?'selected':''}>English</option><option value="ur" ${D.lang=='ur'?'selected':''}>اردو (Urdu)</option></select></label></div></div>${sysCard()}${r}<button class=o onclick="addRowKey()">+ Add Product</button>${optBar()}
 <div class=card><h4>Structure</h4><div class=g><label>Type<select onchange="D.st.o=this.value">${opts(ST,D.st.o)}</select></label>${inp('Amount','st.a',D.st.a,1)}</div></div>
 <div class=card><h4>Accessories</h4>${D.ac.off?`<div class=g>${ACL.map((x,i)=>`<label class=ck><input type=checkbox ${D.ac.off.includes(i)?'':'checked'} onchange="tAc(${i},this.checked)">${x}</label>`).join('')}</div><div style="display:flex;gap:6px;margin-top:8px"><input id=acn placeholder="Add more accessory (e.g. Earthing Kit)" onkeydown="if(event.key=='Enter'){event.preventDefault();addAc()}"><button type=button onclick="addAc()" style="white-space:nowrap">+ Add</button></div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:4px 0">${xl(D.ac).map((z,i)=>`<span class=ck style="padding:4px 4px 4px 10px">${E(z)}<button class=r type=button onclick="rmAc(${i})" style="margin:0 0 0 8px">✕</button></span>`).join('')}</div><div class=g>${inp('Amount','ac.a',D.ac.a,1)}</div>`:`<div class=g>${inp('Items','ac.t',D.ac.t)}${inp('Amount','ac.a',D.ac.a,1)}</div>`}</div>
 <div class=card><h4>Other Charges</h4><div class=g>${inp('Installation charges','inst',D.inst,1)}${inp('Freight charges','frt',D.frt,1)}${inp('Description (optional)','misc.d',D.misc.d,0,'e.g. Concrete, Net metering file')}${inp('Amount','misc.a',D.misc.a,1)}</div></div>${payCard()}
@@ -1305,13 +1305,13 @@ function rowCard(x,i){
 /* quotation / PDF: one item row with the options side by side */
 function altRow(x,L,tr,sp,ur){const all=[x].concat(x.alt),lab=ur?'\u0622\u067e\u0634\u0646':'Option';
  const cell=(y,k)=>`<td><div class=oh>${lab} ${k+1}</div><b>${E(((y.b||'')+' '+(y.m||'')).trim()||tr(y.c))}</b>${sp(y)?`<br><small>${E(sp(y))}</small>`:''}<br><small dir=ltr>${pw(y)?n(y.q)+' x '+n(y.w)+'W = '+f(n(y.q)*n(y.w))+'W @ Rs '+fr(y.rw)+'/W':n(y.q)+' x Rs '+f(un(y))}</small><br><b dir=ltr>Rs ${f(am(y))}</b></td>`;
- const a=[`<b>${tr(x.c)}</b><table class=opt3><tr>${all.map(cell).join('')}</tr></table>`,'','',''];a.sp=1;return a}
+ const a=[`<b>${tr(x.c)}</b><table class=opt3><tr>${all.map((y,k)=>cell(y||x,k)).join('')}</tr></table>`,'','',''];a.sp=1;return a}
 /* the old "compare whole quotation" tabs are hidden (only shown for old quotations that already use them) */
 (function(){const cc=cmpCard;cmpCard=function(){return D&&D.opts?cc():''}})();
 /* making a bill from a quotation that has options: choose one option per item */
 (function(){const t0=toBill;toBill=function(id){const s=DB.docs.find(x=>x.id==id),idx=s?(s.rows||[]).map((r,i)=>r.alt&&r.alt.length?i:-1).filter(i=>i>=0):[];if(!idx.length)return t0(id);
  const o=document.createElement('div');o.className='cfm';
- o.innerHTML='<div class=cfb style="text-align:left;width:min(460px,94vw);max-height:88vh;overflow-y:auto"><p>Choose the option for each item in the bill</p>'+idx.map(i=>{const r=s.rows[i];return `<div style="margin:8px 0"><b>${E(r.c)}</b>`+[r].concat(r.alt).map((y,k)=>`<label style="display:flex;gap:8px;align-items:center;margin:4px 0"><input type=radio name="ob${i}" value="${k}" ${k==0?'checked':''} style="width:auto;margin:0"> Option ${k+1}: ${E(((y.b||'')+' '+(y.m||'')).trim()||'-')} - Rs ${f(am(y))}</label>`).join('')+'</div>'}).join('')+'<div style="display:flex;gap:8px;margin-top:8px"><button class=o id=obok>Make Bill</button><button class=r id=obno>Cancel</button></div></div>';
+ o.innerHTML='<div class=cfb style="text-align:left;width:min(460px,94vw);max-height:88vh;overflow-y:auto"><p>Choose the option for each item in the bill</p>'+idx.map(i=>{const r=s.rows[i];return `<div style="margin:8px 0"><b>${E(r.c)}</b>`+[r].concat(r.alt).map((y,k)=>!y?'':`<label style="display:flex;gap:8px;align-items:center;margin:4px 0"><input type=radio name="ob${i}" value="${k}" ${k==0?'checked':''} style="width:auto;margin:0"> Option ${k+1}: ${E(((y.b||'')+' '+(y.m||'')).trim()||'-')} - Rs ${f(am(y))}</label>`).join('')+'</div>'}).join('')+'<div style="display:flex;gap:8px;margin-top:8px"><button class=o id=obok>Make Bill</button><button class=r id=obno>Cancel</button></div></div>';
  document.body.appendChild(o);o.querySelector('#obno').onclick=()=>o.remove();
  o.querySelector('#obok').onclick=()=>{const c=JSON.parse(JSON.stringify(s));idx.forEach(i=>{const r=c.rows[i],k=+((o.querySelector('input[name=ob'+i+']:checked')||{}).value||0),pick=k==0?Object.assign({},r):Object.assign({},r.alt[k-1]);delete pick.alt;c.rows[i]=pick});
   o.remove();D=c;D.id=Date.now();D.type='Bill';D.no='';D.from=s.no;D.fromId=s.id;go('doc')}}})();
@@ -2379,6 +2379,51 @@ window.xbMove=xbMove;xbMove()})();
 @media print{#sb>*,#tbar>*,#app>*{zoom:1!important}}
 </style>
 <style>
+/* ===== Round 5: stacked options + purchase cost save/view ===== */
+.ob5 .oh small{font-weight:600;color:var(--mut)}
+.card>h4 small{font-weight:600;color:var(--mut)}
+.r3sv{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+</style>
+<script>
+/* ---- Options: Option 1 / 2 / 3 as stacked forms, columns = Inverter | Battery | Panel ---- */
+const O5MAX=3;
+function o5on(x){return !!(x&&x.alt&&x.alt.some(Boolean))}
+function o5mode(){return !!(D&&D.type=='Quotation'&&D.rows.some(o5on))}
+function o5cnt(){let m=1;D.rows.forEach(x=>{if(o5on(x))m=Math.max(m,x.alt.length+1)});return m}
+function o5norm(x){if(!x.alt)return;while(x.alt.length&&!x.alt[x.alt.length-1])x.alt.pop();if(!x.alt.length)delete x.alt}
+function o5new(){if(!D.rows.some(x=>OPTC.includes(x.c))){toast('Add an Inverter, Battery or Panel first');return}
+ const c=o5mode()?o5cnt():1;if(c>=O5MAX){toast('Maximum 3 options');return}const j=c-1;
+ D.rows.forEach(x=>{if(!OPTC.includes(x.c))return;x.alt=x.alt||[];while(x.alt.length<j)x.alt.push(null);x.alt[j]=mkAlt(x)});go('doc')}
+function o5del(i,j){const x=D.rows[i];if(!x.alt)return;x.alt[j]=null;o5norm(x);go('doc')}
+function o5add(i,j){const x=D.rows[i];x.alt=x.alt||[];while(x.alt.length<j)x.alt.push(null);x.alt[j]=mkAlt(x);go('doc')}
+function o5rm(j){cf('Remove Option '+(j+2)+'?',()=>{D.rows.forEach(x=>{if(x.alt&&x.alt.length>j){x.alt.splice(j,1);o5norm(x)}});go('doc')},'Remove')}
+function o5off(){cf('Remove all options? Only Option 1 stays and the normal form comes back.',()=>{D.rows.forEach(x=>{delete x.alt});go('doc')},'Remove')}
+function optBar(){return(D&&D.type=='Quotation'&&!o5mode()&&D.rows.some(x=>OPTC.includes(x.c)))?'<button type=button class=o onclick="o5new()">+ New Option</button>':''}
+function o5block(){const cnt=o5cnt(),idx=[];D.rows.forEach((x,i)=>{if(OPTC.includes(x.c))idx.push(i)});
+ let h='<div class=card><h4>Quotation Options<button class=r type=button onclick="o5off()">Remove all options</button></h4><small class=onote>Option 1 is the main quotation. In Option 2 / 3 delete what you do not need (for example keep only the Inverter). Items missing from an option stay the same as Option 1.</small></div>';
+ const gc='style="grid-template-columns:repeat('+Math.min(Math.max(idx.length,1),3)+',minmax(0,1fr))"';
+ for(let j=0;j<cnt;j++){
+  const cols=idx.map(i=>{const x=D.rows[i];
+   if(j==0)return '<div class="ocol p"><div class=oh><span>'+x.c+'</span><button type=button class=r onclick="D.rows.splice('+i+',1);go(\'doc\')">Remove</button></div>'+colF(x,i,null)+'</div>';
+   const a=x.alt&&x.alt[j-1];
+   return a?'<div class=ocol><div class=oh><span>'+x.c+'</span><button type=button class=r onclick="o5del('+i+','+(j-1)+')">Delete</button></div>'+colF(a,i,j-1)+'</div>':'<div class="ocol add"><button type=button class=o onclick="o5add('+i+','+(j-1)+')">+ Add '+x.c+'</button></div>'}).join('');
+  h+='<div class="card ob5"><h4>Option '+(j+1)+(j==0?' <small>(Primary)</small>':'')+(j>0?'<button class=r type=button onclick="o5rm('+(j-1)+')">Remove Option '+(j+1)+'</button>':'')+'</h4><div class=ocols '+gc+'>'+cols+'</div></div>'}
+ if(cnt<O5MAX)h+='<button type=button class=o onclick="o5new()">+ New Option</button>';
+ return h}
+(function(){const first=()=>D.rows.findIndex(x=>OPTC.includes(x.c));
+ rowCard=function(x,i){if(!D||D.type!='Quotation'||!o5mode()||!OPTC.includes(x.c))return rowCard0(x,i);return i==first()?o5block():''}})();
+
+/* ---- Purchase cost: Save button + saved view ---- */
+var r3bv=0;
+function r3sv(){const d=DB.docs.find(x=>x.id==r3bd);if(!d)return;clearTimeout(r3tmr);save();toast('Cost saved');r3bv=d.id;go('buy')}
+(function(){const ob=V.buy;V.buy=function(){const d=DB.docs.find(x=>x.id==r3bd);
+ if(d&&r3bv===d.id)return '<div class=card><h4>Purchase Cost - Saved</h4><div class=r3in><b>'+E(d.cust||'No name')+'</b> | '+d.type+' '+E(d.no||'')+' | Total Rs '+f(dt(d))+'</div><div class=r3sv><button class=r type=button onclick="r3bd=0;r3bv=0;go(\'buy\')">&#8592; All clients</button><button type=button class=o onclick="r3bv=0;go(\'buy\')">Edit costs</button></div>'+r3tbl(d,0)+'</div>';
+ let h=ob.call(V);
+ if(d)h=h.replace('<div class=r3hn>','<div class=r3sv><button type=button class=o onclick="r3sv()">Save</button><button class=r type=button onclick="r3bd=0;r3bv=0;go(\'buy\')">&#8592; All clients</button></div><div class=r3hn>');
+ else h=h.replace(/onclick="r3bd=(\d+);go\('buy'\)">(<span>(?:(?!<\/span>)[\s\S])*<\/span><span class="r3tag ok">)Cost entered/g,'onclick="r3bd=$1;r3bv=$1;go(\'buy\')">$2Cost entered - View');
+ return h}})();
+</script>
+<style>
 /* ===== Round 4: clean icon set, light preview bar, language toggle in side panel ===== */
 .xbar,#tbar .xbar,.pvw>.xbar{background:#F9F9F9!important;border:1px solid #EEEEEE!important;border-bottom:2px solid #E4E4E4!important;border-radius:14px!important;box-shadow:none!important}
 .xbar{margin:8px 10px 0;padding:6px 8px;gap:2px}
@@ -2413,6 +2458,17 @@ function nsLangSet(l){try{localStorage.setItem('nslang',l)}catch(e){}
  const g=go;go=function(t){g(t);mount();nsLangUi()};
  const nd=newDoc;newDoc=function(t){nd(t);let l='en';try{l=localStorage.getItem('nslang')=='ur'?'ur':'en'}catch(e){}
   if(D&&l=='ur'&&D.lang!='ur'){D.lang='ur';go('doc')}};
+})();
+</script>
+<script>
+/* build tag + one-time cache refresh so updated files always load */
+(function(){const BUILD='R5a';window.NSBUILD=BUILD;
+ function tag(){const sf=document.getElementById('sbf');if(!sf||document.getElementById('nsbuild'))return;const d=document.createElement('div');d.id='nsbuild';d.style.cssText='font-size:10.5px;color:#9fc3e0;text-align:center;margin:0 0 8px';d.textContent='Version '+BUILD;sf.insertBefore(d,sf.firstChild)}
+ tag();const g=go;go=function(t){g(t);tag()};
+ try{if(localStorage.getItem('nsbuild')!==BUILD&&navigator.onLine!==false){localStorage.setItem('nsbuild',BUILD);
+  const jobs=[];if(window.caches&&caches.keys)jobs.push(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))));
+  if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)jobs.push(navigator.serviceWorker.getRegistrations().then(r=>Promise.all(r.map(x=>x.unregister()))));
+  if(jobs.length)Promise.all(jobs).then(()=>{if(/^https?:/.test(location.protocol))location.reload()}).catch(()=>{})}}catch(e){}
 })();
 </script>
 </body></html>
