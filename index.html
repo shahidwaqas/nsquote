@@ -2314,11 +2314,15 @@ function r3ic(){document.querySelectorAll('#nav button').forEach((b,i)=>{const s
 .xbar i{flex:none;width:1px;height:30px;background:#e3e9f1;margin:0 4px}
 .pvt button:first-child{display:none}
 .pvt .pvi,#tpvi,.lhbar{display:none!important}
-#tbar .xbar{margin:0;flex:1 1 auto;min-width:0;height:44px;padding:2px 6px;border-radius:14px;box-shadow:none;background:#fff;border:1px solid #e8edf4}
-#tbar .xbar{gap:0}
-#tbar .xbar button{padding:3px 5px;font-size:10px;gap:1px;border-radius:10px}
+#tbar .xbar{margin:0;flex:1 1 auto;min-width:0;height:44px;padding:0;border-radius:0;box-shadow:none;background:none;border:0}
+#tbar .xbar{gap:4px}
+#tbar .xbar button{padding:3px 8px;font-size:10px;gap:1px;border-radius:10px}
 #tbar .xbar button svg{width:17px;height:17px}
-#tbar .xbar i{height:22px;margin:0 2px}
+#tbar .xbar i{height:22px;margin:0 6px}
+.pvw>.xbar{margin:0;border-radius:0;border:0;border-bottom:1px solid #e8edf4;box-shadow:none;background:#fff;padding:3px 8px;gap:4px;height:50px}
+.pvw>.xbar button{padding:3px 8px;font-size:10px;gap:1px}
+.pvw>.xbar button svg{width:17px;height:17px}
+.pvw>.xbar i{height:22px;margin:0 6px}
 body.inpv #ptl{display:none!important}
 #lkb span{display:none!important}
 #lkb{padding:0 9px!important}
@@ -2356,7 +2360,16 @@ V.pv=function(){let h=ov.call(V);if(!D)return h;
 
 (function(){const g=go;go=function(t){g(t);try{xbMove()}catch(e){}};
 function xbMove(){const tb=document.getElementById('tbar');if(!tb)return;tb.querySelectorAll(':scope>.xbar').forEach(e=>e.remove());
- if(tab!='pv'||innerWidth<700)return;const x=document.querySelector('.pvw .xbar');if(!x)return;tb.insertBefore(x,tb.querySelector('.tsp'))}
+ if(tab!='pv')return;const x=document.querySelector('.pvw .xbar');if(!x)return;if(innerWidth<700){const w=x.parentNode;if(w&&w.classList.contains('pvw'))w.insertBefore(x,w.firstChild);return}tb.insertBefore(x,tb.querySelector('.tsp'))}
 window.xbMove=xbMove;xbMove()})();
 </script>
+<style>
+/* overall slightly smaller dashboard / app screens (not the preview, print or PDF) */
+:root{--tbh:50px}
+@media(min-width:900px){:root{--sbw:232px}}
+#sb>*{zoom:.92}
+#tbar>*{zoom:.92}
+#app>*:not(.pvw){zoom:.9}
+@media print{#sb>*,#tbar>*,#app>*{zoom:1!important}}
+</style>
 </body></html>
