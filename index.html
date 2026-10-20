@@ -254,7 +254,7 @@ $('#nav').innerHTML=[['doc','Home'],['cli','Client List'],['cpa','Cost/Profit An
 const V={
 doc(){if(!D){const q=DB.docs.filter(d=>d.type=='Quotation').length,b=DB.docs.filter(d=>d.type=='Bill');return`<div class=st><div><b>${q}</b><span>Quotations</span></div><div><b>${b.length}</b><span>Bills</span></div><div><b>${f(b.reduce((s,d)=>s+dt(d),0))}</b><span>Billed (Rs)</span></div></div><div class=card><h4>Create New</h4><button onclick="newDoc('Quotation')">+ New Quotation</button><button class=o onclick="newDoc('Bill')">+ New Bill</button></div><div class=card style="padding:0;overflow-x:auto"><h4 style="margin:10px 12px 8px">Recent (Last 2 Days)</h4>${xlTbl(recentDocs(),'home','No quotation / bill created in the last 2 days')}</div>`}
 const r=D.rows.map((x,i)=>rowCard(x,i)).join('');
-return`<div class=card><h4><span><button class=r type=button onclick="goHome()" style="margin:0 8px 0 0">&#8592; Home</button>${D.type}${D.cust?' - '+E(D.cust):''}</span></h4></div><div class=card><h4>Customer Details</h4><div class=g>${inp('Date','date',D.date).replace('<input','<input type=date')}${inp('Customer Name','cust',D.cust)}${inp('Contact No','phone',D.phone)}${inp('Location','loc',D.loc)}<label>Document Language<select onchange="D.lang=this.value"><option value="en" ${D.lang!='ur'?'selected':''}>English</option><option value="ur" ${D.lang=='ur'?'selected':''}>اردو (Urdu)</option></select></label></div></div>${sysCard()}${r}<button class=o onclick="addRowKey()">+ Add Product</button>
+return`<div class=card><h4><span><button class=r type=button onclick="goHome()" style="margin:0 8px 0 0">&#8592; Home</button>${D.type}${D.cust?' - '+E(D.cust):''}</span></h4></div><div class=card><h4>Customer Details</h4><div class=g>${inp('Date','date',D.date).replace('<input','<input type=date')}${inp('Customer Name','cust',D.cust)}${inp('Contact No','phone',D.phone)}${inp('Location','loc',D.loc)}<label>Document Language<select onchange="D.lang=this.value;nsLangUi()"><option value="en" ${D.lang!='ur'?'selected':''}>English</option><option value="ur" ${D.lang=='ur'?'selected':''}>اردو (Urdu)</option></select></label></div></div>${sysCard()}${r}<button class=o onclick="addRowKey()">+ Add Product</button>
 <div class=card><h4>Structure</h4><div class=g><label>Type<select onchange="D.st.o=this.value">${opts(ST,D.st.o)}</select></label>${inp('Amount','st.a',D.st.a,1)}</div></div>
 <div class=card><h4>Accessories</h4>${D.ac.off?`<div class=g>${ACL.map((x,i)=>`<label class=ck><input type=checkbox ${D.ac.off.includes(i)?'':'checked'} onchange="tAc(${i},this.checked)">${x}</label>`).join('')}</div><div style="display:flex;gap:6px;margin-top:8px"><input id=acn placeholder="Add more accessory (e.g. Earthing Kit)" onkeydown="if(event.key=='Enter'){event.preventDefault();addAc()}"><button type=button onclick="addAc()" style="white-space:nowrap">+ Add</button></div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:4px 0">${xl(D.ac).map((z,i)=>`<span class=ck style="padding:4px 4px 4px 10px">${E(z)}<button class=r type=button onclick="rmAc(${i})" style="margin:0 0 0 8px">✕</button></span>`).join('')}</div><div class=g>${inp('Amount','ac.a',D.ac.a,1)}</div>`:`<div class=g>${inp('Items','ac.t',D.ac.t)}${inp('Amount','ac.a',D.ac.a,1)}</div>`}</div>
 <div class=card><h4>Other Charges</h4><div class=g>${inp('Installation charges','inst',D.inst,1)}${inp('Freight charges','frt',D.frt,1)}${inp('Description (optional)','misc.d',D.misc.d,0,'e.g. Concrete, Net metering file')}${inp('Amount','misc.a',D.misc.a,1)}</div></div>${payCard()}
@@ -2223,9 +2223,9 @@ function r3memo(m){const ur=D.lang=='ur',L=LN[ur?'ur':'en'],dir=ur?'rtl':'ltr',t
 })();
 
 /* PDF/image: system badge (e.g. "8 kW Hybrid Solar System") was coming blank in html2canvas -> redraw it with plain, safe markup in the capture copy only */
-function r3fixSy(doc){try{doc.querySelectorAll('.sy').forEach(e=>{const k=e.querySelector('.sk b'),sp=[...e.children].filter(c=>!c.classList.contains('sk')).pop(),tx=((sp?sp.textContent:e.textContent)||'').trim(),kv=k?k.textContent.trim():'';
+function r3fixSy(doc){try{doc.querySelectorAll('.sy').forEach(e=>{const k=e.querySelector('.sk b'),sp=[...e.children].filter(c=>!c.classList.contains('sk')).pop(),tx=((sp?sp.textContent:e.textContent)||'').trim(),kv=k?k.textContent.trim():'',big=kv.length>3;
  e.removeAttribute('class');e.style.cssText='display:inline-block;background:#fde9ea;border:1.5px solid #e9a5a8;border-radius:999px;padding:2px 18px 2px 2px;margin:0 0 12px;white-space:nowrap;direction:ltr;line-height:1';
- e.innerHTML=(kv?'<span style="display:inline-block;vertical-align:middle;width:36px;height:36px;border-radius:18px;background:#d02129;color:#fff;text-align:center;overflow:hidden"><span style="display:block;padding-top:'+(kv.length>3?'9':'7')+'px;font:bold '+(kv.length>3?'10':'13')+'px/'+(kv.length>3?'11':'13')+'px Arial,sans-serif">'+kv+'</span><span style="display:block;font:bold 8px/10px Arial,sans-serif">kW</span></span>':'')+'<span style="display:inline-block;vertical-align:middle;margin-left:'+(kv?'10':'16')+'px;color:#073b6d;font:bold 14px/34px Arial,sans-serif">'+tx+'</span>'})}catch(x){}}
+ e.innerHTML=(kv?'<span style="display:inline-block;vertical-align:middle;width:36px;height:36px;padding-top:6px;border-radius:18px;background:#d02129;text-align:center;color:#ffffff;font-family:Arial,sans-serif;font-weight:bold;font-size:'+(big?'10':'14')+'px;line-height:14px;white-space:nowrap">'+kv+'<br><span style="font-size:8px;line-height:10px">kW</span></span>':'')+'<span style="display:inline-block;vertical-align:middle;margin-left:'+(kv?'10':'16')+'px;color:#073b6d;font:bold 14px/34px Arial,sans-serif">'+tx+'</span>'})}catch(x){}}
 function r3z(d){r3zm=d==0?1:Math.min(3,Math.max(.5,Math.round((r3zm+d)*100)/100));fitView();const e=document.getElementById('r3zl');if(e)e.textContent=Math.round(r3zm*100)+'%'}
 function r3fmt(){D.fmt=D.fmt=='memo'?'':'memo';PC=null;save();go('pv')}
 function fitView(){const el=document.querySelector('.pvc .lp');if(!el)return;const box=el.parentNode;resetPrint();box.style.overflowX='hidden';box.classList.remove('zoomed');const W=794,base=Math.min(1,box.clientWidth/W),k=base*r3zm;if(k==1)return;el.style.width=W+'px';el.style.transformOrigin='0 0';el.style.transform='scale('+k+')';box.style.height=Math.ceil(el.offsetHeight*k)+'px';if(r3zm>1){box.classList.add('zoomed');box.style.overflowX='auto'}}
@@ -2288,14 +2288,14 @@ const R3W={pdf:'<path d="M12 4v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="
  zo:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
  zi:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/><path d="M12 8v8"/>',
  ft:'<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/>'};
-const R3N=['<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
- '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.5c2.2.6 3.5 2.5 3.5 5.5"/>',
- '<path d="M3 17 9 11l4 4 8-9"/><path d="M15 6h6v6"/>',
- '<path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z"/><path d="M9 8h6"/><path d="M9 12h6"/>',
- '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .6h9.2a1 1 0 0 0 1-.8L21 7H6"/>',
- '<path d="M4 20V4"/><path d="M4 20h16"/><path d="M9 16v-5"/><path d="M14 16V7"/><path d="M19 16v-3"/>',
- '<path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/>',
- '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'];
+const R3N=['<path d="M5 12l-2 0l9 -9l9 9l-2 0" /> <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /> <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />',
+ '<path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /> <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /> <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />',
+ '<path d="M10 3.2a9 9 0 1 0 10.8 10.8a1 1 0 0 0 -1 -1h-6.8a2 2 0 0 1 -2 -2v-7a.9 .9 0 0 0 -1 -.8" /> <path d="M15 3.5a9 9 0 0 1 5.5 5.5h-4.5a1 1 0 0 1 -1 -1v-4.5" />',
+ '<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18" /> <path d="M13 8l2 0" /> <path d="M13 12l2 0" />',
+ '<path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /> <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /> <path d="M17 17h-11v-14h-2" /> <path d="M6 5l14 1l-1 7h-13" />',
+ '<path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /> <path d="M18 14v4h4" /> <path d="M18 11v-4a2 2 0 0 0 -2 -2h-2" /> <path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /> <path d="M18 18m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /> <path d="M8 11h4" /> <path d="M8 15h3" />',
+ '<path d="M4 7l16 0" /> <path d="M10 11l0 6" /> <path d="M14 11l0 6" /> <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /> <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />',
+ '<path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" /> <path d="M9 15l3 -3l3 3" /> <path d="M12 12l0 9" />'];
 function r3ic(){document.querySelectorAll('#nav button').forEach((b,i)=>{const s=b.querySelector('svg');if(s&&R3N[i]){s.setAttribute('viewBox','0 0 24 24');s.innerHTML=R3N[i]}});
  document.querySelectorAll('#tpvi .pvi button').forEach(b=>{let k='',lb='';const oc=b.getAttribute('onclick')||'';
   if(b.classList.contains('wa'))k='wa';else if(b.classList.contains('bp'))k='bp';else if(b.classList.contains('cvb'))k='cvb';else if(/pdf\(\)/.test(oc))k='pdf';else if(b.title=='Zoom out'){k='zo';lb='Out'}else if(b.title=='Zoom in'){k='zi';lb='In'}else if(b.title=='Fit'){k='ft';lb='Fit'}
@@ -2332,30 +2332,29 @@ body.inpv #ptl{display:none!important}
 (function(){
 const I=d=>'<svg viewBox="0 0 24 24">'+d+'</svg>';
 const ic={
-back:I('<path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/>'),
-pdf:I('<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M8 15h8"/>'),
-wa:I('<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>'),
-pr:I('<path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="8" rx="1"/>'),
-bill:I('<path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z"/><path d="M9 8h6"/><path d="M9 12h6"/>'),
-zi:I('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/>'),
-zo:I('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6"/>'),
-lh:I('<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M9 5V3h6v2"/><path d="M7 12h4"/><path d="M7 16h10"/>'),
-mg:I('<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>'),
-std:I('<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/>'),
-bk:I('<path d="M5 4h12a2 2 0 012 2v14H7a2 2 0 01-2-2z"/><path d="M9 4v16"/><path d="M12 9h4"/>'),
-lang:I('<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 010 18"/><path d="M12 3a14 14 0 000 18"/>'),
-out:I('<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 11-12.8 0"/>')};
+back:I('<path d="M5 12l14 0" /> <path d="M5 12l6 6" /> <path d="M5 12l6 -6" />'),
+pdf:I('<path d="M14 3v4a1 1 0 0 0 1 1h4" /> <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" /> <path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" /> <path d="M17 18h2" /> <path d="M20 15h-3v6" /> <path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" />'),
+wa:I('<path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" /> <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />'),
+pr:I('<path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /> <path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /> <path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" />'),
+bill:I('<path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2" />'),
+zi:I('<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /> <path d="M7 10l6 0" /> <path d="M10 7l0 6" /> <path d="M21 21l-6 -6" />'),
+zo:I('<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /> <path d="M7 10l6 0" /> <path d="M21 21l-6 -6" />'),
+lh:I('<path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /> <path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /> <path d="M15 8l2 0" /> <path d="M15 12l2 0" /> <path d="M7 16l10 0" />'),
+mg:I('<path d="M19.875 12c.621 0 1.125 .512 1.125 1.143v5.714c0 .631 -.504 1.143 -1.125 1.143h-15.875a1 1 0 0 1 -1 -1v-5.857c0 -.631 .504 -1.143 1.125 -1.143h15.75z" /> <path d="M9 12v2" /> <path d="M6 12v3" /> <path d="M12 12v3" /> <path d="M18 12v3" /> <path d="M15 12v2" /> <path d="M3 3v4" /> <path d="M3 5h18" /> <path d="M21 3v4" />'),
+std:I('<path d="M14 3v4a1 1 0 0 0 1 1h4" /> <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /> <path d="M9 9l1 0" /> <path d="M9 13l6 0" /> <path d="M9 17l6 0" />'),
+bk:I('<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18" /> <path d="M13 8l2 0" /> <path d="M13 12l2 0" />'),
+lang:I('<path d="M9 6.371c0 4.418 -2.239 6.629 -5 6.629" /> <path d="M4 6.371h7" /> <path d="M5 9c0 2.144 2.252 3.908 6 4" /> <path d="M12 20l4 -9l4 9" /> <path d="M19.1 18h-6.2" /> <path d="M6.694 3l.793 .582" />'),
+out:I('<path d="M7 6a7.75 7.75 0 1 0 10 0" /> <path d="M12 4l0 8" />')};
 const ov=V.pv;
 V.pv=function(){let h=ov.call(V);if(!D)return h;
  const memo=D.fmt=='memo',cmp=D.opts&&D.opts.length>1;
  const b=(c,oc,i,l)=>'<button type=button class="'+c+'" onclick="'+oc+'">'+i+l+'</button>',sp='<i></i>';
- let x=b('',"PF=='home'?goHome():go(PF)",ic.back,'Back')+sp+b('',"pdf()",ic.pdf,'PDF')+b('wa',"wa()",ic.wa,'Share')+b('',"pr()",ic.pr,'Print');
+ let x=b('',"go('doc')",ic.back,'Back')+sp+b('',"pdf()",ic.pdf,'PDF')+b('wa',"wa()",ic.wa,'Share')+b('',"pr()",ic.pr,'Print');
  if(D.type=='Quotation'&&!BL(D).length)x+=b('',"sv(1);toBill(D.id)",ic.bill,'To Bill');
  x+=sp+b('',"r3z(.25)",ic.zi,'Zoom In')+b('',"r3z(-.25)",ic.zo,'Zoom Out')+sp+b(LHON?'on':'',"lhTgl()",ic.lh,'Letterhead');
  if(LHON)x+=b('',"lhSet()",ic.mg,'Margins');
- if(!cmp)x+=b(memo?'':'on',"if(D.fmt=='memo')r3fmt()",ic.std,'Standard')+b(memo?'on':'',"if(D.fmt!='memo')r3fmt()",ic.bk,'Bill Book');
- x+=sp+b('',"tgl()",ic.lang,'Language');
- return h.replace('<div class=pvs>','<div class=xbar>'+x+'</div><div class=pvs>')};
+ if(!cmp)x+=sp+b(memo?'':'on',"if(D.fmt=='memo')r3fmt()",ic.std,'Standard')+b(memo?'on':'',"if(D.fmt!='memo')r3fmt()",ic.bk,'Bill Book');
+  return h.replace('<div class=pvs>','<div class=xbar>'+x+'</div><div class=pvs>')};
 })();
 
 (function(){const g=go;go=function(t){g(t);try{xbMove()}catch(e){}};
@@ -2372,4 +2371,41 @@ window.xbMove=xbMove;xbMove()})();
 #app>*:not(.pvw){zoom:.9}
 @media print{#sb>*,#tbar>*,#app>*{zoom:1!important}}
 </style>
+<style>
+/* ===== Round 4: clean icon set, light preview bar, language toggle in side panel ===== */
+.xbar,#tbar .xbar,.pvw>.xbar{background:#F9F9F9!important;border:1px solid #EEEEEE!important;border-bottom:2px solid #E4E4E4!important;border-radius:14px!important;box-shadow:none!important}
+.xbar{margin:8px 10px 0;padding:6px 8px;gap:2px}
+.xbar button,#tbar .xbar button,.pvw>.xbar button{flex:none;width:50px;padding:5px 0 4px;gap:2px;border-radius:10px;color:#4A4A48;font-size:10px;font-weight:500;line-height:1.2}
+.xbar button svg,#tbar .xbar button svg,.pvw>.xbar button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.xbar button.on,#tbar .xbar button.on,.pvw>.xbar button.on{background:#E9F2FB;color:#0C447C;font-weight:600}
+.xbar button.wa svg{fill:none!important;stroke:currentColor!important}
+.xbar button.out{color:#4A4A48}
+.xbar i,#tbar .xbar i,.pvw>.xbar i{width:1px;height:28px;margin:0 4px;background:#E4E4E4}
+#tbar .xbar{height:46px;margin:0;padding:3px 6px;flex:0 1 auto;max-width:100%}
+.pvw>.xbar{margin:8px 10px 0;height:auto;padding:6px 8px;border-radius:14px!important}
+#sb #nav button svg{stroke-width:1.75!important}
+#nslang{margin:0 0 10px}
+#nslang small{display:block;font-size:11px;color:#cfe3f5;margin:0 0 5px;letter-spacing:.3px}
+#nslang div{display:flex;gap:6px}
+#nslang button{flex:1;margin:0;padding:8px 0;border:0;border-radius:9px;background:#ffffff1f;color:#fff;font-size:12.5px;font-weight:600}
+#nslang button.on{background:#E9F2FB;color:#0C447C}
+@media print{#nslang{display:none!important}}
+</style>
+<script>
+function nsLangGet(){if(typeof D!=='undefined'&&D)return D.lang=='ur'?'ur':'en';try{return localStorage.getItem('nslang')=='ur'?'ur':'en'}catch(e){return 'en'}}
+function nsLangUi(){document.querySelectorAll('#nslang button').forEach(b=>b.classList.toggle('on',b.dataset.l==nsLangGet()))}
+function nsLangSet(l){try{localStorage.setItem('nslang',l)}catch(e){}
+ if(D){D.lang=l;try{save()}catch(e){}PC=null;if(tab=='pv'||tab=='doc')go(tab)}
+ nsLangUi();try{closeSb()}catch(e){}}
+(function(){
+ function mount(){const sf=document.getElementById('sbf');if(!sf)return;if(document.getElementById('nslang'))return;
+  const d=document.createElement('div');d.id='nslang';
+  d.innerHTML='<small>Document Language</small><div><button type=button data-l="en" onclick="nsLangSet(\'en\')">English</button><button type=button data-l="ur" onclick="nsLangSet(\'ur\')">\u0627\u0631\u062f\u0648</button></div>';
+  sf.insertBefore(d,sf.firstChild);nsLangUi()}
+ mount();
+ const g=go;go=function(t){g(t);mount();nsLangUi()};
+ const nd=newDoc;newDoc=function(t){nd(t);let l='en';try{l=localStorage.getItem('nslang')=='ur'?'ur':'en'}catch(e){}
+  if(D&&l=='ur'&&D.lang!='ur'){D.lang='ur';go('doc')}};
+})();
+</script>
 </body></html>
