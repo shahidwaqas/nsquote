@@ -2230,4 +2230,44 @@ function r3fmt(){D.fmt=D.fmt=='memo'?'':'memo';PC=null;save();go('pv')}
 function fitView(){const el=document.querySelector('.pvc .lp');if(!el)return;const box=el.parentNode;resetPrint();box.style.overflowX='hidden';box.classList.remove('zoomed');const W=794,base=Math.min(1,box.clientWidth/W),k=base*r3zm;if(k==1)return;el.style.width=W+'px';el.style.transformOrigin='0 0';el.style.transform='scale('+k+')';box.style.height=Math.ceil(el.offsetHeight*k)+'px';if(r3zm>1){box.classList.add('zoomed');box.style.overflowX='auto'}}
 </script>
 
+<style>
+/* ===== Soft / clean icon style: outline glyphs, translucent tint, soft edges, no heavy gradients ===== */
+#sb #nav button svg{width:34px!important;height:34px!important;padding:8px!important;border-radius:12px!important;background:#ffffff14!important;box-shadow:none!important;stroke-width:1.6!important;opacity:.95;animation:none!important;transform:none!important;transition:background .2s ease}
+#sb #nav button:hover svg,#sb #nav button.on:hover svg{animation:none!important;background:#ffffff26!important;transform:none!important}
+#sb #nav button.on{background:#ffffff1f!important;box-shadow:none!important;transform:none!important}
+#sb #nav button.on svg{background:#ffffff38!important;color:#fff!important;stroke:#fff!important;box-shadow:none!important;transform:none!important;animation:none!important}
+#sb #nav button:hover{transform:none!important;animation:none!important}
+.pvt .pvi button{background:#ffffff14!important;box-shadow:none!important;border:1px solid #ffffff22!important;border-radius:14px!important}
+.pvt .pvi button:hover{background:#ffffff26!important;transform:none!important;box-shadow:none!important}
+.pvt .pvi button svg{background:#ffffff1c!important;box-shadow:none!important;color:#fff!important;stroke-width:1.7;border-radius:11px}
+.pvt .pvi .wa svg{background:#25d36633!important;color:#5ff0a0!important}
+.pvt .pvi .cvb svg{background:#f2a33a2e!important;color:#ffd08a!important}
+.pvt .pvi .bp svg{background:#ffffff1c!important}
+.pvt .pvi .fm{background:#ffffff1c!important;color:#fff;border:1px solid #ffffff33!important}
+.pvt .pvi .zb{background:#ffffff14!important}
+.r3ch button.on{box-shadow:none}
+</style>
+<style>
+/* preview action icons live on the white top bar */
+#tpvi{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}
+#tpvi::-webkit-scrollbar{display:none}
+#tpvi .pvi{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;width:auto;order:0}
+#tpvi .pvi button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex:none;min-width:46px;height:46px;margin:0;padding:3px 5px!important;border:1px solid #e3ebf4!important;border-radius:12px!important;background:#f4f8fc!important;color:#334155!important;font-size:9px!important;font-weight:600;line-height:1.15!important;box-shadow:none!important;animation:none!important;transform:none!important;white-space:nowrap}
+#tpvi .pvi button:hover{background:#e8f0fa!important}
+#tpvi .pvi button svg{width:26px;height:26px;padding:5px;box-sizing:border-box;border-radius:9px;background:#e6eef8!important;color:#073b6d!important;stroke-width:1.7;box-shadow:none!important;animation:none!important}
+#tpvi .pvi .wa svg{background:#dff4e7!important;color:#0a7a3d!important}
+#tpvi .pvi .cvb svg{background:#fff0d9!important;color:#b86a00!important}
+#tpvi .pvi .bp svg{background:#e9edf2!important;color:#475569!important}
+#tpvi .pvi .zb{min-width:32px;font-size:17px!important;font-weight:700}
+#tpvi .pvi .zl{font-size:11px;min-width:38px;text-align:center;color:#334155}
+#tpvi .pvi .fm{min-width:60px;background:#fdecee!important;color:#b3261e!important;border-color:#f3c9cc!important}
+body.inpv #tnew{display:none!important}
+@media(max-width:700px){#tpvi .pvi button svg+*{display:none}#tpvi .pvi button{min-width:38px;height:38px}#tpvi .pvi .zb,#tpvi .pvi .fm{font-size:11px!important}body.inpv #ptl{display:none}}
+</style>
+<script>
+function r3tb(){const tb=document.getElementById('tbar');if(!tb)return;let box=document.getElementById('tpvi');
+ if(tab=='pv'){const src=document.querySelector('.pvt .pvi');if(!box){box=document.createElement('div');box.id='tpvi';tb.insertBefore(box,document.getElementById('tnew'))}if(src){box.innerHTML='';box.appendChild(src)}document.body.classList.add('inpv')}
+ else{if(box)box.remove();document.body.classList.remove('inpv')}}
+(function(){const g1=go;go=function(t){g1(t);r3tb()};r3tb()})();
+</script>
 </body></html>
