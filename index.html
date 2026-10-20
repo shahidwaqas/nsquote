@@ -2314,6 +2314,14 @@ function r3ic(){document.querySelectorAll('#nav button').forEach((b,i)=>{const s
 .xbar i{flex:none;width:1px;height:30px;background:#e3e9f1;margin:0 4px}
 .pvt button:first-child{display:none}
 .pvt .pvi,#tpvi,.lhbar{display:none!important}
+#tbar .xbar{margin:0;flex:1 1 auto;min-width:0;height:44px;padding:2px 6px;border-radius:14px;box-shadow:none;background:#fff;border:1px solid #e8edf4}
+#tbar .xbar{gap:0}
+#tbar .xbar button{padding:3px 5px;font-size:10px;gap:1px;border-radius:10px}
+#tbar .xbar button svg{width:17px;height:17px}
+#tbar .xbar i{height:22px;margin:0 2px}
+body.inpv #ptl{display:none!important}
+#lkb span{display:none!important}
+#lkb{padding:0 9px!important}
 @media print{.xbar{display:none!important}}
 </style>
 <script>
@@ -2342,8 +2350,13 @@ V.pv=function(){let h=ov.call(V);if(!D)return h;
  x+=sp+b('',"r3z(.25)",ic.zi,'Zoom In')+b('',"r3z(-.25)",ic.zo,'Zoom Out')+sp+b(LHON?'on':'',"lhTgl()",ic.lh,'Letterhead');
  if(LHON)x+=b('',"lhSet()",ic.mg,'Margins');
  if(!cmp)x+=b(memo?'':'on',"if(D.fmt=='memo')r3fmt()",ic.std,'Standard')+b(memo?'on':'',"if(D.fmt!='memo')r3fmt()",ic.bk,'Bill Book');
- x+=sp+b('',"tgl()",ic.lang,'Language')+b('out',"lockNow()",ic.out,'Logout');
+ x+=sp+b('',"tgl()",ic.lang,'Language');
  return h.replace('<div class=pvs>','<div class=xbar>'+x+'</div><div class=pvs>')};
 })();
+
+(function(){const g=go;go=function(t){g(t);try{xbMove()}catch(e){}};
+function xbMove(){const tb=document.getElementById('tbar');if(!tb)return;tb.querySelectorAll(':scope>.xbar').forEach(e=>e.remove());
+ if(tab!='pv'||innerWidth<700)return;const x=document.querySelector('.pvw .xbar');if(!x)return;tb.insertBefore(x,tb.querySelector('.tsp'))}
+window.xbMove=xbMove;xbMove()})();
 </script>
 </body></html>
