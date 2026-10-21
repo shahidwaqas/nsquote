@@ -139,58 +139,88 @@ html[data-theme="dark"] :is(#sb,.hero,.pvc){filter:invert(1) hue-rotate(180deg)}
 </head><body><div id="lgn"></div><header class="lh"><span id="lg" class="lgb"></span><div><div class="tg">Solar &amp; Electrical Solutions</div><div class="sl">Clean Energy, Bright Future</div></div><div class="ad">Office # 32 Ground Floor<br>Centre Point Plaza Kohinoor Faisalabad<br>0302 2999000 &amp; 0300 33668888</div></header><div id="topbar"><nav id="nav"></nav><div id="clk"><span id="clkd"></span><span id="clkt"></span></div></div><button id="khb" onclick="keysHelp()" title="Keyboard shortcuts">&#9000; Shortcuts (?)</button><div id="ts"></div><main id="app"></main><div id="pr"></div><button id="fab" onclick="openNew()" aria-label="New">+</button><div id="md" onclick="if(event.target==this)cl()"><div class="bx"><div class="mh"><div><b>Create New</b><span>What would you like to make?</span></div><button type="button" class="x" onclick="cl()" aria-label="Close">&times;</button></div><button type="button" class="tile" style="--c:#0a5594" onclick="mk('Quotation')"><i class="ti"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></i><span><strong>New Quotation</strong><small>Price offer for a customer</small></span></button><button type="button" class="tile" style="--c:#d02129" onclick="mk('Bill')"><i class="ti"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></i><span><strong>New Bill</strong><small>Invoice with payment tracking</small></span></button></div></div>
 <script>
 const P={Inverter:{
-Ziewnic:"Max PV2500 2.5kW|Diamond II PV3000 3kW|RLV 3.2 3.2kW|Z5/6G PV4000 4kW|Max PV4200 4.2kW|RLV 4.2 4.2kW|Diamond II PV4500 4.5kW|Roux V54 LV4.7 4.7kW|Max PV5000 5kW|Roux 6.2kW RLV 6.2|Diamond 5G PV6500 6.5kW|Z5/6G PV6500 6.5kW|Roux V54 LV6.7 6.7kW|Max PV7000 7kW|Lenox 3.0 PV8000 8kW|Lenox Hybrid 6kW|Lenox Hybrid 8kW|Lenox Hybrid 12kW|RLV Series 8kW|Diamond 5G PV8500 8.5kW|Marvel PV8500 8.5kW|Z5/6G PV8500 8.5kW|Marvel PV10000 10kW|Lenox 3.0 PV10500 10.5kW|Atom Dual MPPT PV11000 11kW|Roux V54 LV11.7 11.7kW|Diamond 5G PV13000 13kW|Atom Dual MPPT PV14000 14kW|Lenox 3.0 PV15600 15.6kW|Lenox 3.0 PV16000 16kW|Axpert Twin Premium+ PV5000 5kW|Axpert Twin Premium+ PV7000 7kW|Axpert Ultra Twin PV10000 10kW|Axpert Ultra Twin PV12000 12kW",
-Solis:"6kW Hybrid Inverter 1 Phase LV IP66|8kW Hybrid Inverter 1 Phase LV IP66|10kW Hybrid Inverter 1 Phase LV IP66|12kW Hybrid Inverter 1 Phase LV IP66",
-Growatt:"SPF 3000TL LVM-ES 3kW 24V|SPF 5000 ES 5kW 48V|SPF 6000 ES Plus 6kW 48V|MIN 3000TL-X 3kW|MIN 3600TL-X 3.6kW|MIN 5000TL-X 5kW|MIN 6000TL-X 6kW|SPH 3000 3kW Hybrid|SPH 5000 5kW Hybrid|SPH 6000 6kW Hybrid",
+Ziewnic:"Max PV2500 2.5kW|Diamond II PV3000 3kW|RLV 3.2 3.2kW|Z5/6G PV4000 4kW|Max PV4200 4.2kW|RLV 4.2 4.2kW|Diamond II PV4500 4.5kW|Roux V54 LV4.7 4.7kW|Max PV5000 5kW|Roux 6.2kW RLV 6.2|Diamond 5G PV6500 6.5kW|Z5/6G PV6500 6.5kW|Roux V54 LV6.7 6.7kW|Max PV7000 7kW|Lenox 3.0 PV8000 8kW|Lenox Hybrid 6kW|Lenox Hybrid 8kW|Lenox Hybrid 12kW|RLV Series 8kW|Diamond 5G PV8500 8.5kW|Marvel PV8500 8.5kW|Z5/6G PV8500 8.5kW|Marvel PV10000 10kW|Lenox 3.0 PV10500 10.5kW|Atom Dual MPPT PV11000 11kW|Roux V54 LV11.7 11.7kW|Diamond 5G PV13000 13kW|Atom Dual MPPT PV14000 14kW|Lenox 3.0 PV15600 15.6kW|Lenox 3.0 PV16000 16kW|Axpert Twin Premium+ PV5000 5kW|Axpert Twin Premium+ PV7000 7kW|Axpert Ultra Twin PV10000 10kW|Axpert Ultra Twin PV12000 12kW|LoBo Series 7kW PV10000 Netmetering Battery-less|Roux Series 3.5kW PV-5000 IP54 Hybrid|Roux Series 4.7kW PV-7000 IP54 Hybrid|Roux Series 6.7kW PV-9000 IP54 Hybrid|Roux Series 11.7kW PV-15000 IP54 Hybrid",
+Solis:"6kW Hybrid Inverter 1 Phase LV IP66|8kW Hybrid Inverter 1 Phase LV IP66|10kW Hybrid Inverter 1 Phase LV IP66|12kW Hybrid Inverter 1 Phase LV IP66|6kW IP66 L Plus Hybrid|8kW IP66 L Plus Hybrid|10kW IP66 L Plus Hybrid|12kW IP66 L Plus Hybrid|15kW OnGrid|30kW OnGrid|50kW OnGrid|125kW 3 Phase OnGrid",
+Growatt:"SPF 3000TL LVM-ES 3kW 24V|SPF 5000 ES 5kW 48V|SPF 6000 ES Plus 6kW 48V|MIN 3000TL-X 3kW|MIN 3600TL-X 3.6kW|MIN 5000TL-X 5kW|MIN 6000TL-X 6kW|SPH 3000 3kW Hybrid|SPH 5000 5kW Hybrid|SPH 6000 6kW Hybrid|10kW OnGrid|10kW G3 OnGrid|20kW OnGrid|25kW OnGrid|33kW OnGrid|50kW OnGrid|10kW IP65 Hybrid",
 Deye:"SUN-3.6K-SG03LP1 3.6kW|SUN-5K-SG03LP1 5kW|SUN-6K-SG03LP1 6kW|SUN-8K-SG01LP1 8kW|SUN-10K-SG02LP1 10kW",
-GoodWe:"GW3648D-ES 3.6kW|GW5000-ES 5kW|GW5048D-ES 5kW|GW6000-ES 6kW",
-Huawei:"SUN2000-3KTL-L1 3kW|SUN2000-4KTL-L1 4kW|SUN2000-5KTL-L1 5kW|SUN2000-6KTL-L1 6kW",
-Sungrow:"SG3.0RS 3kW|SG4.0RS 4kW|SG5.0RS 5kW|SH5.0RS 5kW Hybrid|SG6.0RS 6kW|SH6.0RS 6kW Hybrid|SH8.0RS 8kW",
-FoxESS:"H1-3.7-E 3.7kW|H1-5.0-E 5kW|H1-6.0-E 6kW",
+GoodWe:"GW3648D-ES 3.6kW|GW5000-ES 5kW|GW5048D-ES 5kW|GW6000-ES 6kW|6kW Single Phase Hybrid|8kW Single Phase Hybrid|10kW Single Phase Hybrid|15kW Three Phase Hybrid|20kW Three Phase Hybrid|10kW OnGrid|15kW OnGrid|20kW OnGrid|30kW OnGrid|125kW IP66 OnGrid",
+Huawei:"SUN2000-3KTL-L1 3kW|SUN2000-4KTL-L1 4kW|SUN2000-5KTL-L1 5kW|SUN2000-6KTL-L1 6kW|10kW OnGrid|15kW OnGrid|20kW OnGrid|25kW OnGrid|30kW OnGrid|50kW OnGrid|115kW IP66 OnGrid",
+Sungrow:"SG3.0RS 3kW|SG4.0RS 4kW|SG5.0RS 5kW|SH5.0RS 5kW Hybrid|SG6.0RS 6kW|SH6.0RS 6kW Hybrid|SH8.0RS 8kW|10kW OnGrid|15kW OnGrid",
+FoxESS:"H1-3.7-E 3.7kW|H1-5.0-E 5kW|H1-6.0-E 6kW|20kW OnGrid",
 Solax:"X1-Hybrid G4 3.0kW|X1-Hybrid G4 3.7kW|X1-Hybrid G4 5.0kW|X1-Hybrid G4 6.0kW",
 Victron:"MultiPlus-II 48/3000 2.4kW|MultiPlus-II 48/5000 4kW|Quattro 48/5000 4kW",
 "Voltronic Axpert":"Axpert VM III 3kW 24V|Axpert King 3kW 24V|Axpert VM III 5kW 48V|Axpert King 5kW 48V|Axpert MAX 7.2kW 48V|Axpert MAX 11kW 48V",
-Inverex:"Veyron II 3.2kW|Nitrox 3kW 24V|Veyron II 5.2kW|Nitrox 6.2kW|Nitrox 6.6kW|Nitrox 10kW",
-Knox:"PV 3200 3.2kW|ECO 4000 4kW 24V|Krypton 6000 4kW 24V|ECO 5000 4.2kW 24V|Krypton 6500 4.5kW 24V|PV 5200 5.2kW|PV 6200 6.2kW|ECO 6600 6.2kW 48V|9000 RGB 6.2kW|9055 RGB 6.5kW|12002 RGB 8.5kW|Hybrid Series 8kW|13002 RGB 10kW|Hybrid Series 10kW|15002 RGB 11.5kW",
-Fronus:"Hybrid Series 3.2kW|ECO 4200 4.2kW 24V|Hybrid Series 5.2kW|PV 5200 Infineon Reborn 5.2kW|ECO 6200 Infineon Reborn 6.2kW|PV 7200 Platinum 7.2kW|PV 7200 Infineon Reborn 7.2kW|PV 9200 Platinum 8kW|PV 9200 Infineon Reborn 8.2kW|PV 12200 Platinum 10kW|PV 12200 Infineon Reborn 10.2kW",
-iTel:"3kW Pro 24V|4kW Pro 24V|6kW Pro 48V|6.6kW Hybrid 48V IP66|8kW Pro 48V|12kW Hybrid 48V",
+Inverex:"Veyron II 3.2kW|Nitrox 3kW 24V|Veyron II 5.2kW|Nitrox 6.2kW|Nitrox 6.6kW|Nitrox 10kW|Nitrox 6.6kW Hybrid|Nitrox 10kW Hybrid",
+Knox:"PV 3200 3.2kW|ECO 4000 4kW 24V|Krypton 6000 4kW 24V|ECO 5000 4.2kW 24V|Krypton 6500 4.5kW 24V|PV 5200 5.2kW|PV 6200 6.2kW|ECO 6600 6.2kW 48V|9000 RGB 6.2kW|9055 RGB 6.5kW|12002 RGB 8.5kW|Hybrid Series 8kW|13002 RGB 10kW|Hybrid Series 10kW|15002 RGB 11.5kW|Krypton Eco 6.2kW IP21 PV6600 Hybrid|Krypton 6.5kW PV9055 Hybrid|4.5kW PV6500 Hybrid|Krypton 6.2kW PV9000 Hybrid|Krypton Eco PV-4000 Hybrid|4kW PV6000 Hybrid|Krypton ECO-5000 4.2kW|Krypton 8.5kW PV12002 IP21 Hybrid|Krypton 10kW PV13002 IP21 Hybrid|Krypton 11.5kW PV15002 IP21 Hybrid|Xenon IP65 12kW PV18000 Hybrid|Xenon IP65 15kW PV22500 Hybrid|Zynex Series 8kW IP66 Hybrid|Zynex Series 10kW IP66 Hybrid|G4 Pro 10.2kW IP66 OnGrid|Xerox G4 Pro 15.2kW OnGrid|Xerox G4 Pro 20.2kW OnGrid|Xerox G4 Pro 25.2kW OnGrid|G4 Pro 30kW OnGrid|G4 Pro 40.5kW OnGrid|G4 Pro 50kW OnGrid|G4 Pro 60kW OnGrid",
+Fronus:"Hybrid Series 3.2kW|ECO 4200 4.2kW 24V|Hybrid Series 5.2kW|PV 5200 Infineon Reborn 5.2kW|ECO 6200 Infineon Reborn 6.2kW|PV 7200 Platinum 7.2kW|PV 7200 Infineon Reborn 7.2kW|PV 9200 Platinum 8kW|PV 9200 Infineon Reborn 8.2kW|PV 12200 Platinum 10kW|PV 12200 Infineon Reborn 10.2kW|Meta 6kW PV9000 Netmetering Battery-less|Meta 10kW PV14000 Netmetering Battery-less",
+iTel:"3kW Pro 24V|4kW Pro 24V|6kW Pro 48V|6.6kW Hybrid 48V IP66|8kW Pro 48V|12kW Hybrid 48V|4kW Single Phase Hybrid|6kW Single Phase Hybrid|8kW Single Phase Hybrid|12kW Single Phase Hybrid",
 Primax:"Venus 4200 4.2kW 24V|Galaxy Dual PV6500+ 5.6kW|Galaxy Dual PV7500+ Max 6kW|Venus 6200 6.2kW 48V|Nexa PSE-Dual-6KW 6kW|Galaxy PV11000+ Max 8kW|Venus 8200 8.2kW|Nexa 8KW 8kW|Venus 10200 10.2kW",
-Crown:"Xavier 3.2kW|Xavier 5.2kW|Xavier 6.2kW",
+Crown:"Xavier 3.2kW|Xavier 5.2kW|Xavier 6.2kW|Elego Star 6.5kW Hybrid|Elego 6kW Hybrid|Yorker 6kW IP21 Hybrid",
 MaxPower:"Hybrid Series 3.2kW|Hybrid Series 5.2kW|Hybrid Series 6.2kW",
 Tesla:"VM II Series 3.2kW|VM III Series 5.2kW",
-Suntrix:"Neon 2kVA 1.5kW Off-Grid|Neon PV4200 3.5kW Off-Grid|Neon PV5500 4.2kW Off-Grid|Neon PV7200 6.2kW Off-Grid|Vortex Z-6 PRO 6kW Hybrid IP54|Vortex Z-8 PRO 8kW Hybrid IP54|Neon PV10000 10kW Off-Grid|Vortex Z-10 PRO 10kW Hybrid IP54|Vortex Z-12 PRO 12kW Hybrid IP54"},
+Suntrix:"Neon 2kVA 1.5kW Off-Grid|Neon PV4200 3.5kW Off-Grid|Neon PV5500 4.2kW Off-Grid|Neon PV7200 6.2kW Off-Grid|Vortex Z-6 PRO 6kW Hybrid IP54|Vortex Z-8 PRO 8kW Hybrid IP54|Neon PV10000 10kW Off-Grid|Vortex Z-10 PRO 10kW Hybrid IP54|Vortex Z-12 PRO 12kW Hybrid IP54",
+CoreTech:"MaxGen 6.5kW PV12000|NextGen 6kW Single Phase Hybrid|NextGen 8kW Single Phase Hybrid|NextGen 10kW Single Phase Hybrid|NewGen 4.2kW PV6000 Hybrid|1.6kW PV2200 IP21 Off-Grid",
+Galaxy:"Envy PV9000 6kW Netmetering Battery-less",
+Muxtronics:"Ultra PV9000 6kW",
+Livoltek:"10kW OnGrid Three Phase|15kW OnGrid Three Phase|25kW OnGrid",
+Anicsun:"Meta EX 4kW PV5000 Hybrid|Meta EX 6kW PV6500 Hybrid|Meta EX 8kW PV12000 Hybrid",
+"Power Square":"VM II PLUS 3kW Off Grid Hybrid",
+"Long Life":"3kW Hybrid",
+Trion:"3.6kW Hybrid"},
 Battery:{
-BYD:"Battery-Box HVS 5kWh 204.8V/25Ah (5.12kWh HV)|Battery-Box HVS 7.7kWh 307.2V/25Ah HV|Battery-Box HVS 10kWh 409.6V/25Ah (10.2kWh HV)|Battery-Box HVS 12.8kWh 512V/25Ah HV|Battery-Box HVM 8.3kWh 153.6V/54Ah HV|Battery-Box HVM 11kWh 204.8V/54Ah HV|Battery-Box LVS LITE 4kWh 51.2V|Battery-Box LVS LITE 8kWh 51.2V|Battery-Box LVS LITE 12kWh 51.2V|Battery-Box LVS LITE 16kWh 51.2V",
-Crown:"Li-Wall 5.1kWh 51.2V/100Ah|Li-Wall 10.2kWh 51.2V/200Ah|LFP Rack 5.12kWh 51.2V/100Ah",
+BYD:"Battery-Box HVS 5kWh 204.8V/25Ah (5.12kWh HV)|Battery-Box HVS 7.7kWh 307.2V/25Ah HV|Battery-Box HVS 10kWh 409.6V/25Ah (10.2kWh HV)|Battery-Box HVS 12.8kWh 512V/25Ah HV|Battery-Box HVM 8.3kWh 153.6V/54Ah HV|Battery-Box HVM 11kWh 204.8V/54Ah HV|Battery-Box LVS LITE 4kWh 51.2V|Battery-Box LVS LITE 8kWh 51.2V|Battery-Box LVS LITE 12kWh 51.2V|Battery-Box LVS LITE 16kWh 51.2V|Battery Box LV5.0+ 5kWh 51.2V/100Ah",
 Deye:"SE-G5.1 Pro-B 5kWh 51.2V/100Ah|SE-G5.1 Pro-B x2 10kWh 51.2V/200Ah|RW-M6.1 6.14kWh 51.2V/120Ah",
-Dyness:"B51100 5kWh 51.2V/100Ah|BX51100 5kWh 51.2V/100Ah|DL5.0C 5kWh 51.2V/100Ah|DL5.0C Pro 5kWh 51.2V/100Ah|HV51100 5kWh 51.2V/100Ah|Powerbox Pro 10kWh 51.2V/200Ah|PowerBrick Pro 14.3kWh 51.2V/280Ah",
+Dyness:"B51100 5kWh 51.2V/100Ah|BX51100 5kWh 51.2V/100Ah|DL5.0C 5kWh 51.2V/100Ah|DL5.0C Pro 5kWh 51.2V/100Ah|HV51100 5kWh 51.2V/100Ah|Powerbox Pro 10kWh 51.2V/200Ah|PowerBrick Pro 14.3kWh 51.2V/280Ah|PowerBrick 14.3kWh 51.2V/280Ah|PowerBrick Max 16kWh 51.2V/314Ah|DL5.0F 5kWh 51.2V/100Ah 8000 Cycle",
 FoxESS:"ECS2900-H2 5.76kWh 115.2V/50Ah HV|ECS2900-H3 8.64kWh 172.8V/50Ah HV|ECS4100-H2 8.06kWh 115.2V/70Ah HV|ECS2900-H4 11.5kWh 230.4V/50Ah HV|ECS2900-H5 14.4kWh 288V/50Ah HV",
 Growatt:"ARK 2.5L-A1 2.5kWh 51.2V/50Ah",
 Huawei:"LUNA2000-5-S0 5kWh 450V HV (350-560V)|LUNA2000-10-S0 10kWh 450V HV (350-560V)|LUNA2000-15-S0 15kWh 450V HV (350-560V)",
 Inverex:"INV-LV2.6 2.6kWh 25.6V/104Ah|INV-LV-IP21 5.1 5kWh 51.2V/100Ah|INV-LV5.3 5.3kWh 51.2V/104Ah|Lithium Wall-Mounted 5kWh 51.2V/100Ah|INV-LV10.6 10.6kWh 51.2V/208Ah|INV-LV-IP21 11.8 11.8kWh 51.2V/230Ah|INV-LV-IP21 16 16kWh 51.2V/314Ah",
-iTel:"IPL 2.5kWh 25.6V/100Ah|IPL 5kWh 25.6V/200Ah|IPL-51100 5kWh 51.2V/100Ah|IPL 10kWh 51.2V/200Ah|IPL 14kWh 51.2V/280Ah|IPL-51314Y 16kWh 51.2V/314Ah",
-Knox:"Powerwall 3.0 2.5kWh 51.2V/50Ah|Powerwall 6.0 5kWh 51.2V/100Ah|Powerwall 6.1 5kWh 51.2V/100Ah|Lio IP65 5kWh 51.2V/100Ah|Rackwall 8 7.68kWh 51.2V/150Ah|Rackwall 10.5 10kWh 51.2V/200Ah|Rackwall 15 14.3kWh 51.2V/280Ah|Powerbase 16 16kWh 51.2V/314Ah",
+iTel:"IPL 2.5kWh 25.6V/100Ah|IPL 5kWh 25.6V/200Ah|IPL-51100 5kWh 51.2V/100Ah|IPL 10kWh 51.2V/200Ah|IPL 14kWh 51.2V/280Ah|IPL-51314Y 16kWh 51.2V/314Ah|16kWh 51.2V/314Ah IP20 (IPL-51314H)|5kWh 51.2V/100Ah IP20",
+Knox:"Powerwall 3.0 2.5kWh 51.2V/50Ah|Powerwall 6.0 5kWh 51.2V/100Ah|Powerwall 6.1 5kWh 51.2V/100Ah|Lio IP65 5kWh 51.2V/100Ah|Rackwall 8 7.68kWh 51.2V/150Ah|Rackwall 10.5 10kWh 51.2V/200Ah|Rackwall 15 14.3kWh 51.2V/280Ah|Powerbase 16 16kWh 51.2V/314Ah|Powerwall 3.0 2.56kWh 25.6V/100Ah|Powerwall 3.1 25.6V/100Ah|Powerwall 6.0 5.12kWh 51.2V/100Ah LED|Powerwall 6.11 5kWh 51.2V/100Ah IP20|Rackwall 10.5 10.5kWh 51.2V/200Ah|Powerbase 10.5kWh 51.2V/205Ah|Powerbase 32kWh 51.2V/628Ah",
 MaxPower:"MP-2500 Ultra 2.5kWh 25.6V/100Ah|MP-10000 Alpha 10kWh 51.2V|MP-16000 Alpha 16kWh 51.2V/314Ah|MP-20024 Ultra 20kWh 51.2V|MP-32000 Ultra 32kWh 51.2V/628Ah",
 Primax:"LUXEED 5.12 5kWh 51.2V/100Ah|Neutron Power Lite 5.12 5kWh 51.2V/100Ah|LUXEED 10.24 10kWh 51.2V/200Ah|LUXEED 16.08 16kWh 51.2V/314Ah",
-Pylontech:"Fidus 5kWh 51.2V/100Ah IP65 (5.12kWh)|Fidus UF5000 5kWh 51.2V/100Ah IP20 (5.12kWh)|Force H3 10kWh 204.8V/50Ah HV (10.24kWh)|Force H3 15kWh 307.2V/50Ah HV (15.36kWh)",
+Pylontech:"Fidus 5kWh 51.2V/100Ah IP65 (5.12kWh)|Fidus UF5000 5kWh 51.2V/100Ah IP20 (5.12kWh)|Force H3 10kWh 204.8V/50Ah HV (10.24kWh)|Force H3 15kWh 307.2V/50Ah HV (15.36kWh)|Fidus Plus 16kWh 51.2V IP65 (FB-L-16-0110)|Fidus 5kWh 51.2V/100Ah",
 Solis:"RBAT-5.1 5.12kWh 51.2V/100Ah LV|RBAT-10 10.24kWh 51.2V/200Ah LV|S6-EH1P Series Pack 5kWh 51.2V/100Ah",
 "Solis-compatible":"Pylontech Fidus 5kWh 51.2V/100Ah|Dyness B51100 5kWh 51.2V/100Ah|Soluna low-voltage 5kWh 51.2V/100Ah",
 Sungrow:"SBR096 9.6kWh 192V HV (30A)|SBR128 12.8kWh 256V HV (30A)|SBR160 16kWh 320V HV (30A)|SBR192 19.2kWh 384V HV (30A)|SBR256 25.6kWh 512V HV (30A)",
 Suntrix:"PowerPulse PP-2.56KW 2.5kWh 25.6V/100Ah|PowerHub W2.56AC IP65 2.5kWh 25.6V/100Ah|PowerPulse PP-5.12KW 5kWh 51.2V/100Ah|PowerHub W5.12AC IP65 5kWh 51.2V/100Ah|PowerPulse PP-16.07KW 16kWh 51.2V/314Ah",
 Tesla:"Lithium 2.5kWh 25.6V/100Ah|Lithium 5kWh 51.2V/100Ah|Lithium 10kWh 51.2V/200Ah",
-Ziewnic:"Z-Box 12.8V/100Ah 1.28kWh|Li-BOX 25.6V/100Ah 2.5kWh|Li-Wall V2.0 25.6V/100Ah 2.5kWh|Z-Box 25.6V/100Ah 2.5kWh|Li-BOX 51.2V/100Ah 5kWh|Li-Wall V2.0 51.2V/100Ah 5kWh|Z-Box 51.2V/100Ah 5kWh|Z-Box 51.2V/280Ah 14.3kWh|Z-Box 51.2V/600Ah 30.7kWh"},
+Ziewnic:"Z-Box 12.8V/100Ah 1.28kWh|Li-BOX 25.6V/100Ah 2.5kWh|Li-Wall V2.0 25.6V/100Ah 2.5kWh|Z-Box 25.6V/100Ah 2.5kWh|Li-BOX 51.2V/100Ah 5kWh|Li-Wall V2.0 51.2V/100Ah 5kWh|Z-Box 51.2V/100Ah 5kWh|Z-Box 51.2V/280Ah 14.3kWh|Z-Box 51.2V/600Ah 30.7kWh",
+Crown:"Elektra Boost Pro 5kWh 100A|Elektra Boost Lite 2.5kWh 100A",
+CoreTech:"Sunwoda Atrix Smart 5 5kWh 51.2V/100Ah|Luxwatt 5kWh 51.2V/100Ah",
+Livoltek:"Lithium Battery IP20 5kWh 51.2V/100Ah|HomCellar 16kWh",
+Fronus:"Platinum 5kWh 51.2V/100Ah|Titan 25.6V/100Ah",
+Soluna:"Venus 16kWh 51.2V/314Ah|BES 5kWh 51.2V/100Ah",
+GoodWe:"Lynx G3 Series 5kWh 51.2V/100Ah|Bat Series 14.3kWh IP20",
+Sofar:"SF 5kWh 51.2V/100Ah",
+Nimbess:"Flyer 2.56kWh 100A 8000 Cycle|Flyer 5.12kWh 100A 8000 Cycle|Flyer 10.24kWh 100A 8000 Cycle",
+ReneSola:"16kWh 51.2V/314Ah 9000 Cycle",
+Volnex:"Armor 5kWh 100A 6000 Cycle|Alpha 2.56 2.5kWh 100A|Alpha 5.12 5kWh 100A|Alpha 16 16kWh 300A",
+SuperNova:"51.2V/100A 6000 Cycle",
+Apex:"ZaroonX 51.2V/102A",
+Phoenix:"Cube Series 25.6V/105Ah",
+"Eve Energy":"LVI 2.0 WallMount 5kWh 51.2V/100Ah|LVI 5.0 5kWh 51.2V/100Ah"},
 Panel:{
-LONGi:"Hi-MO 5 555W Mono PERC|Hi-MO X6 585W N-Type Bifacial|Hi-MO 7 585W N-Type Bifacial|Hi-MO 7 605W N-Type Bifacial|Hi-MO 7 615W N-Type Bifacial|Hi-MO X10 645W N-Type BC",
-Jinko:"Tiger Neo 575W N-Type|Tiger Neo 580W N-Type Bifacial|Tiger Neo 585W N-Type|Tiger Neo 585W N-Type Bifacial|Tiger Neo 610W N-Type Bifacial|Tiger Neo 3.0 615W N-Type Bifacial",
-"JA Solar":"560W Mono PERC|DeepBlue 3.0 585W N-Type Bifacial|DeepBlue 4.0 Pro 585W N-Type|DeepBlue 4.0 Pro 600W N-Type Bifacial|DeepBlue 4.0 Pro 615W N-Type|DeepBlue 4.0 Pro 625W N-Type",
-"Canadian Solar":"HiKu6 550W Mono PERC|TOPBiHiKu6 570W N-Type Bifacial|TOPBiHiKu6 585W N-Type TOPCon|TOPBiHiKu6 620W N-Type TOPCon|HiKu7 650W Mono PERC|BiHiKu7 655W Mono PERC Bifacial|HiKu7 660W Mono PERC|TOPBiHiKu7 710W N-Type|TOPBiHiKu7 715W N-Type",
-Trina:"Vertex 590W Mono PERC|Vertex N 595W N-Type Bifacial|Vertex N 600W N-Type Bifacial",
-Astronergy:"N-Type Bifacial 585W|ASTRO N7 Pro 645W|ASTRO N7 Pro 670W|ASTRO N8 715W|ASTRO N8 745W",
-AIKO:"Neostar ABC 650W",
-"Cora Dawn":"610W N-Type BC Bifacial|640W N-Type BC Bifacial|645W N-Type Bifacial|650W N-Type BC Bifacial|655W N-Type BC Bifacial|660W N-Type BC Bifacial|665W N-Type BC Bifacial|670W N-Type BC Bifacial",
+LONGi:"Hi-MO 5 555W Mono PERC|Hi-MO X6 585W N-Type Bifacial|Hi-MO 7 585W N-Type Bifacial|Hi-MO 7 605W N-Type Bifacial|Hi-MO 7 615W N-Type Bifacial|Hi-MO X10 645W N-Type BC|Horizon 225W 12V A Grade|X10 645W N-Type HPBC 2.0 Double Glass|X7 615W N-Type TOPCon Double Glass",
+Jinko:"Tiger Neo 575W N-Type|Tiger Neo 580W N-Type Bifacial|Tiger Neo 585W N-Type|Tiger Neo 585W N-Type Bifacial|Tiger Neo 610W N-Type Bifacial|Tiger Neo 3.0 615W N-Type Bifacial|585W N-Type TOPCon Double Glass|645W N-Type TOPCon Double Glass",
+"JA Solar":"560W Mono PERC|DeepBlue 3.0 585W N-Type Bifacial|DeepBlue 4.0 Pro 585W N-Type|DeepBlue 4.0 Pro 600W N-Type Bifacial|DeepBlue 4.0 Pro 615W N-Type|DeepBlue 4.0 Pro 625W N-Type|585W N-Type TOPCon Double Glass|625W N-Type TOPCon Double Glass",
+"Canadian Solar":"HiKu6 550W Mono PERC|TOPBiHiKu6 570W N-Type Bifacial|TOPBiHiKu6 585W N-Type TOPCon|TOPBiHiKu6 620W N-Type TOPCon|HiKu7 650W Mono PERC|BiHiKu7 655W Mono PERC Bifacial|HiKu7 660W Mono PERC|TOPBiHiKu7 710W N-Type|TOPBiHiKu7 715W N-Type|585W N-Type TOPCon Double Glass|620W N-Type TOPCon Double Glass",
+Trina:"Vertex 590W Mono PERC|Vertex N 595W N-Type Bifacial|Vertex N 600W N-Type Bifacial|720W N-Type TOPCon Double Glass",
+Astronergy:"N-Type Bifacial 585W|ASTRO N7 Pro 645W|ASTRO N7 Pro 670W|ASTRO N8 715W|ASTRO N8 745W|ASTRO N7 625W 16BB N-Type TOPCon Double Glass",
+AIKO:"Neostar ABC 650W|Stellar 665W N-Type TOPCon Double Glass",
+"Cora Dawn":"610W N-Type BC Bifacial|640W N-Type BC Bifacial|645W N-Type Bifacial|650W N-Type BC Bifacial|655W N-Type BC Bifacial|660W N-Type BC Bifacial|665W N-Type BC Bifacial|670W N-Type BC Bifacial|650W N-Type TOPCon Double Glass",
 Sunova:"585W N-Type",
 Suntrix:"N-Type TOPCon 585W|N-Type TOPCon 605W",
-Inverex:"Mustang N-Type"}};
+Inverex:"Mustang N-Type|Mustang 620W N-Type TOPCon Double Glass|Mustang 720W N-Type TOPCon Double Glass",
+Fronus:"585W N-Type TOPCon Double Glass",
+CoreTech:"585W N-Type TOPCon Double Glass",
+Znshine:"585W 20BB Steel Frame N-Type TOPCon Double Glass",
+TCL:"620W N-Type TOPCon Double Glass",
+Ronma:"585W N-Type TOPCon Double Glass|620W N-Type TOPCon Double Glass",
+Renesola:"585W N-Type TOPCon Double Glass",
+Turkish:"585W N-Type TOPCon Double Glass",
+Crown:"620W 20BB N-Type TOPCon Double Glass",
+Risen:"HJT 740W N-Type TOPCon Double Glass"}};
 /* sort brands and models alphabetically (A-Z) */
 (function(){const cmp=(a,b)=>a.localeCompare(b,'en',{numeric:true,sensitivity:'base'});
 for(const c in P){const o={};Object.keys(P[c]).sort(cmp).forEach(b=>{o[b]=P[c][b].split('|').filter(Boolean).sort(cmp).join('|')});P[c]=o}})();
@@ -2670,5 +2700,20 @@ rowCard=function(x,i){if(!D)return rowCard0(x,i);if(!OPTC.includes(x.c))return r
  const k=h.indexOf('<div class=card><h4>Item ');const blk=o5block();
  return k<0?h:h.slice(0,k)+blk+h.slice(k)};
  const st=document.createElement('style');st.textContent='@media(min-width:701px){.ocols{grid-template-columns:repeat(3,minmax(0,1fr))!important}}';document.head.appendChild(st)})();
+</script>
+<script>
+/* ===== Change 45: accessories - AC/DC Breakers, Duct Patti, Flexible Pipe, MC4; amount bar above the selection ===== */
+(function(){
+ ACL.length=0;["AC Breakers","DC Breakers","Change Over","DC/AC Wire","SPD","Voltage Protection","DP Box","Fire Extinguisher","Nut Bolts","Duct Patti","Flexible Pipe","MC4"].forEach(x=>ACL.push(x));
+ Object.assign(ACU,{"AC Breakers":"اے سی بریکرز","DC Breakers":"ڈی سی بریکرز","Duct Patti":"ڈکٹ پٹی","Flexible Pipe":"فلیکسیبل پائپ","MC4":"ایم سی 4"});
+ /* old documents were saved with the old 8-item list: shift their unticked items, keep the new ones off */
+ let NV=0;function mig(a){if(!a||!a.off||a.v2)return;if(NV){a.v2=1;return}const o=[];a.off.forEach(i=>{if(i==0)o.push(0,1);else o.push(i+1)});o.push(9,10,11);a.off=o;a.v2=1}
+ window.acMig=mig;
+ const t=acTxt;acTxt=function(a,ur){mig(a);return t(a,ur)};
+ const nd=newDoc;newDoc=function(t){NV=1;try{nd(t)}finally{NV=0}if(D&&D.ac)D.ac.v2=1};
+ const v=V.doc;V.doc=function(){if(D)mig(D.ac);return v.call(V)};
+ const st=document.createElement('style');
+ st.textContent='.cmp43 .acx{display:flex;flex-direction:column}.cmp43 .acx>.ach{order:-3;margin-bottom:0}.cmp43 .acx>.g:last-child:not(:first-of-type){order:-2;margin:6px 0 4px}';
+ document.head.appendChild(st)})();
 </script>
 </body></html>
