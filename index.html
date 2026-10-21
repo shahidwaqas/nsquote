@@ -2630,7 +2630,7 @@ function ldZ(d){const box=document.getElementById('cpb'),fit=box?box.clientWidth
 o5mode=function(){return !!(D&&D.type=='Quotation'&&D.rows.some(x=>OPTC.includes(x.c)))};
 (function(){const ob=o5block;o5block=function(){let h=ob();if(o5cnt()<2){h=h.replace(/^<div class=card><h4>Quotation Options[\s\S]*?<\/small><\/div>/,'').replace('Option 1 <small>(Primary)</small>','Inverter / Battery / Panel')}return h}})();
 
-/* ===== Change 43: Structure / Accessories / Installation / Freight / Misc in the same column-block style ===== */
+/* ===== Change 43 (redone): compact Structure & Charges box + compact Accessories, same box ===== */
 (function(){const v=V.doc;V.doc=function(){let h=v.call(V);if(!D)return h;
  const i1=h.indexOf('<div class=card><h4>Structure</h4>'),i2=h.indexOf('<div class=card><h4>Accessories</h4>'),i3=h.indexOf('<div class=card><h4>Other Charges</h4>');
  if(i1<0||i2<i1||i3<i2)return h;
@@ -2638,12 +2638,11 @@ o5mode=function(){return !!(D&&D.type=='Quotation'&&D.rows.some(x=>OPTC.includes
  const stIn=h.slice(i1+'<div class=card><h4>Structure</h4>'.length,i2).replace(/<\/div>\s*$/,''),
   acIn=h.slice(i2+'<div class=card><h4>Accessories</h4>'.length,i3).replace(/<\/div>\s*$/,''),
   ocIn=h.slice(i3+'<div class=card><h4>Other Charges</h4><div class=g>'.length,e3),
-  L=ocIn.match(/<label>[\s\S]*?<\/label>/g)||[];
- if(L.length<4)return h;
- const col=(t,b,c)=>'<div class="ocol'+(c?' '+c:'')+'"><div class=oh><span>'+t+'</span></div>'+b+'</div>',
-  g2='style="grid-template-columns:repeat(2,minmax(0,1fr))"',g3='style="grid-template-columns:repeat(3,minmax(0,1fr))"';
- const blk='<div class="card ob5"><h4>Structure &amp; Other Charges</h4><div class=ocols '+g2+'>'+col('Structure',stIn)+col('Accessories',acIn)+'</div><div class=ocols '+g3+'>'+col('Installation',L[0])+col('Freight',L[1])+col('Miscellaneous',L[2]+L[3])+'</div></div>';
+  S=stIn.match(/<label>[\s\S]*?<\/label>/g)||[],L=ocIn.match(/<label>[\s\S]*?<\/label>/g)||[];
+ if(S.length<2||L.length<4)return h;
+ const lb=(x,a,b)=>x.replace('<label>'+a,'<label>'+b);
+ const blk='<div class="card cmp43"><h4>Structure &amp; Charges</h4><div class=sg>'+lb(S[0],'Type','Structure Type')+lb(S[1],'Amount','Structure Amount')+lb(L[0],'Installation charges','Installation')+lb(L[2],'Description (optional)','Concrete / Misc')+lb(L[3],'Amount','Concrete / Misc Amount')+lb(L[1],'Freight charges','Freight')+'</div><div class=acx><div class=ach>Accessories</div>'+acIn+'</div></div>';
  return h.slice(0,i1)+blk+h.slice(e3+'</div></div>'.length)};
- const st=document.createElement('style');st.textContent='@media(max-width:700px){.ocols[style*="repeat(2"]{grid-template-columns:1fr!important}}';document.head.appendChild(st)})();
+ const st=document.createElement('style');st.textContent='.cmp43 .sg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cmp43 label{margin:0;font-size:12px}.cmp43 input:not([type=checkbox]),.cmp43 select{padding:6px 8px;font-size:13px;min-width:0;width:100%}.cmp43 .ach{font-weight:800;color:var(--r);border-top:1px solid var(--bd);margin-top:10px;padding-top:8px}.cmp43 .acx{margin-top:2px}.cmp43 .acx>.g:first-of-type{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}.cmp43 .acx .ck{padding:3px 9px;font-size:12px;border-radius:14px;margin:0;display:inline-flex}.cmp43 .acx .ck input{width:auto;margin:0 5px 0 0}.cmp43 .acx>.g:first-of-type>label:not(.ck){flex:1 1 150px}.cmp43 .acx>.g:last-child:not(:first-of-type){display:grid;grid-template-columns:minmax(0,220px);margin-top:6px}@media(max-width:700px){.cmp43 .sg{grid-template-columns:repeat(2,minmax(0,1fr))}}';document.head.appendChild(st)})();
 </script>
 </body></html>
