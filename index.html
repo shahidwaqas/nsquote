@@ -2462,7 +2462,7 @@ function nsLangSet(l){try{localStorage.setItem('nslang',l)}catch(e){}
 </script>
 <script>
 /* build tag + one-time cache refresh so updated files always load */
-(function(){const BUILD='R5a';window.NSBUILD=BUILD;
+(function(){const BUILD='R5b';window.NSBUILD=BUILD;
  function tag(){const sf=document.getElementById('sbf');if(!sf||document.getElementById('nsbuild'))return;const d=document.createElement('div');d.id='nsbuild';d.style.cssText='font-size:10.5px;color:#9fc3e0;text-align:center;margin:0 0 8px';d.textContent='Version '+BUILD;sf.insertBefore(d,sf.firstChild)}
  tag();const g=go;go=function(t){g(t);tag()};
  try{if(localStorage.getItem('nsbuild')!==BUILD&&navigator.onLine!==false){localStorage.setItem('nsbuild',BUILD);
@@ -2470,5 +2470,13 @@ function nsLangSet(l){try{localStorage.setItem('nslang',l)}catch(e){}
   if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)jobs.push(navigator.serviceWorker.getRegistrations().then(r=>Promise.all(r.map(x=>x.unregister()))));
   if(jobs.length)Promise.all(jobs).then(()=>{if(/^https?:/.test(location.protocol))location.reload()}).catch(()=>{})}}catch(e){}
 })();
+</script>
+<style>
+/* Round 5b: hide top "+ Quotation / + Bill" buttons and the name bar in document preview */
+#tnew,#tbar #tnew,#tb #tnew{display:none!important}
+.pvt.pvdoc,.pvw>.pvt.pvdoc{display:none!important}
+</style>
+<script>
+(function(){const o=V.pv;V.pv=function(){return o.call(V).replace('<div class=pvt>','<div class="pvt pvdoc">')}})();
 </script>
 </body></html>
