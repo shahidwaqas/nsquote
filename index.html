@@ -2611,5 +2611,39 @@ function pbOpen(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const L=pbLis
  const x=xlTbl;xlTbl=function(L,pf,emp){const out=x(L,pf,emp),P=out.split('<tr class=hd ');for(let i=1;i<P.length;i++){const m=/viewDoc\((\d+),/.exec(P[i]);if(!m)continue;const d=DB.docs.find(z=>z.id==+m[1]);if(!d||!(n(d.recv)>0))continue;
   P[i]=P[i].replace('<button class=vb onclick="viewDoc(','<button class=vb onclick="pbOpen('+d.id+')">Payments</button><button class=vb onclick="viewDoc(')}return P.join('<tr class=hd ')};
  V.cli=cliV})();
+
+/* ===== Daily Ledger preview: smaller default size + zoom ===== */
+var LZ=0;
+function cliFit(){const el=document.getElementById('cpv'),box=document.getElementById('cpb');if(!el||!box)return;
+ const fit=box.clientWidth/794;let k;
+ if(tab=='ldp'){k=LZ||Math.min(fit,.62);el.style.marginLeft=(k*794<box.clientWidth?Math.floor((box.clientWidth-794*k)/2):0)+'px'}
+ else{k=Math.min(1,fit);el.style.marginLeft=''}
+ el.style.transform=k<1||tab=='ldp'?'scale('+k+')':'';box.style.height=Math.ceil(el.offsetHeight*k)+'px';
+ const zl=document.getElementById('ldzl');if(zl)zl.textContent=Math.round(k*100)+'%'}
+function ldZ(d){const box=document.getElementById('cpb'),fit=box?box.clientWidth/794:1,cur=LZ||Math.min(fit,.62);LZ=Math.max(.3,Math.min(1.5,Math.round((cur+d)*100)/100));cliFit()}
+(function(){const v=ldpV;ldpV=function(){let h=v();V.ldp=ldpV;return h.replace('<b>Daily Ledger - ','<button type="button" onclick="ldZ(-.1)" title="Zoom out" style="font-size:16px;padding:4px 12px">&minus;</button><span id="ldzl" style="color:#fff;font-size:12.5px;min-width:38px;text-align:center"></span><button type="button" onclick="ldZ(.1)" title="Zoom in" style="font-size:16px;padding:4px 12px">+</button><b>Daily Ledger - ')};V.ldp=ldpV;
+ const g=go;go=function(t){if(t=='ldp'&&tab!='ldp')LZ=0;g(t);if(t=='ldp')setTimeout(cliFit,30)};
+ })();
+(function(){const st=document.createElement('style');st.textContent='@media print{#cpv{margin-left:0!important}}';document.head.appendChild(st)})();
+
+/* ===== Change 42: Option 1 itself shows as Inverter | Battery | Panel columns from the start ===== */
+o5mode=function(){return !!(D&&D.type=='Quotation'&&D.rows.some(x=>OPTC.includes(x.c)))};
+(function(){const ob=o5block;o5block=function(){let h=ob();if(o5cnt()<2){h=h.replace(/^<div class=card><h4>Quotation Options[\s\S]*?<\/small><\/div>/,'').replace('Option 1 <small>(Primary)</small>','Inverter / Battery / Panel')}return h}})();
+
+/* ===== Change 43: Structure / Accessories / Installation / Freight / Misc in the same column-block style ===== */
+(function(){const v=V.doc;V.doc=function(){let h=v.call(V);if(!D)return h;
+ const i1=h.indexOf('<div class=card><h4>Structure</h4>'),i2=h.indexOf('<div class=card><h4>Accessories</h4>'),i3=h.indexOf('<div class=card><h4>Other Charges</h4>');
+ if(i1<0||i2<i1||i3<i2)return h;
+ const e3=h.indexOf('</div></div>',i3);if(e3<0)return h;
+ const stIn=h.slice(i1+'<div class=card><h4>Structure</h4>'.length,i2).replace(/<\/div>\s*$/,''),
+  acIn=h.slice(i2+'<div class=card><h4>Accessories</h4>'.length,i3).replace(/<\/div>\s*$/,''),
+  ocIn=h.slice(i3+'<div class=card><h4>Other Charges</h4><div class=g>'.length,e3),
+  L=ocIn.match(/<label>[\s\S]*?<\/label>/g)||[];
+ if(L.length<4)return h;
+ const col=(t,b,c)=>'<div class="ocol'+(c?' '+c:'')+'"><div class=oh><span>'+t+'</span></div>'+b+'</div>',
+  g2='style="grid-template-columns:repeat(2,minmax(0,1fr))"',g3='style="grid-template-columns:repeat(3,minmax(0,1fr))"';
+ const blk='<div class="card ob5"><h4>Structure &amp; Other Charges</h4><div class=ocols '+g2+'>'+col('Structure',stIn)+col('Accessories',acIn)+'</div><div class=ocols '+g3+'>'+col('Installation',L[0])+col('Freight',L[1])+col('Miscellaneous',L[2]+L[3])+'</div></div>';
+ return h.slice(0,i1)+blk+h.slice(e3+'</div></div>'.length)};
+ const st=document.createElement('style');st.textContent='@media(max-width:700px){.ocols[style*="repeat(2"]{grid-template-columns:1fr!important}}';document.head.appendChild(st)})();
 </script>
 </body></html>
