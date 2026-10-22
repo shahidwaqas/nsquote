@@ -268,7 +268,7 @@ const fr=v=>Number.isInteger(+v)?f(v):(+v).toFixed(2);
 const ia=x=>pw(x)?n(x.q)+' x '+n(x.w)+'W = '+f(n(x.q)*n(x.w))+'W &nbsp;x&nbsp; Rs '+fr(x.rw)+'/W &nbsp;|&nbsp; Amount: Rs '+f(am(x)):'Unit: Rs '+f(un(x))+' &nbsp;|&nbsp; Amount: Rs '+f(am(x));
 let D,lang='en',tab='doc',PF='doc';
 function newDoc(t){D={id:Date.now(),type:t,lang:'en',no:'',date:today(),cust:'',phone:'',loc:'',rows:[row()],st:{o:ST[1],a:0},ac:{a:0,off:[],x:''},inst:0,misc:{a:0,d:''},frt:0,recv:0};go('doc')}
-const tot=()=>D.rows.reduce((s,x)=>s+am(x),0)+n(D.st.a)+n(D.ac.a)+n(D.inst)+n(D.misc.a)+n(D.frt);
+const tot=()=>D.rows.reduce((s,x)=>s+am(x),0)+n(D.st.a)+n(D.ac.a)+n(D.inst)+n(D.misc.a)+n(D.frt)-n(D.disc);
 function S2(p,v,num){const k=p.split('.');let o=D;while(k.length>1)o=o[k.shift()];o[k[0]]=num?n(v):v;T()}
 function T(){const t=tot(),e=$('#tt'),rc=n(D.recv);if(e)e.innerHTML=`Total: <b>Rs ${f(t)}</b><br><span style="font-weight:500;font-size:12px">`+(rc||D.type=='Bill'?`Received: Rs ${f(rc)} &nbsp;|&nbsp; Remaining: Rs ${f(t-rc)}`:`Advance: Rs ${f(Math.max(t-1e5,0))} &nbsp;|&nbsp; After installation: Rs ${f(Math.min(1e5,t))}`)+'</span>';const m=$('#rmn');if(m)m.textContent='Remaining: Rs '+f(t-rc)}
 function U(i,k,v,re){const x=D.rows[i],N=['q','p','w','rw','a'],ob=String(x.b||'').trim().toLowerCase();x[k]=N.includes(k)?n(v):v;
@@ -341,7 +341,7 @@ function docHTML(mode){const ur=D.lang=='ur',L=LN[ur?'ur':'en'],t=tot(),OT=windo
 const o=(d,a)=>[d,1,'-',f(a)],sm=t=>t?`<br><small>${t}</small>`:'',sp=x=>{let a=x.s?tr(x.s):'';if(x.wy)a+=(a?' | ':'')+L.wr+': '+(ur?wU(x.wy):x.wy);return a};
 let rows=D.rows.map(x=>x.alt&&x.alt.length&&D.type=='Quotation'?altRow(x,L,tr,sp,ur):[`<b>${E((x.b+' '+x.m).trim()||tr(x.c))}</b>${sp(x)?`<br><small>${E(sp(x))}</small>`:''}${pw(x)?`<br><small dir=ltr>${n(x.q)} panels x ${n(x.w)}W = ${f(n(x.q)*n(x.w))}W</small>`:''}`,pw(x)?`<span dir=ltr>${f(n(x.q)*n(x.w))} W</span>`:n(x.q),pw(x)?fr(x.rw):f(un(x)),f(am(x))]);
 rows.push(o(`<b>${L.st}: ${E(tr(D.st.o))}</b>`+sm(D.st.o==ST[0]?L.stu:L.stg),D.st.a),o(`<b>${L.ac}</b>`+sm(E(D.ac.off?acTxt(D.ac,ur):tr(D.ac.t))),D.ac.a),o(`<b>${L.in}</b>`+sm(L.ind),D.inst));
-if(D.misc.d||n(D.misc.a))rows.push(o('<b>'+(E(D.misc.d)||'-')+'</b>'+sm(/concrete|کنکریٹ/i.test(D.misc.d)?L.cod:''),D.misc.a));rows.push(o(`<b>${L.fr}</b>`+sm(L.frd),D.frt));
+if(D.misc.d||n(D.misc.a))rows.push(o('<b>'+(E(D.misc.d)||'-')+'</b>'+sm(/concrete|کنکریٹ/i.test(D.misc.d)?L.cod:''),D.misc.a));rows.push(o(`<b>${L.fr}</b>`+sm(L.frd),D.frt));if(n(D.disc))rows.push(o('<b>'+(ur?'خصوصی رعایت':'Special Discount')+'</b>',-n(D.disc)));
 const tb=rows.map((r,i)=>r.sp?`<tr><td class=c>${i+1}<td colspan=4>${r[0]}`:`<tr><td class=c>${i+1}<td>${r[0]}<td class=c>${r[1]}<td class=n>${r[2]}<td class=n>${r[3]}`).join('');
 return`<div class=lp dir="${dir}">${LHON?(mode=='view'?lhPh('top'):''):`<div class=lh dir=ltr><div class=lgb>${LOGOD(58)}</div><div><div class=tg>${LN.en.sub}</div><div class=sl>Clean Energy, Bright Future</div></div><div class=ad>Office # 32 Ground Floor<br>Centre Point Plaza Kohinoor Faisalabad<br>0302 2999000 &amp; 0300 33668888</div></div><div class=ys></div><div class=tgl dir="${dir}">${L.tag}</div>`}
 <div style="padding:0 18px 12px"><div class="tb${sysT(D)?' hs':''}"><b>${L[D.type]}</b><span>${L.no}: ${D.no||'-'}${D.from?` <small style="font-weight:400">(Ref: ${E(D.from)})</small>`:''}</span></div>
@@ -896,7 +896,7 @@ function cmpHTML(mode){
  ['Inverter','Battery','Panel','Other'].forEach(c=>{if(!O.some(o=>o.rows.some(x=>x.c==c)))return;k++;body+=`<tr><td class=c>${k}<td><b>${tr(c)}</b>`+O.map(o=>`<td>${o.rows.filter(x=>x.c==c).map(cell).join('')||'-'}`).join('')+'</tr>'});
  const com=[[`<b>${L.st}: ${E(tr(D.st.o))}</b>`+sm(D.st.o==ST[0]?L.stu:L.stg),D.st.a],[`<b>${L.ac}</b>`+sm(E(D.ac.off?acTxt(D.ac,ur):tr(D.ac.t))),D.ac.a],[`<b>${L.in}</b>`+sm(L.ind),D.inst]];
  if(D.misc.d||n(D.misc.a))com.push(['<b>'+(E(D.misc.d)||'-')+'</b>'+sm(/concrete|کنکریٹ/i.test(D.misc.d)?L.cod:''),D.misc.a]);
- com.push([`<b>${L.fr}</b>`+sm(L.frd),D.frt]);
+ com.push([`<b>${L.fr}</b>`+sm(L.frd),D.frt]);if(n(D.disc))com.push(['<b>'+(ur?'خصوصی رعایت':'Special Discount')+'</b>',-n(D.disc)]);
  com.forEach(r=>{k++;body+=`<tr><td class=c>${k}<td>${r[0]}`+O.map(()=>`<td class=n>${f(r[1])}`).join('')+'</tr>'});
  body+=`<tr class="tot g1"><td colspan=2 class=n>${L.t}`+TT.map(t=>`<td class=n>Rs ${f(t)}`).join('')+'</tr>';
  body+=`<tr class=tot><td colspan=2 class=n>${L.ad}`+TT.map(t=>`<td class=n>${f(Math.max(t-1e5,0))}`).join('')+'</tr>';
@@ -2023,7 +2023,7 @@ window.optTotals=function(){
  if(!D||D.type!='Quotation')return null;
  var mx=1;(D.rows||[]).forEach(function(x){if(x.alt&&x.alt.length)mx=Math.max(mx,x.alt.length+1)});
  if(mx<2)return null;
- var ex=n(D.st.a)+n(D.ac.a)+n(D.inst)+n(D.misc.a)+n(D.frt),r=[];
+ var ex=n(D.st.a)+n(D.ac.a)+n(D.inst)+n(D.misc.a)+n(D.frt)-n(D.disc),r=[];
  for(var k=0;k<mx;k++){var t=ex;D.rows.forEach(function(x){t+=am(k>0&&x.alt&&x.alt[k-1]?x.alt[k-1]:x)});r.push(t)}
  return r};
 window.OTT=function(T,L,ur,rows,tr,sp){
@@ -2231,7 +2231,7 @@ function r3words(x){x=Math.round(x);if(!x)return 'Zero';const o=['','One','Two',
 function r3memo(m){const ur=D.lang=='ur',L=LN[ur?'ur':'en'],dir=ur?'rtl':'ltr',t=tot(),isB=D.type=='Bill',rc=n(D.recv),ad=Math.max(t-1e5,0),tr=s=>ur&&UR[s]?UR[s]:s;const it=[];
  D.rows.forEach(x=>{const nm=((x.b||'')+' '+(x.m||'')).trim()||tr(x.c);let sp=x.s?tr(x.s):'';if(x.wy)sp+=(sp?' | ':'')+L.wr+': '+(ur?wU(x.wy):x.wy);it.push([`<b>${E(nm)}</b>${sp?`<small>${E(sp)}</small>`:''}`,n(x.q)||1,un(x),am(x)])});
  const fx=(a,l,sm)=>{if(n(a))it.push([`<b>${l}</b>${sm?`<small>${sm}</small>`:''}`,1,n(a),n(a)])};
- fx(D.st.a,L.st+': '+E(tr(D.st.o)));fx(D.ac.a,L.ac,E(D.ac.off?acTxt(D.ac,ur):tr(D.ac.t)));fx(D.inst,L.in);if(D.misc)fx(D.misc.a,E(D.misc.d)||'-');fx(D.frt,L.fr);
+ fx(D.st.a,L.st+': '+E(tr(D.st.o)));fx(D.ac.a,L.ac,E(D.ac.off?acTxt(D.ac,ur):tr(D.ac.t)));fx(D.inst,L.in);if(D.misc)fx(D.misc.a,E(D.misc.d)||'-');fx(D.frt,L.fr);fx(-n(D.disc),ur?'خصوصی رعایت':'Special Discount');
  const rows=it.map((r,i)=>`<tr><td class=c>${i+1}<td>${r[0]}<td class=c>${r[1]}<td class=n>${f(r[2])}<td class=n>${f(r[3])}`);while(rows.length<10)rows.push('<tr><td class=c>&nbsp;<td><td><td><td>');
  const hd=LHON?(m=='view'?lhPh('top'):''):`<div class=lh dir=ltr><div class=lgb>${LOGOD(58)}</div><div><div class=tg>${LN.en.sub}</div><div class=sl>Clean Energy, Bright Future</div></div><div class=ad>Office # 32 Ground Floor<br>Centre Point Plaza Kohinoor Faisalabad<br>0302 2999000 &amp; 0300 33668888</div></div><div class=ys></div>`;
  const tt=isB?`<tr><td>${L.t}<td class=n>Rs ${f(t)}<tr><td>${L.rc}<td class=n>Rs ${f(rc)}<tr><td>${L.rm}<td class=n>Rs ${f(t-rc)}`:`<tr><td>${L.t}<td class=n>Rs ${f(t)}<tr><td>${L.ad}<td class=n>Rs ${f(ad)}<tr><td>${L.ai}<td class=n>Rs ${f(t-ad)}`;
@@ -2772,6 +2772,198 @@ var r3dn=0;
  const d0=dupDoc;dupDoc=function(){const r=d0.apply(this,arguments);if(D){delete D.done;delete D.doneAt}return r};
  const t0=toBill;toBill=function(){const r=t0.apply(this,arguments);if(D){delete D.done;delete D.doneAt}return r}})();
 function r3sorted(){return DB.docs.filter(d=>r3dn?d.done:!d.done).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||b.id-a.id)}
+function r3same(d){const k=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' '),p=x=>String(x||'').replace(/\D/g,'').slice(-10),c=k(d.cust),ph=p(d.phone);
+ return DB.docs.filter(x=>x.id!=d.id&&!x.done&&x.id!=d.fromId&&x.fromId!=d.id&&((c&&k(x.cust)==c)||(ph.length>=7&&p(x.phone)==ph)))}
+function r3fin(d,disc){const t=today();if(disc>0){d.disc=n(d.disc)+disc;d.discAuto=disc}
+ d.done=true;d.doneAt=t;if(d.fromId){const q=DB.docs.find(x=>x.id==d.fromId);if(q){q.done=true;q.doneAt=t}}
+ if(D&&D.id==d.id)D=null;r3cpd=0;r3ced=0;r3cf='Done';save();toast('Project marked Done');
+ const sm=r3same(d);if(sm.length)r3dup(d,sm);else go('cpa')}
+function r3dup(d,sm){const o=document.createElement('div');o.className='cfm';o.style.zIndex=260;
+ const ls=sm.map(x=>'<label style="display:flex;gap:6px;align-items:flex-start;text-align:left;margin:4px 0;font-size:13px"><input type=checkbox class=r3dk value="'+x.id+'" '+(x.type=='Quotation'?'checked':'')+' style="margin-top:3px"><span><b>'+E(x.type)+' '+E(x.no||'')+'</b> - '+E(x.cust||'')+' '+E(x.phone||'')+'<br><small>'+E(fd(x.date)||'')+' | Total Rs '+f(dt(x))+(x.type=='Bill'?' | Received Rs '+f(n(x.recv)):'')+'</small></span></label>').join('');
+ o.innerHTML='<div class=cfb style="max-width:420px;max-height:80vh;overflow:auto"><p><b>Same naam/mobile ke '+sm.length+' aur document mile</b><br>Merge karne par sirf ye Done wali quotation ke rate/products rahenge, selected baqi sab Recycle Bin mein chale jayenge. (Bills default unselected hain.)</p>'+ls+'<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px"><button class=r id=r3k>Keep</button><button class=o id=r3m>Merge (baqi hata do)</button></div></div>';
+ document.body.appendChild(o);
+ o.querySelector('#r3k').onclick=()=>{o.remove();go('cpa')};
+ o.querySelector('#r3m').onclick=()=>{const l=[...o.querySelectorAll('.r3dk:checked')].map(e=>DB.docs.find(x=>x.id==e.value)).filter(Boolean);l.forEach(x=>{binAdd('doc',x);const i=DB.docs.findIndex(y=>y.id==x.id);if(i>=0)DB.docs.splice(i,1)});o.remove();save();toast(l.length+' document merge hue (Recycle Bin mein)');go('cpa')}}
+function r3done(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const rem=d.type=='Bill'?Math.max(dt(d)-n(d.recv),0):0;
+ let m='Mark "'+(d.cust||'this project')+'" as Done? It will be removed from Home, Client List and other tabs and will stay only in Cost / Profit Analysis (Done).';
+ if(!r3has(d))m='Cost is not entered yet. '+m;
+ if(rem>0){const o=document.createElement('div');o.className='cfm';
+  o.innerHTML='<div class=cfb><p>Payment of Rs '+f(rem)+' is still pending. '+E(m)+'</p><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=r3c>Cancel</button><button class=r id=r3n>Done (pending rakhein)</button><button class=o id=r3y>Done + Special Discount Rs '+f(rem)+'</button></div></div>';
+  document.body.appendChild(o);o.querySelector('#r3c').onclick=()=>o.remove();o.querySelector('#r3n').onclick=()=>{o.remove();r3fin(d,0)};o.querySelector('#r3y').onclick=()=>{o.remove();r3fin(d,rem)};return}
+ cf(m,()=>r3fin(d,0),'Mark Done')}
+function r3undone(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;cf('Move this project back to the normal lists?'+(n(d.discAuto)?' Special Discount Rs '+f(d.discAuto)+' will be reversed.':''),()=>{if(n(d.discAuto)){d.disc=Math.max(n(d.disc)-n(d.discAuto),0);if(!d.disc)delete d.disc;delete d.discAuto}delete d.done;delete d.doneAt;if(d.fromId){const q=DB.docs.find(x=>x.id==d.fromId);if(q){delete q.done;delete q.doneAt}}
+  r3cpd=0;r3ced=0;r3cf='Bill';save();toast('Restored to normal lists');go('cpa')},'Restore')}
+(function(){const o=V.cpa;V.cpa=function(){let h=o.call(V);const d=DB.docs.find(x=>x.id==r3cpd);if(!d||!costOK())return h;
+ h=h.replace('>Edit costs</button>','>Edit costs</button> <button type="button" class=o onclick="r3cm=!r3cm;go(\'cpa\')">'+(r3cm?'Table view':'Comparison view')+'</button>');
+ if(r3cm)h=h.replace(/<div class=r3w>[\s\S]*<\/div>\s*<\/div>\s*$/,r3cmpH(d)+'</div>');return h}})();
+(function(){const o=V.buy;V.buy=function(){let h=o.call(V);const d=DB.docs.find(x=>x.id==r3bd);if(d&&h.indexOf('<b>Quick fill:</b>')>=0)h=h.replace('<b>Quick fill:</b>','<button type="button" class=o onclick="r3cm=1;r3cpd='+d.id+';go(\'cpa\')">Comparison view</button> <b>Quick fill:</b>');return h}})();
+/* ---- receive payment later (Client List) ---- */
+function rcvOpen(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const rem=Math.max(dt(d)-n(d.recv),0);
+ dlg('Receive payment: '+(d.cust||'-')+' (Remaining Rs '+f(rem)+')',[{l:'Amount (Rs)',t:'number',v:rem||''},{l:'Date',t:'date',v:today()},{l:'Note (optional)',v:''}],'Add',v=>{const a=n(v[0]);if(!(a>0))return'Enter amount';if(a>rem)return'Amount is more than remaining (Rs '+f(rem)+')';
+  if(!Array.isArray(d.pays)||(!d.pays.length&&n(d.recv)>0))d.pays=n(d.recv)>0?[{d:d.date||today(),a:n(d.recv),n:'Earlier'}]:[];
+  d.pays.push({d:v[1]||today(),a:a,n:(v[2]||'').trim()});d.recv=d.pays.reduce((s,p)=>s+n(p.a),0);save();toast('Payment added: Rs '+f(a));go(tab);return''})}
+function r8rem(d){return d.type=='Bill'?Math.max(dt(d)-n(d.recv),0):0}
+(function(){const c=cliL;cliL=function(){let L=c();return CP?L.filter(d=>r8rem(d)>0):L};
+ const s=cliSet;cliSet=function(k,v){if(k=='t')CP=false;return s(k,v)};
+ const o=dsOpen;dsOpen=function(t){CP=false;return o(t)};
+ const x=xlTbl;xlTbl=function(L,pf,emp){const out=x(L,pf,emp),P=out.split('<tr class=hd ');for(let i=1;i<P.length;i++){const m=/viewDoc\((\d+),/.exec(P[i]);if(!m)continue;const d=DB.docs.find(z=>z.id==+m[1]),r=d?r8rem(d):0;if(!(r>0))continue;
+  P[i]=P[i].replace('</small><td class=c>','</small><div style="color:#b3261e;font-weight:700;font-size:12px">Pending: Rs '+f(r)+'</div><td class=c>').replace('<button class=vb onclick="viewDoc(','<button class=vb onclick="rcvOpen('+d.id+')">Receive</button><button class=vb onclick="viewDoc(')}return P.join('<tr class=hd ')};
+ const v=cliV;cliV=function(){let h=v();h=h.replace(/(onclick="cliSet\('t','Bill'\)">Bills<\/button>)/,'$1<button type="button" class="'+(CP?'on':'')+'" onclick="CT=\'Bill\';CP=!CP;go(\'cli\')">Pending</button>');
+  if(CP){const L=cliL(),tp=L.reduce((s,d)=>s+r8rem(d),0);h=h.replace(/(<div class=cnt id=clin>)/,'$1Total pending: Rs '+f(tp)+' | ')}return h};V.cli=cliV})();
+
+/* ===== Change 40: payment breakup on demand ===== */
+var PBK=false;
+function pbList(d){if(Array.isArray(d.pays)&&d.pays.length)return d.pays;return n(d.recv)>0?[{d:d.date||today(),a:n(d.recv),n:'Earlier'}]:[]}
+function pbOpen(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const L=pbList(d),t=dt(d),rc=L.reduce((s,p)=>s+n(p.a),0),rem=Math.max(t-rc,0);
+ const o=document.createElement('div');o.className='cfm';o.style.zIndex=250;o.onkeydown=e=>e.stopPropagation();
+ o.innerHTML='<div class=cfb style="width:min(380px,94vw)"><p><b>Payment Breakup</b><br>'+E(d.cust||'-')+' ('+E(d.no||'')+')</p>'+
+ (L.length?L.map((p,i)=>'<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #e3e7ec"><span>'+(i+1)+'. '+fd(p.d)+(p.n?' - '+E(p.n):'')+'</span><b>Rs '+f(n(p.a))+'</b></div>').join(''):'<div style="padding:8px 0">No payment received yet.</div>')+
+ '<div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-weight:700"><span>Total Received</span><span>Rs '+f(rc)+'</span></div>'+
+ '<div style="display:flex;justify-content:space-between;font-weight:700;color:#b3261e"><span>Remaining</span><span>Rs '+f(rem)+'</span></div>'+
+ '<div style="margin-top:10px"><button class=o type=button id=pbx>Close</button></div></div>';
+ document.body.appendChild(o);o.querySelector('#pbx').onclick=()=>o.remove();o.onclick=e=>{if(e.target==o)o.remove()}}
+/* printed/preview bill shows only total received unless breakup is switched on */
+(function(){const o=payRows;payRows=function(L){return PBK?o(L):''};
+ const v=V.pv;V.pv=function(){let h=v.call(V);if(!D||D.type!='Bill'||!Array.isArray(D.pays)||D.pays.length<2)return h;
+  const ic='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l6 -6"/><circle cx="9.5" cy="8.5" r=".6"/><circle cx="14.5" cy="13.5" r=".6"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2"/></svg>';
+  const btn='<i></i><button type=button class="'+(PBK?'on':'')+'" onclick="PBK=!PBK;go(\'pv\')">'+ic+'Payments</button>';
+  return h.replace(/(<div class=xbar>[\s\S]*?)(<\/div><div class=pvs>)/,'$1'+btn+'$2')};
+ const g=go;go=function(t){if(t!='pv'&&t!='doc')PBK=false;return g(t)};
+ const vd=viewDoc;viewDoc=function(){PBK=false;return vd.apply(this,arguments)};
+ const x=xlTbl;xlTbl=function(L,pf,emp){const out=x(L,pf,emp),P=out.split('<tr class=hd ');for(let i=1;i<P.length;i++){const m=/viewDoc\((\d+),/.exec(P[i]);if(!m)continue;const d=DB.docs.find(z=>z.id==+m[1]);if(!d||!(n(d.recv)>0))continue;
+  P[i]=P[i].replace('<button class=vb onclick="viewDoc(','<button class=vb onclick="pbOpen('+d.id+')">Payments</button><button class=vb onclick="viewDoc(')}return P.join('<tr class=hd ')};
+ V.cli=cliV})();
+
+/* ===== Daily Ledger preview: smaller default size + zoom ===== */
+var LZ=0;
+function cliFit(){const el=document.getElementById('cpv'),box=document.getElementById('cpb');if(!el||!box)return;
+ const fit=box.clientWidth/794;let k;
+ if(tab=='ldp'){k=LZ||Math.min(fit,.62);el.style.marginLeft=(k*794<box.clientWidth?Math.floor((box.clientWidth-794*k)/2):0)+'px'}
+ else{k=Math.min(1,fit);el.style.marginLeft=''}
+ el.style.transform=k<1||tab=='ldp'?'scale('+k+')':'';box.style.height=Math.ceil(el.offsetHeight*k)+'px';
+ const zl=document.getElementById('ldzl');if(zl)zl.textContent=Math.round(k*100)+'%'}
+function ldZ(d){const box=document.getElementById('cpb'),fit=box?box.clientWidth/794:1,cur=LZ||Math.min(fit,.62);LZ=Math.max(.3,Math.min(1.5,Math.round((cur+d)*100)/100));cliFit()}
+(function(){const v=ldpV;ldpV=function(){let h=v();V.ldp=ldpV;return h.replace('<b>Daily Ledger - ','<button type="button" onclick="ldZ(-.1)" title="Zoom out" style="font-size:16px;padding:4px 12px">&minus;</button><span id="ldzl" style="color:#fff;font-size:12.5px;min-width:38px;text-align:center"></span><button type="button" onclick="ldZ(.1)" title="Zoom in" style="font-size:16px;padding:4px 12px">+</button><b>Daily Ledger - ')};V.ldp=ldpV;
+ const g=go;go=function(t){if(t=='ldp'&&tab!='ldp')LZ=0;g(t);if(t=='ldp')setTimeout(cliFit,30)};
+ })();
+(function(){const st=document.createElement('style');st.textContent='@media print{#cpv{margin-left:0!important}}';document.head.appendChild(st)})();
+
+/* ===== Change 42: Option 1 itself shows as Inverter | Battery | Panel columns from the start ===== */
+o5mode=function(){return !!(D&&D.type=='Quotation'&&D.rows.some(x=>OPTC.includes(x.c)))};
+(function(){const ob=o5block;o5block=function(){let h=ob();if(o5cnt()<2){h=h.replace(/^<div class=card><h4>Quotation Options[\s\S]*?<\/small><\/div>/,'').replace('Option 1 <small>(Primary)</small>','Inverter / Battery / Panel')}return h}})();
+
+/* ===== Change 43 (redone): compact Structure & Charges box + compact Accessories, same box ===== */
+(function(){const v=V.doc;V.doc=function(){let h=v.call(V);if(!D)return h;
+ const i1=h.indexOf('<div class=card><h4>Structure</h4>'),i2=h.indexOf('<div class=card><h4>Accessories</h4>'),i3=h.indexOf('<div class=card><h4>Other Charges</h4>');
+ if(i1<0||i2<i1||i3<i2)return h;
+ const e3=h.indexOf('</div></div>',i3);if(e3<0)return h;
+ const stIn=h.slice(i1+'<div class=card><h4>Structure</h4>'.length,i2).replace(/<\/div>\s*$/,''),
+  acIn=h.slice(i2+'<div class=card><h4>Accessories</h4>'.length,i3).replace(/<\/div>\s*$/,''),
+  ocIn=h.slice(i3+'<div class=card><h4>Other Charges</h4><div class=g>'.length,e3),
+  S=stIn.match(/<label>[\s\S]*?<\/label>/g)||[],L=ocIn.match(/<label>[\s\S]*?<\/label>/g)||[];
+ if(S.length<2||L.length<4)return h;
+ const lb=(x,a,b)=>x.replace('<label>'+a,'<label>'+b);
+ const blk='<div class="card cmp43"><h4>Structure &amp; Charges</h4><div class=sg>'+lb(S[0],'Type','Structure Type')+lb(S[1],'Amount','Structure Amount')+lb(L[0],'Installation charges','Installation')+lb(L[2],'Description (optional)','Concrete / Misc')+lb(L[3],'Amount','Concrete / Misc Amount')+lb(L[1],'Freight charges','Freight')+'</div><div class=acx><div class=ach>Accessories</div>'+acIn+'</div></div>';
+ return h.slice(0,i1)+blk+h.slice(e3+'</div></div>'.length)};
+ const st=document.createElement('style');st.textContent='.cmp43 .sg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cmp43 label{margin:0;font-size:12px}.cmp43 input:not([type=checkbox]),.cmp43 select{padding:6px 8px;font-size:13px;min-width:0;width:100%}.cmp43 .ach{font-weight:800;color:var(--r);border-top:1px solid var(--bd);margin-top:10px;padding-top:8px}.cmp43 .acx{margin-top:2px}.cmp43 .acx>.g:first-of-type{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}.cmp43 .acx .ck{padding:3px 9px;font-size:12px;border-radius:14px;margin:0;display:inline-flex}.cmp43 .acx .ck input{width:auto;margin:0 5px 0 0}.cmp43 .acx>.g:first-of-type>label:not(.ck){flex:1 1 150px}.cmp43 .acx>.g:last-child:not(:first-of-type){display:grid;grid-template-columns:minmax(0,220px);margin-top:6px}@media(max-width:700px){.cmp43 .sg{grid-template-columns:repeat(2,minmax(0,1fr))}}';document.head.appendChild(st)})();
+</script>
+<script>
+/* ===== Change 44: always 3 parallel columns Inverter | Battery | Panel (Quotation + Bill) ===== */
+function t3add(c){const r=row();r.c=c;r.b='';r.m='';r.s=SP[c]||'';r.wy=DW[c]||'';D.rows.push(r);go('doc')}
+function t3idx(c){const a=[];D.rows.forEach((x,i)=>{if(x.c==c)a.push(i)});return a}
+o5mode=function(){return !!(D&&D.type=='Quotation'&&D.rows.some(x=>OPTC.includes(x.c)))};
+o5block=function(){const q=D.type=='Quotation',cnt=q?o5cnt():1;let h='';
+ if(cnt>1)h+='<div class=card><h4>Quotation Options<button class=r type=button onclick="o5off()">Remove all options</button></h4><small class=onote>Option 1 is the main quotation. In Option 2 / 3 delete what you do not need (for example keep only the Inverter). Items missing from an option stay the same as Option 1.</small></div>';
+ for(let j=0;j<cnt;j++){
+  const cols=OPTC.map(c=>{const ids=t3idx(c);
+   if(!ids.length)return j==0?'<div class="ocol add"><button type=button class=o onclick="t3add(\''+c+'\')">+ Add '+c+'</button></div>':'<div class="ocol add"><small class=onote>No '+c+'</small></div>';
+   return '<div class="ocol'+(j==0?' p':'')+'">'+ids.map(i=>{const x=D.rows[i];
+    if(j==0)return '<div class=oh><span>'+c+'</span><button type=button class=r onclick="D.rows.splice('+i+',1);go(\'doc\')">Remove</button></div>'+colF(x,i,null);
+    const a=x.alt&&x.alt[j-1];
+    return a?'<div class=oh><span>'+c+'</span><button type=button class=r onclick="o5del('+i+','+(j-1)+')">Delete</button></div>'+colF(a,i,j-1):'<button type=button class=o onclick="o5add('+i+','+(j-1)+')">+ Add '+c+'</button>'}).join('')+'</div>'}).join('');
+  h+='<div class="card ob5"><h4>'+(cnt>1?'Option '+(j+1)+(j==0?' <small>(Primary)</small>':''):'Inverter / Battery / Panel')+(j>0?'<button class=r type=button onclick="o5rm('+(j-1)+')">Remove Option '+(j+1)+'</button>':'')+'</h4><div class=ocols>'+cols+'</div></div>'}
+ if(q&&cnt<O5MAX)h+='<button type=button class=o onclick="o5new()">+ New Option</button>';
+ return h};
+rowCard=function(x,i){if(!D)return rowCard0(x,i);if(!OPTC.includes(x.c))return rowCard0(x,i);
+ const f=D.rows.findIndex(y=>OPTC.includes(y.c));return i==f?o5block():''};
+(function(){const v=V.doc;V.doc=function(){if(D&&D.rows&&!D.rows.some(x=>OPTC.includes(x.c))&&D.rows.length==0)D.rows.push(row());
+ let h=v.call(V);if(!D||D.rows.some(x=>OPTC.includes(x.c)))return h;
+ /* no Inverter/Battery/Panel row at all: still show the 3 empty columns */
+ const k=h.indexOf('<div class=card><h4>Item ');const blk=o5block();
+ return k<0?h:h.slice(0,k)+blk+h.slice(k)};
+ const st=document.createElement('style');st.textContent='@media(min-width:701px){.ocols{grid-template-columns:repeat(3,minmax(0,1fr))!important}}';document.head.appendChild(st)})();
+</script>
+<script>
+/* ===== Change 45: accessories - AC/DC Breakers, Duct Patti, Flexible Pipe, MC4; amount bar above the selection ===== */
+(function(){
+ ACL.length=0;["AC Breakers","DC Breakers","Change Over","DC/AC Wire","SPD","Voltage Protection","DP Box","Fire Extinguisher","Nut Bolts","Duct Patti","Flexible Pipe","MC4"].forEach(x=>ACL.push(x));
+ Object.assign(ACU,{"AC Breakers":"اے سی بریکرز","DC Breakers":"ڈی سی بریکرز","Duct Patti":"ڈکٹ پٹی","Flexible Pipe":"فلیکسیبل پائپ","MC4":"ایم سی 4"});
+ /* old documents were saved with the old 8-item list: shift their unticked items, keep the new ones off */
+ let NV=0;function mig(a){if(!a||!a.off||a.v2)return;if(NV){a.v2=1;return}const o=[];a.off.forEach(i=>{if(i==0)o.push(0,1);else o.push(i+1)});o.push(9,10,11);a.off=o;a.v2=1}
+ window.acMig=mig;
+ const t=acTxt;acTxt=function(a,ur){mig(a);return t(a,ur)};
+ const nd=newDoc;newDoc=function(t){NV=1;try{nd(t)}finally{NV=0}if(D&&D.ac)D.ac.v2=1};
+ const v=V.doc;V.doc=function(){if(D)mig(D.ac);return v.call(V)};
+ const st=document.createElement('style');
+ st.textContent='.cmp43 .acx{display:flex;flex-direction:column}.cmp43 .acx>.ach{order:-3;margin-bottom:0}.cmp43 .acx>.g:last-child:not(:first-of-type){order:-2;margin:6px 0 4px}';
+ document.head.appendChild(st)})();
+</script>
+<script>
+/* ===== Round 9: compact Daily Ledger, cost entry inside Cost/Profit Analysis, editable Selling rate ===== */
+(function(){const st=document.createElement('style');st.textContent=
+'.ldc{padding:8px 10px!important;margin-bottom:8px}.ldr{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.ldr input,.ldr button{margin:0!important;padding:5px 8px!important;font-size:13px!important;width:auto}.ldr input[type=date],.ldr input[type=month]{flex:1;min-width:120px}'
++'.ldc .cseg button{padding:5px 10px!important;font-size:12.5px!important}.lds{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.lds div{background:#f1f5fa;border-radius:8px;padding:4px 4px;text-align:center;min-width:0}.lds span{display:block;font-size:10px;color:#667}.lds b{font-size:12.5px;white-space:nowrap}'
++'.lda{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.lda input,.lda select{margin:0!important;padding:6px 8px!important;font-size:13px!important;width:100%;min-width:0}.lda .full{grid-column:1/-1}'
++'.ldw{max-height:46vh;overflow:auto}.ldt td,.ldt th{padding:4px 6px!important;font-size:12px!important}.ldt .r{padding:1px 8px!important;font-size:12px}'
++'.ldb{display:flex;gap:6px}.ldb button{margin:0!important;flex:1;padding:6px 8px!important;font-size:13px!important}'
++'@media(max-width:420px){.lds{grid-template-columns:repeat(2,1fr)}}';document.head.appendChild(st)})();
+V.led=V.exp=function(){const D1=ldData(),pr=DB.docs.filter(d=>!d.done&&d.type=='Bill').map(d=>`<option value="${d.id}">${E(d.cust)}`).join(''),H=lhd(LT),C={};
+ D1.R.filter(x=>x.out).forEach(x=>{const k=x.e.cat||'Other';C[k]=(C[k]||0)+x.out});
+ const sb=(l,v,c)=>`<div><span>${l}</span><b${c?` style="color:${c}"`:''}>${f(v)}</b></div>`;
+ return`<div class="card ldc"><div class=ldr><div class=cseg><button type=button class="${LM=='day'?'on':''}" onclick="ldSet('m','day')">Day</button><button type=button class="${LM=='month'?'on':''}" onclick="ldSet('m','month')">Month</button></div>
+<button type=button class=vb onclick="ldSet('d',ldShift(LD,-1))">&#8249;</button>${LM=='day'?`<input type=date value="${LD}" onchange="ldSet('d',this.value)">`:`<input type=month value="${LD.slice(0,7)}" onchange="ldSet('d',(this.value||LD.slice(0,7))+'-01')">`}<button type=button class=vb onclick="ldSet('d',ldShift(LD,1))">&#8250;</button><button type=button class=vb onclick="LD=today();go('led')">Today</button></div>
+<div class=lds>${sb('Opening',D1.op)}${sb('Cash In',D1.ti,'#0a7a3d')}${sb('Cash Out',D1.to,'#b3261e')}${sb('Closing',D1.cl)}</div></div>
+<div class="card ldc"><div class=ldr><div class=cseg><button type=button class="${LT=='out'?'on':''}" onclick="ldSet('t','out')">Cash Out</button><button type=button class="${LT=='in'?'on':''}" onclick="ldSet('t','in')">Cash In</button></div><small style="color:#667">Add entry</small></div>
+<div class=lda><input id=lad type=date value="${LM=='day'?LD:today()}"><select id=lah>${opts(H,'')}</select><input id=lads placeholder="Detail (optional)"><input id=lam type=number inputmode=decimal placeholder="Amount">${LT=='out'?`<select id=lap class=full><option value="">No project</option>${pr}</select>`:''}</div>
+<button style="margin:8px 0 0;padding:7px;font-size:13.5px;width:100%" onclick="ldAdd()">Add</button></div>
+<div class="card ldc" style="padding:0!important"><div style="padding:8px 10px 4px;font-size:13px"><b>${LM=='day'?'Entries':'Entries of'} - ${ldTitle()}</b></div><div class=ldw><table class="xl ldt"><tr><th class=c>#<th>${LM=='day'?'Head':'Date / Head'}<th>Detail<th style="text-align:right">In<th style="text-align:right">Out<th></tr>${D1.R.map((x,j)=>`<tr><td class=c>${j+1}<td>${LM=='day'?'':fd(x.d)+'<br>'}<b>${E(x.e.cat||'Other')}</b><td>${E(x.e.d)||'-'}<td style="text-align:right">${x.in?f(x.in):''}<td style="text-align:right">${x.out?f(x.out):''}<td><button class=r onclick="ldDel('${x.k}',${x.i})">x</button>`).join('')||'<tr><td colspan=6 class=c>No entries</tr>'}</table></div></div>
+${LM=='month'&&Object.keys(C).length?`<div class="card ldc"><b style="font-size:13px">Expense Heads - ${ldTitle()}</b><table class="xl ldt">${Object.keys(C).map(k=>`<tr><td>${E(k)}<td style="text-align:right">${f(C[k])}`).join('')}</table></div>`:''}
+<div class="card ldc"><div class=ldb><button class=bp onclick="ldPrint()">Preview / Print</button><button class=o onclick="ldPdf()">Save PDF</button></div></div>
+<details class="card ldc" ${LHO?'open':''} ontoggle="LHO=this.open?1:0"><summary><b>Manage Heads (add / remove)</b></summary>${['out','in'].map(t=>`<div style="margin-top:10px"><small><b>${t=='out'?'Cash Out heads':'Cash In heads'}</b></small><div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">${lhd(t).map((h,j)=>`<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">${E(h)} <button type=button class=r style="margin:0;padding:0 6px" onclick="ldHeadDel('${t}',${j})">x</button></span>`).join('')}</div><div style="display:flex;gap:6px"><input id=lhn${t} placeholder="New head name" style="margin:0"><button type=button class=vb style="margin:0" onclick="ldHeadAdd('${t}')">Add</button></div></div>`).join('')}
+<div style="margin-top:12px"><small><b>Balance counting starts from (optional)</b></small><input type=date value="${DB.ls||''}" onchange="ldStart(this.value)"><small>Entries before this date are not counted in the Opening balance.</small></div><button type=button class=r style="margin-top:10px" onclick="ldHeadReset()">Reset to standard heads</button></details>`};
+
+/* ---- cost entry now lives inside Cost / Profit Analysis ---- */
+var r3ced=0;
+(function(){const g=go;go=function(t){if(t=='buy'&&r3bd){r3cpd=r3bd;r3ced=r3bv?0:1;r3cm=0;r3bd=0;r3bv=0;t='cpa'}return g(t)}})();
+(function(){const o=V.buy;V.buy=function(){if(!costOK())return R8LOCK;return'<div class=card><h4>Purchases</h4><div class=bkh>Client-wise cost entry is now inside <b>Cost / Profit Analysis</b>. Only general purchases are kept here.</div><button type=button class=o onclick="go(\'cpa\')">Open Cost / Profit Analysis</button></div><div class=card><h4>General Purchases</h4>'+lst('buy','Purchase')+'</div>'}})();
+(function(){const o=V.doc;V.doc=function(){let h=o.call(V);return h.replace('>Purchase Cost</button>','>Cost / Profit</button>')}})();
+/* selling rate edit: updates the quotation / bill itself */
+function r3ss(id,k,v){const d=r3cd(id);if(!d)return;const a=n(v);
+ if(/^r\d+$/.test(k)){const x=d.rows[+k.slice(1)];if(!x)return;const q=n(x.q)||1;
+  if(pw(x))x.rw=a/(q*n(x.w));else if(n(x.p))x.p=a/q;else x.a=a}
+ else if(k=='st'){d.st=d.st||{};d.st.a=a}else if(k=='ac'){d.ac=d.ac||{};d.ac.a=a}else if(k=='in')d.inst=a;
+ else if(k=='mi'){d.misc=d.misc||{a:0,d:''};d.misc.a=a}else if(k=='fr')d.frt=a;
+ r3upd(d);const e=document.getElementById('r3bt');if(e)e.textContent=f(dt(d));r3dsv()}
+function r3cpSave(id){clearTimeout(r3tmr);save();toast('Saved - quotation / bill updated');r3ced=0;go('cpa')}
+function r3cpDet(d,edit){const it=r3items(d),c=d.cost||{v:{},s:{}};let sa=0,ca=0;
+ const rows=it.map(x=>{const cv=r3cv(d,x.k),sr=(c.s||{})[x.k]||'M';sa+=x.a;ca+=cv;
+  return `<tr><td>${E(x.l)}${x.c?`<br><small>${E(x.c)}</small>`:''}<td class=n>${edit?`<input class=r3i type=number inputmode=decimal value="${Math.round(x.a*100)/100||''}" placeholder="0" oninput="r3ss(${d.id},'${x.k}',this.value)">`:f(x.a)}<td class=n>${edit?`<input class=r3i type=number inputmode=decimal value="${cv||''}" placeholder="0" oninput="r3set(${d.id},'${x.k}',this.value)">`:f(cv)}<td>${edit?`<select class=r3s onchange="r3src(${d.id},'${x.k}',this.value)">${R3S.map(o=>`<option value="${o[0]}" ${o[0]==sr?'selected':''}>${o[1]}</option>`).join('')}</select>`:E((R3S.find(o=>o[0]==sr)||[])[1]||'')}<td class="n${cv&&x.a-cv<0?' neg':''}" id="r3m_${x.k}">${cv?f(x.a-cv):'-'}`}).join('');
+ return `<div class=r3in><b>${E(d.cust||'No name')}</b> | ${d.type} ${E(d.no||'')} | Total Rs <b id=r3bt>${f(dt(d))}</b></div>`
+ +`<div class=r3sv>${edit?`<button type=button onclick="r3cpSave(${d.id})">Save</button>`:`<button type=button class=o onclick="r3ced=1;go('cpa')">Edit</button>`}<button type=button class=r onclick="r3cpd=0;r3ced=0;go('cpa')">&#8592; Back</button><button type=button class=o onclick="r3cm=1;go('cpa')">Comparison view</button><button type=button class=o onclick="${edit?'r3cpSave('+d.id+');':''}viewDoc(${d.id},'cpa')">View ${d.type}</button></div>`
+ +(edit?`<div class=r3in style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>Quick fill:</b> Profit % <input id=r3qp type=number inputmode=decimal placeholder="10" style="width:80px"><button type=button class=o onclick="r3bd=${d.id};r3qf(${d.id})">Fill all</button></div>`:'')
+ +`<div class=r3w><table class=r3t><tr><th>Item<th>Selling (Rs)<th>Purchase Cost (Rs)<th>Source<th>Margin (Rs)</tr>${rows}<tr class=r3tr><td>Total<td class=n id=r3ts>${f(sa)}<td class=n id=r3tc>${f(ca)}<td>Margin %<td class=n><span id=r3tg>${ca?f(sa-ca):'-'}</span> | <span id=r3tp>${ca&&sa?(Math.round((sa-ca)/sa*1000)/10)+'%':'-'}</span></tr></table></div>`
+ +(edit?'<div class=r3hn>Wrong rate laga ho to Selling (Rs) yahin change karein: quotation / bill, preview aur PDF mein bhi usi waqt update ho jata hai. Cost private hai, quotation / bill par nazar nahi aata.</div>':'')}
+(function(){const o=V.cpa;V.cpa=function(){const d=DB.docs.find(x=>x.id==r3cpd);if(!d||!costOK()||r3cm)return o.call(V);
+ return '<div class=card><h4>'+(r3ced?'Edit Cost / Rate':'Cost / Profit')+'</h4>'+r3cpDet(d,r3ced)+'</div>'}})();
+</script>
+<script>
+/* ===== Round 10: "Done" projects - shown only in Cost / Profit Analysis ===== */
+var r3dn=0;
+(function(){const c=cliL;cliL=function(){return c().filter(d=>!d.done)};
+ const rd=recentDocs;recentDocs=function(){return rd().filter(d=>!d.done)};
+ const d0=dupDoc;dupDoc=function(){const r=d0.apply(this,arguments);if(D){delete D.done;delete D.doneAt}return r};
+ const t0=toBill;toBill=function(){const r=t0.apply(this,arguments);if(D){delete D.done;delete D.doneAt}return r}})();
+function r3sorted(){return DB.docs.filter(d=>r3dn?d.done:!d.done).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||b.id-a.id)}
 function r3done(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const rem=d.type=='Bill'?Math.max(dt(d)-n(d.recv),0):0;
  let m='Mark "'+(d.cust||'this project')+'" as Done? It will be removed from Home, Client List and other tabs and will stay only in Cost / Profit Analysis (Done).';
  if(rem>0)m='Payment of Rs '+f(rem)+' is still pending. '+m;if(!r3has(d))m='Cost is not entered yet. '+m;
@@ -2810,22 +3002,49 @@ ${ks.length?`<div class="card"><h4>Head-wise - ${mt}</h4><table class="xl oxt">$
 </script>
 <script>
 /* ===== Round 12: standard Office Expense heads ===== */
-const OXH=['Rent','Electricity Bill','Gas Bill','Water Bill','Internet / Net Bill','Phone Bill','Salary','Daily Expense','Tea / Refreshment','Staff Meals','Fuel','Transport','Utility Bills','FESCO Bill','Maintenance','Sweeper Salary','Repair & Maintenance','Stationery & Printing','Office Supplies / Cleaning','Courier / Postage','Advertising / Marketing','Software / Subscription','Bank Charges','Government Fee / Tax','Guest Entertainment','Office Equipment','Other'];
-function oexHeads(){const L=lhd('out');if(!DB.hdv12){OXH.forEach(h=>{if(!L.some(x=>x.toLowerCase()==h.toLowerCase())){const j=L.findIndex(x=>x=='Other');if(j>=0)L.splice(j,0,h);else L.push(h)}});DB.hdv12=1;save()}
- if(!DB.hdv13){['Utility Bills','FESCO Bill','Maintenance','Sweeper Salary','Transport'].forEach(h=>{if(!L.some(x=>x.toLowerCase()==h.toLowerCase())){const j=L.findIndex(x=>x=='Other');if(j>=0)L.splice(j,0,h);else L.push(h)}});
-  const t=L.findIndex(x=>x=='Transport / Conveyance');if(t>=0)L.splice(t,1);DB.hdv13=1;save()}return L}
+const OXH=['Rent','Utilities','Transport / Fuel','Cleaning & Maintenance','Guest Entertainment','Stationery & Printing','Repair & Maintenance','Other'];
+const OXOLD=['Rent','Electricity Bill','Gas Bill','Water Bill','Internet / Net Bill','Phone Bill','Salary','Daily Expense','Tea / Refreshment','Staff Meals','Fuel','Transport','Utility Bills','FESCO Bill','Maintenance','Sweeper Salary','Repair & Maintenance','Stationery & Printing','Office Supplies / Cleaning','Courier / Postage','Advertising / Marketing','Software / Subscription','Bank Charges','Government Fee / Tax','Guest Entertainment','Office Equipment','Other'];
+function oexHeads(){const L=lhd('out');if(!DB.hdv14){const used=new Set((DB.exp||[]).map(e=>e.cat||'Other'));for(let k=L.length-1;k>=0;k--){if(OXOLD.includes(L[k])&&!OXH.includes(L[k])&&!used.has(L[k]))L.splice(k,1)}
+  OXH.forEach(h=>{if(!L.some(x=>x.toLowerCase()==h.toLowerCase())){const j=L.findIndex(x=>x=='Other');if(j>=0)L.splice(j,0,h);else L.push(h)}});DB.hdv14=1;save()}return L}
 function oexHAdd(){const el=$('#oxhn'),v=(el.value||'').trim();if(!v)return;const L=oexHeads();if(L.some(x=>x.toLowerCase()==v.toLowerCase())){toast('Already in list');return}L.push(v);save();OXO=1;go('buy')}
 function oexHDel(j){const L=oexHeads();cf('Remove "'+L[j]+'" from the list? Old entries stay as they are.',()=>{L.splice(j,1);save();OXO=1;go('buy')},'Remove')}
-function oexHReset(){cf('Reset to the standard office expense heads?',()=>{DB.hd=DB.hd||{};delete DB.hd.out;DB.hdv12=0;DB.hdv13=0;oexHeads();OXO=1;go('buy')},'Reset')}
+function oexHReset(){cf('Reset to the standard office expense heads?',()=>{DB.hd=DB.hd||{};delete DB.hd.out;DB.hdv14=0;oexHeads();OXO=1;go('buy')},'Reset')}
 var OXO=0;
 (function(){const o=V.buy;V.buy=function(){if(!costOK())return R8LOCK;const L=oexHeads();let h=o.call(V);
  const C={};let tot=0;DB.exp.forEach(e=>{if(String(e.date||'').slice(0,7)==OM){const k=e.cat||'Other';C[k]=(C[k]||0)+n(e.amt);tot+=n(e.amt)}});
- const hs=L.slice();Object.keys(C).forEach(k=>{if(!hs.includes(k))hs.push(k)});
+ const hs=Object.keys(C).sort((a,b)=>C[b]-C[a]);
  const mt=new Date(OM+'-01T00:00:00').toLocaleString('en-GB',{month:'long',year:'numeric'});
  const card='<div class="card"><h4>Head-wise - '+mt+'</h4><table class="xl oxt">'+hs.map(k=>{const v=C[k]||0;return '<tr style="'+(v?'':'color:#8a94a3')+'"><td>'+E(k)+(v&&tot?'<div class=oxb><i style="width:'+Math.round(v/tot*100)+'%"></i></div>':'')+'<td style="text-align:right;white-space:nowrap">'+(v?f(v)+'<br><small>'+Math.round(v/tot*100)+'%</small>':'-')}).join('')+'<tr><td><b>Total</b><td style="text-align:right"><b>'+f(tot)+'</b></table></div>';
  const re=/<div class="card"><h4>Head-wise[\s\S]*?<\/table><\/div>/;
- if(re.test(h))h=h.replace(re,()=>card);else h=h.replace('<div class="card" style="padding:0">',()=>card+'<div class="card" style="padding:0">');
+ const dc=hs.length?'<details class=card><summary><b>Head-wise - '+mt+'</b> ('+hs.length+')</summary>'+card.replace('<div class="card"><h4>Head-wise - '+mt+'</h4>','<div>')+'</details>':'';if(re.test(h))h=h.replace(re,()=>dc);else h=h.replace('<div class="card" style="padding:0">',()=>dc+'<div class="card" style="padding:0">');
  const mg='<details class=card '+(OXO?'open':'')+' ontoggle="OXO=this.open?1:0"><summary><b>Manage Heads (add / remove)</b></summary><div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+L.map((x,j)=>'<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">'+E(x)+' <button type=button class=r style="margin:0;padding:0 6px" onclick="oexHDel('+j+')">x</button></span>').join('')+'</div><div style="display:flex;gap:6px"><input id=oxhn placeholder="New head name" style="margin:0"><button type=button class=vb style="margin:0" onclick="oexHAdd()">Add</button></div><button type=button class=r style="margin-top:10px" onclick="oexHReset()">Reset to standard heads</button></details>';
  return h.replace('<details class=card><summary><b>General purchases',()=>mg+'<details class=card><summary><b>General purchases')}})();
+</script>
+<script>
+/* ===== Round 13: Inventory (stock in / out ledger) ===== */
+const INVD=['Inverter','Battery','Breaker AC','Breaker DC','DP Box 4 Way','DP Box 8 Way','DP Box 16 Way','Nut Bolts','Voltage Protector','SPD AC','SPD DC','Changeover','Fire Extinguisher','MC4 Connector'];
+var INF='',INT='in',INO=0;
+function invD(){DB.inv=DB.inv||{items:INVD.slice(),tx:[]};return DB.inv}
+function invCalc(){const I=invD(),bal={},rows=[];I.tx.map((x,i)=>({x,i})).sort((a,b)=>a.x.date<b.x.date?-1:a.x.date>b.x.date?1:(a.x.t||0)-(b.x.t||0)).forEach(({x,i})=>{const q=n(x.qty);bal[x.item]=(bal[x.item]||0)+(x.type=='in'?q:-q);rows.push({x,i,rem:bal[x.item]})});return{rows,bal}}
+function invT(t){INT=t;go('inv')}
+function invAdd(){const I=invD(),it=$('#ivi').value,q=n($('#ivq').value),p=n($('#ivp').value),d=$('#ivd').value||today();
+ if(!it){toast('Item select karein');return}if(!(q>0)){toast('Qty likhein');return}
+ const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Stock sirf '+bal+' hai');return}
+ I.tx.push({date:d,item:it,type:INT,qty:q,price:p,t:Date.now()});INF=INF&&INF!=it?'':INF;save();toast(INT=='in'?'Stock In add hua':'Stock Out add hua');go('inv')}
+function invDel(i){cf('Ye entry delete karni hai?',()=>{invD().tx.splice(i,1);save();go('inv')})}
+function invIAdd(){const el=$('#ivn'),v=(el.value||'').trim();if(!v)return;const I=invD();if(I.items.some(x=>x.toLowerCase()==v.toLowerCase())){toast('Pehle se maujood');return}I.items.push(v);save();INO=1;go('inv')}
+function invIDel(j){const I=invD(),it=I.items[j];if(I.tx.some(x=>x.item==it)){toast('Is item ki entries hain, delete nahi ho sakta');return}cf('"'+it+'" list se hata dein?',()=>{I.items.splice(j,1);save();INO=1;go('inv')},'Remove')}
+V.inv=function(){if(!costOK())return R8LOCK;const I=invD(),C=invCalc(),mt=x=>x.price?f(n(x.qty)*n(x.price)):'-';
+ const sm={};I.tx.forEach(x=>{const s=sm[x.item]=sm[x.item]||{i:0,o:0,ci:0};if(x.type=='in'){s.i+=n(x.qty);s.ci+=n(x.qty)*n(x.price)}else s.o+=n(x.qty)});
+ const ks=Object.keys(sm);let sv=0;const srows=ks.map(k=>{const s=sm[k],rem=s.i-s.o,av=s.i?s.ci/s.i:0,v=Math.round(rem*av);sv+=v;return '<tr><td>'+E(k)+'<td class=c>'+f(s.i)+'<td class=c>'+f(s.o)+'<td class=c style="'+(rem<=0?'color:#b3261e;font-weight:700':'font-weight:700')+'">'+f(rem)+'<td style="text-align:right">'+f(v)}).join('');
+ const L=C.rows.filter(r=>!INF||r.x.item==INF).reverse();
+ return `<div class=card><h4>Inventory</h4><div class=oxk><div><span>Items in stock</span><b>${ks.filter(k=>sm[k].i-sm[k].o>0).length}</b></div><div><span>Stock value (avg cost)</span><b>Rs ${f(sv)}</b></div></div></div>
+<div class=card><h4>Stock Entry</h4><div class=oxr style="margin-bottom:8px"><button type=button class="${INT=='in'?'':'r'}" onclick="invT('in')">Stock In</button><button type=button class="${INT=='out'?'o':'r'}" onclick="invT('out')">Stock Out</button></div>
+<div class=oxg><input id=ivd type=date value="${today()}"><select id=ivi><option value="">- Item select -</option>${I.items.map(x=>'<option value="'+E(x)+'" '+(x==INF?'selected':'')+'>'+E(x)+'</option>').join('')}</select><input id=ivq type=number inputmode=decimal placeholder="Qty"><input id=ivp type=number inputmode=decimal placeholder="${INT=='in'?'Purchase cost (per unit)':'Sale price (per unit)'}"></div><button style="margin:8px 0 0;width:100%" onclick="invAdd()">${INT=='in'?'Add Stock In':'Add Stock Out'}</button></div>
+${ks.length?`<details class=card><summary><b>Stock Summary</b> (${ks.length} items)</summary><table class="xl oxt"><tr><th>Item<th class=c>In<th class=c>Out<th class=c>Remaining<th style="text-align:right">Value</tr>${srows}</table></details>`:''}
+<div class="card" style="padding:0"><div style="padding:10px 12px 4px;display:flex;gap:6px;align-items:center"><b style="flex:1">Ledger</b><select style="margin:0;max-width:180px" onchange="INF=this.value;go('inv')"><option value="">All items</option>${I.items.map(x=>'<option value="'+E(x)+'" '+(x==INF?'selected':'')+'>'+E(x)+'</option>').join('')}</select></div>
+<div style="overflow:auto;max-height:55vh"><table class="xl oxt"><tr><th class=c>Sr#<th>Item<th class=c>Stock In<th class=c>Stock Out<th class=c>Remaining<th style="text-align:right">Purchase / Sale Amt<th style="text-align:right">Total<th></tr>${L.map((r,j)=>{const x=r.x,i_=x.type=='in';return '<tr><td class=c>'+(L.length-j)+'<td><b>'+E(x.item)+'</b><br><small>'+fd(x.date)+'</small><td class=c>'+(i_?f(x.qty):'')+'<td class=c>'+(i_?'':f(x.qty))+'<td class=c><b>'+f(r.rem)+'</b><td style="text-align:right">'+(x.price?f(x.price):'-')+'<br><small>'+(i_?'cost':'sale')+'</small><td style="text-align:right;color:'+(i_?'#b3261e':'#118a4a')+'">'+mt(x)+'<td><button class=r onclick="invDel('+r.i+')">x</button>'}).join('')||'<tr><td colspan=8 class=c>Abhi koi entry nahi</tr>'}</table></div></div>
+<details class=card ${INO?'open':''} ontoggle="INO=this.open?1:0"><summary><b>Manage Items</b></summary><div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">${I.items.map((x,j)=>'<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">'+E(x)+' <button type=button class=r style="margin:0;padding:0 6px" onclick="invIDel('+j+')">x</button></span>').join('')}</div><div style="display:flex;gap:6px"><input id=ivn placeholder="Naya item (e.g. Cable 6mm)" style="margin:0"><button type=button class=vb style="margin:0" onclick="invIAdd()">Add</button></div></details>`};
+(function(){const g=go;go=function(t){if(t=='inv'&&!costOK())t='doc';g(t);try{if(!costOK())return;const nv=document.getElementById('nav');if(!nv||nv.querySelector('[data-inv]'))return;const b=[...nv.querySelectorAll('button')].find(x=>/go\('buy'\)/.test(x.getAttribute('onclick')||''));if(!b)return;b.insertAdjacentHTML('afterend','<button data-inv=1 class="'+(tab=='inv'?'on':'')+'" onclick="go(\'inv\')">Inventory</button>');if(tab=='inv'){nv.querySelectorAll('button.on').forEach(x=>{if(!x.hasAttribute('data-inv'))x.classList.remove('on')})}}catch(e){}}})();
 </script>
 </body></html>
