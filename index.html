@@ -530,7 +530,7 @@ async function shB(){const t=await enc();try{localStorage.nsbkd=today()}catch(e)
  toast('Backup copied - paste it in WhatsApp')}
 async function psB(r){try{const x=await dec($('#bkt').value);if(!x||!x.docs)throw 0;
  if(r){if(!window.__ok){cf('Current data replace hoga. Continue?',()=>{window.__ok=1;psB(1).then(()=>window.__ok=0)},'Replace');return}DB=x}
- else{const ids=new Set(DB.docs.map(d=>d.id));x.docs.forEach(d=>{if(!ids.has(d.id))DB.docs.push(d)});['buy','exp','inc'].forEach(k=>{DB[k]=DB[k]||[];const z=new Set(DB[k].map(e=>JSON.stringify(e)));(x[k]||[]).forEach(e=>{if(!z.has(JSON.stringify(e)))DB[k].push(e)})});DB.seq=Math.max(DB.seq||1,x.seq||1)}
+ else nsMerge(x)
  save();go('cli');toast('Backup loaded')}catch(e){alert('Backup text is not valid - copy the full text and paste it')}}
 /* system size / type + popup before PDF / image / print */
 const STY=['Hybrid','Off-Grid','On-Grid'];
@@ -626,7 +626,7 @@ return sub+`<div class=card><h4>Data Export</h4><div class=bki><b>${DB.docs.leng
 /* backup import (text / file) */
 function bkRead(){const fi=$('#bkf');if(fi&&fi.files&&fi.files[0])return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsText(fi.files[0])});return Promise.resolve(($('#bkt').value||'').trim())}
 async function bkImport(){const rep=$('#bkm').value=='r';try{const x=await dec(await bkRead());if(!x||!Array.isArray(x.docs))throw 0;
- const run=()=>{if(rep){DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1}else{const ids=new Set(DB.docs.map(d=>d.id));x.docs.forEach(d=>{if(!ids.has(d.id))DB.docs.push(d)});['buy','exp','inc'].forEach(k=>{DB[k]=DB[k]||[];const z=new Set(DB[k].map(e=>JSON.stringify(e)));(x[k]||[]).forEach(e=>{if(!z.has(JSON.stringify(e)))DB[k].push(e)})});DB.seq=Math.max(DB.seq||1,x.seq||1)}
+ const run=()=>{if(rep){DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1}else nsMerge(x)
   save();BK='out';go('cli');toast('Data imported')};
  if(rep)cf('Current data replace hoga. Continue?',run,'Replace');else run()}catch(e){alert('Backup text or file is not valid. Copy the full text and paste it, or choose a valid .json file.')}}
 
@@ -1642,7 +1642,7 @@ async function cldUp(){if(CL.busy)return;CL.busy=true;try{toast('Uploading...');
 async function cldFetch(){await cldLoad();if(!CL.user)throw{code:'permission'};const m=await cldMeta();if(!m)throw new Error('No cloud backup found');let t='';for(let i=0;i<(m.n||1);i++){const r=await fsReq('GET','ns_backup/c'+i);if(!r||!r.fields||!r.fields.d)throw new Error('Cloud backup incomplete');t+=r.fields.d.stringValue}const x=await dec(t);if(!x||!Array.isArray(x.docs))throw new Error('Cloud backup invalid');return x}
 function cldDown(rep){cf(rep?'All data on this device will be replaced with the cloud backup. Continue?':'New data from the cloud will be added to this device. Continue?',async()=>{if(CL.busy)return;CL.busy=true;try{toast('Downloading...');const x=await cldFetch();
  if(rep){DB=x;DB.bin=DB.bin||[];DB.buy=DB.buy||[];DB.exp=DB.exp||[]}
- else{const ids=new Set(DB.docs.map(d=>d.id));x.docs.forEach(d=>{if(!ids.has(d.id))DB.docs.push(d)});['buy','exp','inc'].forEach(k=>{DB[k]=DB[k]||[];const z=new Set(DB[k].map(e=>JSON.stringify(e)));(x[k]||[]).forEach(e=>{if(!z.has(JSON.stringify(e)))DB[k].push(e)})});DB.seq=Math.max(DB.seq||1,x.seq||1)}
+ else nsMerge(x)
  save();CL.msg='';toast('Cloud data loaded')}catch(e){CL.msg=cldErr(e);toast(CL.msg)}CL.busy=false;go()},rep?'Replace':'Merge')}
 
 /* ===== Admin: create / delete users inside the app ===== */
@@ -1783,10 +1783,7 @@ async function autoSync(force){
   if(!ASDIRTY&&mt&&ASLAST&&mt.at==ASLAST){ASBUSY=0;return}
   let x=null;try{x=await cldFetch()}catch(e){if(!/No cloud backup/.test((e&&e.message)||''))throw e}
   let add=0;
-  if(x){const ids=new Set(DB.docs.map(d=>d.id)),gd=new Set((DB.bin||[]).filter(b=>b.k=='doc'&&b.it).map(b=>b.it.id)),go2=new Set((DB.bin||[]).filter(b=>b.k!='doc'&&b.it).map(b=>JSON.stringify(b.it)));
-   (x.docs||[]).forEach(d=>{if(!ids.has(d.id)){if(!gd.has(d.id)){DB.docs.push(d);HS[d.id]=hsh(d);add++}}else if(+d.ut>+((DB.docs.find(z=>z.id==d.id)||{}).ut||0)&&!(tab=='doc'&&D&&D.id==d.id)){const i=DB.docs.findIndex(z=>z.id==d.id);DB.docs[i]=d;HS[d.id]=hsh(d);add++}});
-   ['buy','exp','inc'].forEach(k=>{DB[k]=DB[k]||[];const z=new Set(DB[k].map(e=>JSON.stringify(e)));(x[k]||[]).forEach(e=>{const j=JSON.stringify(e);if(!z.has(j)&&!go2.has(j)){DB[k].push(e);add++}})});
-   DB.seq=Math.max(DB.seq||1,x.seq||1);if(add){ASMRG=1;try{save()}finally{ASMRG=0}}}
+  if(x){add=nsMerge(x);if(add){ASMRG=1;try{save()}finally{ASMRG=0}}}
   try{autosave()}catch(e){}
   if(!ASDIRTY){ASLAST=mt?mt.at:0;ASBUSY=0;if(add&&((tab=='doc'&&!D)||tab=='cli'))go();return}
   ASDIRTY=false;
@@ -3046,5 +3043,158 @@ ${ks.length?`<details class=card><summary><b>Stock Summary</b> (${ks.length} ite
 <div style="overflow:auto;max-height:55vh"><table class="xl oxt"><tr><th class=c>Sr#<th>Item<th class=c>Stock In<th class=c>Stock Out<th class=c>Remaining<th style="text-align:right">Purchase / Sale Amt<th style="text-align:right">Total<th></tr>${L.map((r,j)=>{const x=r.x,i_=x.type=='in';return '<tr><td class=c>'+(L.length-j)+'<td><b>'+E(x.item)+'</b><br><small>'+fd(x.date)+'</small><td class=c>'+(i_?f(x.qty):'')+'<td class=c>'+(i_?'':f(x.qty))+'<td class=c><b>'+f(r.rem)+'</b><td style="text-align:right">'+(x.price?f(x.price):'-')+'<br><small>'+(i_?'cost':'sale')+'</small><td style="text-align:right;color:'+(i_?'#b3261e':'#118a4a')+'">'+mt(x)+'<td><button class=r onclick="invDel('+r.i+')">x</button>'}).join('')||'<tr><td colspan=8 class=c>Abhi koi entry nahi</tr>'}</table></div></div>
 <details class=card ${INO?'open':''} ontoggle="INO=this.open?1:0"><summary><b>Manage Items</b></summary><div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">${I.items.map((x,j)=>'<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">'+E(x)+' <button type=button class=r style="margin:0;padding:0 6px" onclick="invIDel('+j+')">x</button></span>').join('')}</div><div style="display:flex;gap:6px"><input id=ivn placeholder="Naya item (e.g. Cable 6mm)" style="margin:0"><button type=button class=vb style="margin:0" onclick="invIAdd()">Add</button></div></details>`};
 (function(){const g=go;go=function(t){if(t=='inv'&&!costOK())t='doc';g(t);try{if(!costOK())return;const nv=document.getElementById('nav');if(!nv||nv.querySelector('[data-inv]'))return;const b=[...nv.querySelectorAll('button')].find(x=>/go\('buy'\)/.test(x.getAttribute('onclick')||''));if(!b)return;b.insertAdjacentHTML('afterend','<button data-inv=1 class="'+(tab=='inv'?'on':'')+'" onclick="go(\'inv\')">Inventory</button>');if(tab=='inv'){nv.querySelectorAll('button.on').forEach(x=>{if(!x.hasAttribute('data-inv'))x.classList.remove('on')})}}catch(e){}}})();
+
+/* ===== Round 14: delete-sync + Recycle Bin on all devices, sync status, payment reminders, inventory<->project cost, low stock, pre-Done check, monthly summary, daily auto backup ===== */
+
+/* ---------- 1) stable ids + synced "deleted" list ---------- */
+function nsH(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return(h>>>0).toString(36)}
+function nsIds(o){
+ [o.buy,o.exp,o.inc,o.inv&&o.inv.tx].forEach(a=>{if(!Array.isArray(a))return;const seen=new Set();a.forEach(e=>{if(e&&e._id)seen.add(e._id)});
+  a.forEach(e=>{if(!e||e._id)return;const b='L'+nsH(JSON.stringify(e));let id=b,j=1;while(seen.has(id)){j++;id=b+'-'+j}e._id=id;seen.add(id)})});
+ (o.bin||[]).forEach(b=>{if(b&&b.it&&b.k!='doc'&&!b.it._id)b.it._id='L'+nsH(JSON.stringify(b.it))})}
+const nsK=(k,it)=>k+':'+(k=='doc'?it.id:it._id);
+function nsPrep(o){o.del=o.del||{};o.bin=o.bin||[];nsIds(o);o.bin.forEach(b=>{if(!b||!b.it)return;const key=nsK(b.k,b.it);if(!o.del[key])o.del[key]={t:b.at||Date.now(),r:0}})}
+nsPrep(DB);
+(function(){const s0=save;save=function(){try{nsPrep(DB)}catch(e){}return s0.apply(this,arguments)}})();
+(function(){const b0=binAdd;binAdd=function(k,it){if(!it)return;try{nsPrep(DB)}catch(e){}b0(k,it);try{nsIds(DB);DB.del[nsK(k,it)]={t:Date.now(),r:0}}catch(e){}}})();
+function binRestore(i){const b=(DB.bin||[])[i];if(!b)return;const key=nsK(b.k,b.it);
+ if(b.k=='doc'){if(!DB.docs.some(x=>x.id==b.it.id))DB.docs.push(b.it)}
+ else if(b.k=='inv'){invD().tx.push(b.it)}
+ else{DB[b.k]=DB[b.k]||[];DB[b.k].push(b.it)}
+ DB.bin.splice(i,1);DB.del=DB.del||{};DB.del[key]={t:Date.now(),r:1};save();go();toast('Restored')}
+function binPurge(i){cf('Delete forever? This cannot be undone.',()=>{const b=DB.bin[i];if(b){DB.del=DB.del||{};DB.del[nsK(b.k,b.it)]={t:Date.now(),r:2}}DB.bin.splice(i,1);save();go()},'Delete forever')}
+function binEmpty(){cf('Empty the Recycle Bin? All items will be deleted permanently.',async()=>{DB.del=DB.del||{};(DB.bin||[]).forEach(b=>{if(b&&b.it)DB.del[nsK(b.k,b.it)]={t:Date.now(),r:2}});DB.bin=[];save();try{const L=(await iq('f','readonly',o=>o.getAll()))||[];for(const x of L)if(x.del)await iq('f','readwrite',o=>o.delete(x.name))}catch(e){}go();toast('Recycle Bin is empty')},'Empty')}
+(function(){const n0=binName;binName=function(b){if(b.k=='inv'){const t=b.it;return'<b>Inventory '+(t.type=='in'?'Stock In':'Stock Out')+'</b> '+E(t.item)+'<br><small>'+E(t.date)+' | Qty '+f(t.qty)+'</small>'}return n0(b)}})();
+
+/* merge cloud/backup data into this device (docs, buy, exp, inc, inventory, bin, deleted list) */
+function nsMerge(x){
+ nsPrep(DB);nsPrep(x);let add=0;const L=DB.del,R=x.del||{};
+ Object.keys(R).forEach(k=>{if(!L[k]||R[k].t>L[k].t)L[k]=R[k]});
+ const gone=k=>{const s=L[k];return !!s&&(s.r==0||s.r==2)};
+ const have=new Set(DB.docs.map(d=>d.id));
+ (x.docs||[]).forEach(d=>{if(gone('doc:'+d.id))return;
+  if(!have.has(d.id)){DB.docs.push(d);HS[d.id]=hsh(d);add++}
+  else{const i=DB.docs.findIndex(z=>z.id==d.id);if(+d.ut>+(DB.docs[i].ut||0)&&!(tab=='doc'&&D&&D.id==d.id)){DB.docs[i]=d;HS[d.id]=hsh(d);add++}}});
+ for(let i=DB.docs.length-1;i>=0;i--){if(gone('doc:'+DB.docs[i].id)&&!(tab=='doc'&&D&&D.id==DB.docs[i].id)){DB.docs.splice(i,1);add++}}
+ const arr=(la,ra,kind)=>{const h=new Set(la.map(e=>e._id));(ra||[]).forEach(e=>{if(!e||gone(kind+':'+e._id))return;if(!h.has(e._id)){la.push(e);h.add(e._id);add++}});for(let i=la.length-1;i>=0;i--){if(gone(kind+':'+la[i]._id)){la.splice(i,1);add++}}};
+ ['buy','exp','inc'].forEach(k=>{DB[k]=DB[k]||[];arr(DB[k],x[k],k)});
+ if(x.inv){const I=invD();(x.inv.items||[]).forEach(it=>{if(!I.items.some(y=>y.toLowerCase()==it.toLowerCase()))I.items.push(it)});I.min=I.min||{};Object.keys(x.inv.min||{}).forEach(k=>{if(!(k in I.min))I.min[k]=x.inv.min[k]});arr(I.tx,x.inv.tx,'inv')}
+ const bk=new Set(DB.bin.map(b=>nsK(b.k,b.it)));
+ (x.bin||[]).forEach(b=>{if(!b||!b.it)return;const key=nsK(b.k,b.it);if(!bk.has(key)&&L[key]&&L[key].r==0){DB.bin.push(b);bk.add(key);add++}});
+ for(let i=DB.bin.length-1;i>=0;i--){const b=DB.bin[i],s=L[nsK(b.k,b.it)];if(!s||s.r!=0)DB.bin.splice(i,1)}
+ DB.seq=Math.max(DB.seq||1,x.seq||1);return add}
+
+/* ---------- 2) sync status pill ---------- */
+function nsSyncSt(){if(!NSU||!SYNCPW)return['Local only','#64748b'];if(ASBUSY||(CL&&CL.busy))return['Syncing...','#0a5594'];if(ASERR)return['Sync error','#b3261e'];if(!navigator.onLine)return['Offline - pending','#b7791f'];if(ASDIRTY)return['Pending','#b7791f'];return['Synced','#118a4a']}
+function nsSyncClick(){const s=nsSyncSt();if(s[0]=='Local only'){toast('Cloud sync is off - login with your username to sync');return}if(s[0]=='Synced'){toast('All data is synced'+(ASLAST?' (last: '+new Date(ASLAST).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+')':''));return}toast('Syncing...');autoSync(true)}
+function nsSyncUpd(){const tb=document.getElementById('tbar');if(!tb)return;let b=document.getElementById('nssy');
+ if(!b){b=document.createElement('button');b.id='nssy';b.type='button';b.onclick=nsSyncClick;b.style.cssText='margin:0 8px 0 0;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;color:#fff;border:0;box-shadow:none;transform:none;flex:none';const sp=tb.querySelector('.tsp');if(sp)sp.insertAdjacentElement('afterend',b);else tb.appendChild(b)}
+ const s=nsSyncSt();b.textContent='● '+s[0];b.style.background=s[1]}
+setInterval(()=>{try{nsSyncUpd()}catch(e){}},1500);
+
+/* ---------- 3) payment reminders (Home) ---------- */
+const nsSnz=id=>{try{return +localStorage.getItem('nsrm_'+id)>Date.now()}catch(e){return false}};
+function nsRemL(){const now=Date.now();return DB.docs.filter(d=>d.type=='Bill'&&!d.done&&r8rem(d)>0&&!nsSnz(d.id)).map(d=>{const pl=pbList(d),last=pl.length?pl.map(p=>p.d).filter(Boolean).sort().pop():d.date;return{d,rem:r8rem(d),last,days:Math.max(0,Math.floor((now-new Date(last||today()).getTime())/864e5))}}).sort((a,b)=>b.days-a.days||b.rem-a.rem)}
+var NSRA=0;
+function nsRemWa(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const t=dt(d),msg='Assalam o Alaikum'+(d.cust?' '+d.cust:'')+',\nNS Solar Energy - Bill '+(d.no||'')+'\nTotal: Rs '+f(t)+'\nReceived: Rs '+f(n(d.recv))+'\nRemaining: Rs '+f(t-n(d.recv))+'\nKindly clear the remaining balance at your earliest convenience. Thank you.';
+ let ph=String(d.phone||'').replace(/\D/g,'');if(!ph){toast('Is customer ka phone number nahi hai');return}if(ph[0]=='0')ph='92'+ph.slice(1);
+ const a=document.createElement('a');a.href='https://wa.me/'+ph+'?text='+encodeURIComponent(msg);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
+function nsRemLater(id){try{localStorage.setItem('nsrm_'+id,String(Date.now()+3*864e5))}catch(e){}toast('3 din baad dobara yaad dilayenge');go('doc')}
+function nsRemCard(){const L=nsRemL();if(!L.length)return'';const tot=L.reduce((s,x)=>s+x.rem,0),S=NSRA?L:L.slice(0,4);
+ return`<div class=card id=nsrem style="border-left:5px solid #b7791f"><h4 style="margin-bottom:4px">Payment reminders (${L.length})</h4><div class=bkh style="margin:0 0 6px">Total pending: <b>Rs ${f(tot)}</b></div>${S.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-top:1px solid #e3e7ec;flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${E(x.d.cust||'No name')}</b><br><small>Bill ${E(x.d.no||'')} | Pending <b style="color:#b3261e">Rs ${f(x.rem)}</b> | ${x.days} din${x.last?' ('+fd(x.last)+')':''}</small></div><button class=wa style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemWa(${x.d.id})">WhatsApp</button><button class=r style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemLater(${x.d.id})">Later</button></div>`).join('')}${L.length>4?`<button class=r style="margin:8px 0 0" onclick="NSRA=${NSRA?0:1};go('doc')">${NSRA?'Show less':'Show all ('+L.length+')'}</button>`:''}</div>`}
+
+/* ---------- 4) inventory: stock-out linked to project cost + low stock ---------- */
+function invAvg(item,upTo){let q=0,c=0;invD().tx.forEach(x=>{if(x.item==item&&x.type=='in'&&(!upTo||x.date<=upTo)){q+=n(x.qty);c+=n(x.qty)*n(x.price)}});return q?c/q:0}
+function invCostFor(id){let s=0;invD().tx.forEach(x=>{if(x.type=='out'&&x.pid==id)s+=n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date))});return Math.round(s)}
+function invAdd(){const I=invD(),it=$('#ivi').value,q=n($('#ivq').value),p=n($('#ivp').value),d=$('#ivd').value||today(),pj=$('#ivj')?+$('#ivj').value||0:0;
+ if(!it){toast('Item select karein');return}if(!(q>0)){toast('Qty likhein');return}
+ const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Stock sirf '+bal+' hai');return}
+ const tx={date:d,item:it,type:INT,qty:q,price:p,t:Date.now()};if(INT=='out'){tx.uc=Math.round(invAvg(it,d)*100)/100;if(pj)tx.pid=pj}
+ I.tx.push(tx);INF=INF&&INF!=it?'':INF;save();
+ const left=bal+(INT=='in'?q:-q),mn=n((I.min||{})[it]);
+ toast(INT=='in'?'Stock In add hua':('Stock Out add hua'+(pj?' - project cost mein Rs '+f(q*tx.uc)+' judi':'')));
+ if(INT=='out'&&left<=mn)setTimeout(()=>toast('Low stock: '+it+' - sirf '+f(left)+' bacha'),2400);
+ go('inv')}
+function invDel(i){cf('Ye entry delete karni hai? Ye Recycle Bin mein jayegi.',()=>{const t=invD().tx[i];if(t)binAdd('inv',t);invD().tx.splice(i,1);save();go('inv')})}
+function invMin(it,v){const I=invD();I.min=I.min||{};if(v===''||v==null)delete I.min[it];else I.min[it]=n(v);save();toast('Low-stock limit save hui');go('inv')}
+function nsLow(){if(!costOK())return[];const I=invD(),C=invCalc(),has=new Set(I.tx.map(x=>x.item));return I.items.filter(it=>has.has(it)).map(it=>({it,rem:C.bal[it]||0,mn:n((I.min||{})[it])})).filter(x=>x.rem<=x.mn)}
+function nsLowCard(){const L=nsLow();if(!L.length)return'';return`<div class=card style="border-left:5px solid #b3261e"><h4 style="margin-bottom:4px">Low stock alert (${L.length})</h4>${L.map(x=>`<div style="padding:4px 0;border-top:1px solid #e3e7ec"><b>${E(x.it)}</b> - <span style="color:#b3261e;font-weight:700">${f(x.rem)} bacha</span> <small>(limit ${f(x.mn)})</small></div>`).join('')}${tab=='inv'?'':'<button class=o style="margin-top:8px" onclick="go(\'inv\')">Open Inventory</button>'}</div>`}
+/* Stock Out: project dropdown, low-stock card, limits editor */
+(function(){const v=V.inv;V.inv=function(){let h=v.call(V);if(!costOK())return h;
+ if(INT=='out'){const P=DB.docs.filter(d=>!d.done).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||b.id-a.id),o='<select id=ivj><option value="">- Project / client (optional) -</option>'+P.map(d=>'<option value="'+d.id+'">'+E(d.no||'-')+' | '+E(d.cust||'No name')+' | '+d.type+'</option>').join('')+'</select>';h=h.replace('<input id=ivp ',o+'<input id=ivp ')}
+ const I=invD();h=nsLowCard()+h+`<details class=card><summary><b>Low-stock limits</b></summary><div class=bkh style="margin:6px 0">Jab remaining stock is limit ya us se kam ho jaye to alert aata hai (khali = sirf 0 par).</div>${I.items.map(x=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="flex:1">${E(x)}</span><input type=number inputmode=decimal value="${(I.min||{})[x]!=null?(I.min||{})[x]:''}" placeholder="0" style="width:90px;margin:0" onchange="invMin(this.dataset.i,this.value)" data-i="${E(x)}"></div>`).join('')}</details>`;return h}})();
+/* ledger rows: show which project a stock-out went to */
+function nsInvRows(){if(tab!='inv')return;document.querySelectorAll('#app button[onclick^="invDel("]').forEach(b=>{const i=+/invDel\((\d+)\)/.exec(b.getAttribute('onclick'))[1],x=invD().tx[i];if(!x||!x.pid)return;const d=DB.docs.find(z=>z.id==x.pid),tr=b.closest('tr');if(!tr||!d)return;const td=tr.children[1];if(td&&!td.querySelector('.nspj'))td.insertAdjacentHTML('beforeend','<br><small class=nspj style="color:#0a5594">&rarr; '+E(d.cust||'No name')+' (cost Rs '+f(n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date)))+')</small>')})}
+/* project cost includes inventory stock used */
+(function(){const ri=r3items;r3items=function(d){const o=ri(d);if(invCostFor(d.id)>0)o.push({k:'inv',l:'Inventory stock used',c:'from Stock Out',a:0});return o};
+ const rv=r3cv;r3cv=function(d,k){return k=='inv'?invCostFor(d.id):rv(d,k)};
+ const fix=(h,d)=>{if(!/'inv',this\.value/.test(h))return h;const c=f(invCostFor(d.id));
+  return h.replace(/<input class=r3i[^>]*oninput="r3ss\(\d+,'inv',this\.value\)">/,'0').replace(/<input class=r3i[^>]*oninput="r3set\(\d+,'inv',this\.value\)">/,c).replace(/<select class=r3s onchange="r3src\(\d+,'inv',this\.value\)">[\s\S]*?<\/select>/,'Inventory')};
+ const t0=r3tbl;r3tbl=function(d,e){return fix(t0(d,e),d)};const c0=r3cpDet;r3cpDet=function(d,e){return fix(c0(d,e),d)}})();
+
+/* ---------- 5) pre-Done cost check ---------- */
+(function(){const rd=r3done;r3done=function(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;
+ const it=r3items(d),sa=it.reduce((s,x)=>s+x.a,0),ca=r3ct(d),w=[];
+ if(ca<=0)w.push('Cost bilkul enter nahi hui - profit sahi nahi dikhega.');
+ else{const mi=it.filter(x=>x.a>0&&r3cv(d,x.k)<=0).map(x=>x.l);if(mi.length)w.push('In lines ki cost enter nahi: '+mi.slice(0,6).map(E).join(', ')+(mi.length>6?' ...':''));
+  if(sa>0&&ca>sa)w.push('Cost selling se zyada hai - nuqsan (loss) Rs '+f(ca-sa));else if(sa>0&&(sa-ca)/sa<0.05)w.push('Margin 5% se kam hai ('+(Math.round((sa-ca)/sa*1000)/10)+'%).')}
+ if(!w.length){rd(id);return}
+ const o=document.createElement('div');o.className='cfm';o.style.zIndex=260;
+ o.innerHTML='<div class=cfb style="max-width:420px;text-align:left"><p><b>Done se pehle cost check</b><br><small>'+E(d.cust||'')+' | Selling Rs '+f(sa)+' | Cost Rs '+f(ca)+' | Profit Rs '+f(sa-ca)+'</small></p><ul style="margin:6px 0 10px 18px;padding:0;font-size:13px;color:#b3261e">'+w.map(x=>'<li>'+x+'</li>').join('')+'</ul><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=nsdc>Cancel</button><button class=o id=nsde>Cost edit karein</button><button id=nsdg>Phir bhi Done</button></div></div>';
+ document.body.appendChild(o);o.querySelector('#nsdc').onclick=()=>o.remove();o.querySelector('#nsde').onclick=()=>{o.remove();r3cpd=id;r3ced=1;go('cpa')};o.querySelector('#nsdg').onclick=()=>{o.remove();rd(id)}}})();
+
+/* ---------- 6) monthly summary page ---------- */
+var NSM=today().slice(0,7);
+function nsMShift(k){const x=new Date(NSM+'-01T00:00:00Z');x.setUTCMonth(x.getUTCMonth()+k,1);NSM=x.toISOString().slice(0,7);go('msum')}
+function nsMData(m){const inM=x=>String(x.date||'').slice(0,7)==m,bills=DB.docs.filter(d=>d.type=='Bill'&&inM(d)),sales=bills.reduce((s,d)=>s+dt(d),0),cost=bills.reduce((s,d)=>s+r3ct(d),0);
+ let rec=0;DB.docs.filter(d=>d.type=='Bill').forEach(d=>pbList(d).forEach(p=>{if(String(p.d||'').slice(0,7)==m)rec+=n(p.a)}));
+ const ex=(DB.exp||[]).filter(inM),et=ex.reduce((s,e)=>s+n(e.amt),0),gp=(DB.buy||[]).filter(inM).reduce((s,e)=>s+n(e.amt),0);
+ return{m,bills,sales,cost,rec,ex,et,gp,pend:bills.reduce((s,d)=>s+r8rem(d),0),net:sales-cost-et-gp,miss:bills.filter(d=>!r3has(d)).length}}
+function nsMLab(m){const x=new Date(m+'-01T00:00:00Z');return x.toLocaleString('en-GB',{month:'long',year:'numeric',timeZone:'UTC'})}
+function nsMHTML(){const M=nsMData(NSM),kp=(l,v,c)=>`<div class="${c||''}"><small>${l}</small><b>Rs ${f(v)}</b></div>`,C={};M.ex.forEach(e=>{const k=e.cat||'Other';C[k]=(C[k]||0)+n(e.amt)});const cs=Object.entries(C).sort((a,b)=>b[1]-a[1]);
+ const tr=[];for(let i=5;i>=0;i--){const x=new Date(NSM+'-01T00:00:00Z');x.setUTCMonth(x.getUTCMonth()-i,1);tr.push(nsMData(x.toISOString().slice(0,7)))}
+ return`<div class="lp rp" dir=ltr><div class=lh dir=ltr><div class=lgb>${LOGOD(58)}</div><div><div class=tg>${LN.en.sub}</div><div class=sl>Clean Energy, Bright Future</div></div><div class=ad>Office # 32 Ground Floor<br>Centre Point Plaza Kohinoor Faisalabad<br>0302 2999000 &amp; 0300 33668888</div></div><div class=ys></div>
+ <div style="padding:0 18px 14px"><div class=r3rt><b>MONTHLY SUMMARY</b><span>${nsMLab(NSM)}</span></div>
+ <div class=r3k>${kp('Sales ('+M.bills.length+' bills)',M.sales)}${kp('Received',M.rec,'g')}${kp('Pending (these bills)',M.pend,M.pend>0?'rd':'')}${kp('Purchase Cost',M.cost+M.gp)}${kp('Expenses',M.et)}${kp('Net Profit',M.net,M.net<0?'rd':'g')}</div>
+ <h5>Bills</h5><table class=r3t><tr><th>Date<th>Customer<th>Billed<th>Received<th>Cost<th>Profit</tr>${M.bills.sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(d=>{const s=dt(d),c=r3ct(d);return`<tr><td>${fd(d.date)}<td>${E(d.cust||'-')}<td class=n>${f(s)}<td class=n>${f(n(d.recv))}<td class=n>${c?f(c):'-'}<td class=n>${c?f(s-c):'-'}`}).join('')||'<tr><td colspan=6>No bills this month'}</table>
+ <div class=r3c2><div><h5>Expenses by category</h5><table class=r3t><tr><th>Category<th>Amount</tr>${cs.map(x=>`<tr><td>${E(x[0])}<td class=n>${f(x[1])}`).join('')||'<tr><td colspan=2>No expenses'}${M.gp?`<tr><td>General purchases<td class=n>${f(M.gp)}`:''}</table></div>
+ <div><h5>Last 6 months</h5><table class=r3t><tr><th>Month<th>Sales<th>Net</tr>${tr.map(x=>`<tr><td>${x.m}<td class=n>${f(x.sales)}<td class=n>${f(x.net)}`).join('')}</table></div></div>
+ ${M.miss?`<div class=r3wn>Note: purchase cost is not entered for ${M.miss} bill(s), so profit may look higher than actual.</div>`:''}
+ <div class=r3ft>Net Profit = Sales - Purchase Cost - Expenses | Generated ${fd(today())}</div></div></div>`}
+V.msum=function(){if(!costOK())return R8LOCK;
+ return`<div class=card><h4>Monthly Summary</h4><div style="display:flex;gap:6px;align-items:center;margin-bottom:8px"><button class=r type=button style="margin:0" onclick="nsMShift(-1)">&#8592;</button><b style="flex:1;text-align:center">${nsMLab(NSM)}</b><button class=r type=button style="margin:0" onclick="nsMShift(1)">&#8594;</button></div><button type=button onclick="nsMPdf()">Save PDF</button> <button type=button class=o onclick="nsMPr()">Print</button></div><div class=card style="padding:0;overflow:hidden"><div id=r3rv>${nsMHTML()}</div></div>`};
+async function nsMPr(){try{await prHTML(nsMHTML())}catch(e){toast('Print failed - use Save PDF')}}
+async function nsMPdf(){toast('Creating PDF...');try{const b=await mkPdf(await cv(nsMHTML()));sendBlob(b,'NS_Monthly_'+NSM+'.pdf','application/pdf')}catch(e){toast('PDF failed - check internet')}}
+window.addEventListener('resize',()=>{if(tab=='msum')r3rfit()});
+
+/* ---------- 7) daily auto backup (device snapshots + optional auto file download) ---------- */
+function nsBakDB(){return new Promise((ok,no)=>{const r=indexedDB.open('nsbak',1);r.onupgradeneeded=()=>r.result.createObjectStore('s',{keyPath:'d'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+const nsBakReq=(m,fx)=>nsBakDB().then(db=>new Promise((ok,no)=>{const t=db.transaction('s',m),r=fx(t.objectStore('s'));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)}));
+async function nsBakSnap(){const t=await enc();await nsBakReq('readwrite',s=>s.put({d:today(),t,n:DB.docs.length,at:Date.now()}));const all=(await nsBakReq('readonly',s=>s.getAll()))||[];all.sort((a,b)=>a.d<b.d?1:-1).slice(10).forEach(x=>nsBakReq('readwrite',s=>s.delete(x.d)))}
+const nsAF=()=>{try{const v=localStorage.getItem('nsabf');return v==null?!MOB:v=='1'}catch(e){return false}};
+async function nsDaily(force){try{if(!DB.docs.length&&!force)return;let last='';try{last=localStorage.getItem('nsabd')||''}catch(e){}if(!force&&last==today())return;
+ await nsBakSnap();try{localStorage.setItem('nsabd',today())}catch(e){}
+ if(nsAF()||force==2){try{bk()}catch(e){}}
+ if(tab=='bkp')go()}catch(e){}}
+function nsAFt(){try{localStorage.setItem('nsabf',nsAF()?'0':'1')}catch(e){}go('bkp')}
+async function nsBakNow(){toast('Backup ban raha hai...');await nsDaily(2);toast('Backup ho gaya')}
+async function nsBakRestore(d){const r=await nsBakReq('readonly',s=>s.get(d));if(!r)return;cf('Is backup ('+fd(d)+') se saara data replace hoga. Continue?',async()=>{try{const x=await dec(r.t);if(!x||!Array.isArray(x.docs))throw 0;DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1;save();go('cli');toast('Backup restore ho gaya')}catch(e){alert('Backup read nahi ho saka')}},'Restore')}
+async function nsBakFile(d){const r=await nsBakReq('readonly',s=>s.get(d));if(!r)return;try{const x=await dec(r.t),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(x)]));a.download='NS_backup_'+d+'.json';a.click()}catch(e){toast('Download fail')}}
+async function nsBakList(){const e=document.getElementById('nsbl');if(!e)return;let L=[];try{L=(await nsBakReq('readonly',s=>s.getAll()))||[]}catch(x){}L.sort((a,b)=>a.d<b.d?1:-1);
+ e.innerHTML=L.length?L.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid #e3e7ec"><span style="flex:1"><b>${fd(x.d)}</b> <small>| ${x.n} docs</small></span><button class=o style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakFile('${x.d}')">File</button><button class=r style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakRestore('${x.d}')">Restore</button></div>`).join(''):'<small>Abhi koi daily backup nahi</small>'}
+(function(){const v=V.bkp;V.bkp=function(){setTimeout(nsBakList,0);return v.call(V)+`<div class=card><h4>Daily Auto Backup</h4><div class=bkh style="margin:0 0 8px">Har roz ek backup is device par khud ban jata hai (aakhri 10 din), cloud ke saath saath.</div><label class=ck style="display:flex;gap:8px;align-items:center"><input type=checkbox ${nsAF()?'checked':''} onchange="nsAFt()" style="width:auto;margin:0"> Roz backup file (.json) khud download ho</label><button class=o style="margin:8px 0" onclick="nsBakNow()">Backup abhi lein</button><div id=nsbl></div></div>`}})();
+setTimeout(()=>nsDaily(),6000);setInterval(()=>nsDaily(),10*60*1000);
+
+/* ---------- 8) page hooks: nav tab, Home cards, sync pill ---------- */
+(function(){const g=go;go=function(t){g.apply(this,arguments);try{
+ const nv=document.getElementById('nav');
+ if(nv&&costOK()&&!nv.querySelector('[data-ms]')){const b=[...nv.querySelectorAll('button')].find(x=>/go\('rep'\)/.test(x.getAttribute('onclick')||''));if(b){b.insertAdjacentHTML('afterend','<button data-ms=1 class="'+(tab=='msum'?'on':'')+'" onclick="go(\'msum\')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span>Monthly Summary</span></button>');if(tab=='msum')nv.querySelectorAll('button.on').forEach(x=>{if(!x.hasAttribute('data-ms'))x.classList.remove('on')})}}
+ if(tab=='inv'){const p=document.getElementById('ptl');if(p)p.textContent='Inventory'}
+ const ib=nv&&nv.querySelector('[data-inv]');if(ib&&!ib.querySelector('svg'))ib.innerHTML='<svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span>Inventory</span>';
+ if(tab=='msum'){const p=document.getElementById('ptl');if(p)p.textContent='Monthly Summary';r3rfit()}
+ if(tab=='doc'&&!D){const a=document.getElementById('app');if(a&&!document.getElementById('nsrem')){const h=nsRemCard()+nsLowCard();if(h){const hero=document.getElementById('hero');if(hero)hero.insertAdjacentHTML('afterend',h);else a.insertAdjacentHTML('afterbegin',h)}}}
+ nsInvRows();nsSyncUpd()}catch(e){}}})();
+try{nsSyncUpd()}catch(e){}
+
 </script>
 </body></html>
