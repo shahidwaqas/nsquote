@@ -3518,12 +3518,25 @@ function nsTopBars(){const tb=document.getElementById('tbar');if(!tb)return;let 
  document.body.classList.add('intabs')}
 /* watermark as a real element (PDF/print capture pseudo-elements badly) */
 const WMKU="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20600%20560'%3E%3Cg%20transform='rotate%28-14%20300%20280%29'%3E%3Cg%20stroke='%23f59e0b'%20stroke-width='9'%20stroke-linecap='round'%3E%3Cline%20x1='370.0'%20y1='170.0'%20x2='398.0'%20y2='170.0'/%3E%3Cline%20x1='360.6'%20y1='205.0'%20x2='384.9'%20y2='219.0'/%3E%3Cline%20x1='335.0'%20y1='230.6'%20x2='349.0'%20y2='254.9'/%3E%3Cline%20x1='300.0'%20y1='240.0'%20x2='300.0'%20y2='268.0'/%3E%3Cline%20x1='265.0'%20y1='230.6'%20x2='251.0'%20y2='254.9'/%3E%3Cline%20x1='239.4'%20y1='205.0'%20x2='215.1'%20y2='219.0'/%3E%3Cline%20x1='230.0'%20y1='170.0'%20x2='202.0'%20y2='170.0'/%3E%3Cline%20x1='239.4'%20y1='135.0'%20x2='215.1'%20y2='121.0'/%3E%3Cline%20x1='265.0'%20y1='109.4'%20x2='251.0'%20y2='85.1'/%3E%3Cline%20x1='300.0'%20y1='100.0'%20x2='300.0'%20y2='72.0'/%3E%3Cline%20x1='335.0'%20y1='109.4'%20x2='349.0'%20y2='85.1'/%3E%3Cline%20x1='360.6'%20y1='135.0'%20x2='384.9'%20y2='121.0'/%3E%3C/g%3E%3Ccircle%20cx='300'%20cy='170'%20r='50'%20fill='%23f59e0b'/%3E%3Cpolygon%20points='150,290%20450,290%20490,400%20110,400'%20fill='%230a5594'/%3E%3Cg%20stroke='%23fff'%20stroke-width='4'%20opacity='.8'%3E%3Cline%20x1='225'%20y1='290'%20x2='195'%20y2='400'/%3E%3Cline%20x1='300'%20y1='290'%20x2='280'%20y2='400'/%3E%3Cline%20x1='375'%20y1='290'%20x2='365'%20y2='400'/%3E%3Cline%20x1='140'%20y1='345'%20x2='460'%20y2='345'/%3E%3C/g%3E%3Cline%20x1='300'%20y1='400'%20x2='300'%20y2='430'%20stroke='%230a5594'%20stroke-width='10'/%3E%3Ctext%20x='300'%20y='488'%20text-anchor='middle'%20font-family='Arial,Helvetica,sans-serif'%20font-weight='800'%20font-size='50'%20letter-spacing='6'%20fill='%230a5594'%3ENS%20SOLAR%20ENERGY%3C/text%3E%3Ctext%20x='300'%20y='522'%20text-anchor='middle'%20font-family='Arial,Helvetica,sans-serif'%20font-size='22'%20letter-spacing='3'%20fill='%23d02129'%3EClean%20Energy,%20Bright%20Future%3C/text%3E%3C/g%3E%3C/svg%3E";
-function wmI(h){if(typeof h!='string'||h.indexOf('class=wmk')>=0)return h;return h.replace(/(<div class="?lp[ ">][^>]*>)/,'$1<img class=wmk alt="" src="'+WMKU+'">')}
+var WMKS=WMKU;
+(function(){try{const u=WMKU.indexOf('<svg ')>=0?WMKU.replace('<svg ',"<svg width='600' height='560' "):WMKU.replace('%3Csvg%20',"%3Csvg%20width=%27600%27%20height=%27560%27%20"),im=new Image();
+ im.onload=function(){try{const c=document.createElement('canvas');c.width=900;c.height=840;c.getContext('2d').drawImage(im,0,0,900,840);WMKS=c.toDataURL('image/png')}catch(e){}};im.src=u}catch(e){}})();
+function wmI(h){if(typeof h!='string'||h.indexOf('class=wmk')>=0)return h;return h.replace(/(<div class="?lp[ ">][^>]*>)/,'$1<img class=wmk alt="" src="'+WMKS+'">')}
 (function(){const d=docHTML;docHTML=function(){return wmI(d.apply(this,arguments))};
  const c=cv;cv=function(){const a=[...arguments];a[0]=wmI(a[0]);return c.apply(this,a)};
  const p=prHTML;prHTML=function(){const a=[...arguments];a[0]=wmI(a[0]);return p.apply(this,a)}})();
 /* counter-sale bills: cost comes from stock, so no separate Cost / Profit button in the editor */
 (function(){const o=V.doc;V.doc=function(){let h=o.call(V);if(D&&D.cs)h=h.replace(/<button class=o onclick="sv\(1\);r3bd=D\.id;go\('buy'\)">(Cost \/ Profit|Purchase Cost)<\/button>/,'');return h}})();
+/* visible reason when cloud sync is off / failed / offline */
+function nsRsn(){const tb=document.getElementById('tbar');if(!tb)return;let b=document.getElementById('nsrsn');const s=nsSyncSt()[0],bad=s=='Local only'||s=='Sync error'||s.startsWith('Offline');
+ if(!bad||tab=='sync'){if(b)b.remove();return}
+ let m=nsSyncWhy(s).replace(/ Tap Sync now to retry\./,''),c=['#eef2f7','#334155'];
+ if(s=='Sync error'){c=['#fdecea','#8a1c14'];if(NSLE)m='Sync stopped: '+NSLE.m.replace(/^Auto sync pending:\s*/i,'')+' ('+new Date(NSLE.t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+')'}
+ else if(s.startsWith('Offline'))c=['#fff6e0','#7a5200'];
+ else m='Cloud sync is off. '+m;
+ if(!b){b=document.createElement('div');b.id='nsrsn';b.onclick=()=>go('sync');tb.insertAdjacentElement('afterend',b)}
+ if(b.dataset.t!==m){b.dataset.t=m;b.style.cssText='padding:7px 16px;font-size:12.5px;line-height:1.4;cursor:pointer;background:'+c[0]+';color:'+c[1]+';border-bottom:1px solid rgba(0,0,0,.08)';b.innerHTML='<b>'+(s=='Sync error'?'Sync error':s.startsWith('Offline')?'Offline':'Local only')+':</b> '+E(m)+' <u>Details</u>'}}
+setInterval(()=>{try{nsRsn()}catch(e){}},1500);try{nsRsn()}catch(e){}
 
 </script>
 </body></html>
