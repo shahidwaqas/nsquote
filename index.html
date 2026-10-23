@@ -529,7 +529,7 @@ async function shB(){const t=await enc();try{localStorage.nsbkd=today()}catch(e)
  try{await navigator.clipboard.writeText(t)}catch(e){const a=$('#bkt');a.value=t;a.select();document.execCommand('copy')}
  toast('Backup copied - paste it in WhatsApp')}
 async function psB(r){try{const x=await dec($('#bkt').value);if(!x||!x.docs)throw 0;
- if(r){if(!window.__ok){cf('Current data replace hoga. Continue?',()=>{window.__ok=1;psB(1).then(()=>window.__ok=0)},'Replace');return}DB=x}
+ if(r){if(!window.__ok){cf('Current data will be replaced. Continue?',()=>{window.__ok=1;psB(1).then(()=>window.__ok=0)},'Replace');return}DB=x}
  else nsMerge(x)
  save();go('cli');toast('Backup loaded')}catch(e){alert('Backup text is not valid - copy the full text and paste it')}}
 /* system size / type + popup before PDF / image / print */
@@ -628,7 +628,7 @@ function bkRead(){const fi=$('#bkf');if(fi&&fi.files&&fi.files[0])return new Pro
 async function bkImport(){const rep=$('#bkm').value=='r';try{const x=await dec(await bkRead());if(!x||!Array.isArray(x.docs))throw 0;
  const run=()=>{if(rep){DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1}else nsMerge(x)
   save();BK='out';go('cli');toast('Data imported')};
- if(rep)cf('Current data replace hoga. Continue?',run,'Replace');else run()}catch(e){alert('Backup text or file is not valid. Copy the full text and paste it, or choose a valid .json file.')}}
+ if(rep)cf('Current data will be replaced. Continue?',run,'Replace');else run()}catch(e){alert('Backup text or file is not valid. Copy the full text and paste it, or choose a valid .json file.')}}
 
 /* excel (SheetJS loaded on demand) */
 function loadX(){return new Promise((ok,no)=>{if(window.XLSX)return ok();const L=['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'];let i=0;const nx=()=>{if(i>=L.length)return no(new Error('lib'));const e=document.createElement('script');e.src=L[i++];e.onload=()=>window.XLSX?ok():nx();e.onerror=()=>{e.remove();nx()};document.head.appendChild(e)};nx()})}
@@ -2757,7 +2757,7 @@ function r3cpDet(d,edit){const it=r3items(d),c=d.cost||{v:{},s:{}};let sa=0,ca=0
  +`<div class=r3sv>${edit?`<button type=button onclick="r3cpSave(${d.id})">Save</button>`:`<button type=button class=o onclick="r3ced=1;go('cpa')">Edit</button>`}<button type=button class=r onclick="r3cpd=0;r3ced=0;go('cpa')">&#8592; Back</button><button type=button class=o onclick="r3cm=1;go('cpa')">Comparison view</button><button type=button class=o onclick="${edit?'r3cpSave('+d.id+');':''}viewDoc(${d.id},'cpa')">View ${d.type}</button></div>`
  +(edit?`<div class=r3in style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>Quick fill:</b> Profit % <input id=r3qp type=number inputmode=decimal placeholder="10" style="width:80px"><button type=button class=o onclick="r3bd=${d.id};r3qf(${d.id})">Fill all</button></div>`:'')
  +`<div class=r3w><table class=r3t><tr><th>Item<th>Selling (Rs)<th>Purchase Cost (Rs)<th>Source<th>Margin (Rs)</tr>${rows}<tr class=r3tr><td>Total<td class=n id=r3ts>${f(sa)}<td class=n id=r3tc>${f(ca)}<td>Margin %<td class=n><span id=r3tg>${ca?f(sa-ca):'-'}</span> | <span id=r3tp>${ca&&sa?(Math.round((sa-ca)/sa*1000)/10)+'%':'-'}</span></tr></table></div>`
- +(edit?'<div class=r3hn>Wrong rate laga ho to Selling (Rs) yahin change karein: quotation / bill, preview aur PDF mein bhi usi waqt update ho jata hai. Cost private hai, quotation / bill par nazar nahi aata.</div>':'')}
+ +(edit?'<div class=r3hn>If a rate is wrong, change Selling (Rs) here: the quotation / bill, preview and PDF update immediately. Cost is private and is never shown on the quotation / bill.</div>':'')}
 (function(){const o=V.cpa;V.cpa=function(){const d=DB.docs.find(x=>x.id==r3cpd);if(!d||!costOK()||r3cm)return o.call(V);
  return '<div class=card><h4>'+(r3ced?'Edit Cost / Rate':'Cost / Profit')+'</h4>'+r3cpDet(d,r3ced)+'</div>'}})();
 </script>
@@ -2777,15 +2777,15 @@ function r3fin(d,disc){const t=today();if(disc>0){d.disc=n(d.disc)+disc;d.discAu
  const sm=r3same(d);if(sm.length)r3dup(d,sm);else go('cpa')}
 function r3dup(d,sm){const o=document.createElement('div');o.className='cfm';o.style.zIndex=260;
  const ls=sm.map(x=>'<label style="display:flex;gap:6px;align-items:flex-start;text-align:left;margin:4px 0;font-size:13px"><input type=checkbox class=r3dk value="'+x.id+'" '+(x.type=='Quotation'?'checked':'')+' style="margin-top:3px"><span><b>'+E(x.type)+' '+E(x.no||'')+'</b> - '+E(x.cust||'')+' '+E(x.phone||'')+'<br><small>'+E(fd(x.date)||'')+' | Total Rs '+f(dt(x))+(x.type=='Bill'?' | Received Rs '+f(n(x.recv)):'')+'</small></span></label>').join('');
- o.innerHTML='<div class=cfb style="max-width:420px;max-height:80vh;overflow:auto"><p><b>Same naam/mobile ke '+sm.length+' aur document mile</b><br>Merge karne par sirf ye Done wali quotation ke rate/products rahenge, selected baqi sab Recycle Bin mein chale jayenge. (Bills default unselected hain.)</p>'+ls+'<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px"><button class=r id=r3k>Keep</button><button class=o id=r3m>Merge (baqi hata do)</button></div></div>';
+ o.innerHTML='<div class=cfb style="max-width:420px;max-height:80vh;overflow:auto"><p><b>'+sm.length+' more document(s) found with the same name / mobile</b><br>On merge, only this Done quotation keeps its rates/products; all other selected documents move to the Recycle Bin. (Bills are unselected by default.)</p>'+ls+'<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px"><button class=r id=r3k>Keep</button><button class=o id=r3m>Merge (remove the rest)</button></div></div>';
  document.body.appendChild(o);
  o.querySelector('#r3k').onclick=()=>{o.remove();go('cpa')};
- o.querySelector('#r3m').onclick=()=>{const l=[...o.querySelectorAll('.r3dk:checked')].map(e=>DB.docs.find(x=>x.id==e.value)).filter(Boolean);l.forEach(x=>{binAdd('doc',x);const i=DB.docs.findIndex(y=>y.id==x.id);if(i>=0)DB.docs.splice(i,1)});o.remove();save();toast(l.length+' document merge hue (Recycle Bin mein)');go('cpa')}}
+ o.querySelector('#r3m').onclick=()=>{const l=[...o.querySelectorAll('.r3dk:checked')].map(e=>DB.docs.find(x=>x.id==e.value)).filter(Boolean);l.forEach(x=>{binAdd('doc',x);const i=DB.docs.findIndex(y=>y.id==x.id);if(i>=0)DB.docs.splice(i,1)});o.remove();save();toast(l.length+' document(s) merged (moved to Recycle Bin)');go('cpa')}}
 function r3done(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const rem=d.type=='Bill'?Math.max(dt(d)-n(d.recv),0):0;
  let m='Mark "'+(d.cust||'this project')+'" as Done? It will be removed from Home, Client List and other tabs and will stay only in Cost / Profit Analysis (Done).';
  if(!r3has(d))m='Cost is not entered yet. '+m;
  if(rem>0){const o=document.createElement('div');o.className='cfm';
-  o.innerHTML='<div class=cfb><p>Payment of Rs '+f(rem)+' is still pending. '+E(m)+'</p><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=r3c>Cancel</button><button class=r id=r3n>Done (pending rakhein)</button><button class=o id=r3y>Done + Special Discount Rs '+f(rem)+'</button></div></div>';
+  o.innerHTML='<div class=cfb><p>Payment of Rs '+f(rem)+' is still pending. '+E(m)+'</p><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=r3c>Cancel</button><button class=r id=r3n>Done (keep pending)</button><button class=o id=r3y>Done + Special Discount Rs '+f(rem)+'</button></div></div>';
   document.body.appendChild(o);o.querySelector('#r3c').onclick=()=>o.remove();o.querySelector('#r3n').onclick=()=>{o.remove();r3fin(d,0)};o.querySelector('#r3y').onclick=()=>{o.remove();r3fin(d,rem)};return}
  cf(m,()=>r3fin(d,0),'Mark Done')}
 function r3undone(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;cf('Move this project back to the normal lists?'+(n(d.discAuto)?' Special Discount Rs '+f(d.discAuto)+' will be reversed.':''),()=>{if(n(d.discAuto)){d.disc=Math.max(n(d.disc)-n(d.discAuto),0);if(!d.disc)delete d.disc;delete d.discAuto}delete d.done;delete d.doneAt;if(d.fromId){const q=DB.docs.find(x=>x.id==d.fromId);if(q){delete q.done;delete q.doneAt}}
@@ -2949,7 +2949,7 @@ function r3cpDet(d,edit){const it=r3items(d),c=d.cost||{v:{},s:{}};let sa=0,ca=0
  +`<div class=r3sv>${edit?`<button type=button onclick="r3cpSave(${d.id})">Save</button>`:`<button type=button class=o onclick="r3ced=1;go('cpa')">Edit</button>`}<button type=button class=r onclick="r3cpd=0;r3ced=0;go('cpa')">&#8592; Back</button><button type=button class=o onclick="r3cm=1;go('cpa')">Comparison view</button><button type=button class=o onclick="${edit?'r3cpSave('+d.id+');':''}viewDoc(${d.id},'cpa')">View ${d.type}</button></div>`
  +(edit?`<div class=r3in style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>Quick fill:</b> Profit % <input id=r3qp type=number inputmode=decimal placeholder="10" style="width:80px"><button type=button class=o onclick="r3bd=${d.id};r3qf(${d.id})">Fill all</button></div>`:'')
  +`<div class=r3w><table class=r3t><tr><th>Item<th>Selling (Rs)<th>Purchase Cost (Rs)<th>Source<th>Margin (Rs)</tr>${rows}<tr class=r3tr><td>Total<td class=n id=r3ts>${f(sa)}<td class=n id=r3tc>${f(ca)}<td>Margin %<td class=n><span id=r3tg>${ca?f(sa-ca):'-'}</span> | <span id=r3tp>${ca&&sa?(Math.round((sa-ca)/sa*1000)/10)+'%':'-'}</span></tr></table></div>`
- +(edit?'<div class=r3hn>Wrong rate laga ho to Selling (Rs) yahin change karein: quotation / bill, preview aur PDF mein bhi usi waqt update ho jata hai. Cost private hai, quotation / bill par nazar nahi aata.</div>':'')}
+ +(edit?'<div class=r3hn>If a rate is wrong, change Selling (Rs) here: the quotation / bill, preview and PDF update immediately. Cost is private and is never shown on the quotation / bill.</div>':'')}
 (function(){const o=V.cpa;V.cpa=function(){const d=DB.docs.find(x=>x.id==r3cpd);if(!d||!costOK()||r3cm)return o.call(V);
  return '<div class=card><h4>'+(r3ced?'Edit Cost / Rate':'Cost / Profit')+'</h4>'+r3cpDet(d,r3ced)+'</div>'}})();
 </script>
@@ -3025,12 +3025,12 @@ function invD(){DB.inv=DB.inv||{items:INVD.slice(),tx:[]};return DB.inv}
 function invCalc(){const I=invD(),bal={},rows=[];I.tx.map((x,i)=>({x,i})).sort((a,b)=>a.x.date<b.x.date?-1:a.x.date>b.x.date?1:(a.x.t||0)-(b.x.t||0)).forEach(({x,i})=>{const q=n(x.qty);bal[x.item]=(bal[x.item]||0)+(x.type=='in'?q:-q);rows.push({x,i,rem:bal[x.item]})});return{rows,bal}}
 function invT(t){INT=t;go('inv')}
 function invAdd(){const I=invD(),it=$('#ivi').value,q=n($('#ivq').value),p=n($('#ivp').value),d=$('#ivd').value||today();
- if(!it){toast('Item select karein');return}if(!(q>0)){toast('Qty likhein');return}
- const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Stock sirf '+bal+' hai');return}
- I.tx.push({date:d,item:it,type:INT,qty:q,price:p,t:Date.now()});INF=INF&&INF!=it?'':INF;save();toast(INT=='in'?'Stock In add hua':'Stock Out add hua');go('inv')}
-function invDel(i){cf('Ye entry delete karni hai?',()=>{invD().tx.splice(i,1);save();go('inv')})}
-function invIAdd(){const el=$('#ivn'),v=(el.value||'').trim();if(!v)return;const I=invD();if(I.items.some(x=>x.toLowerCase()==v.toLowerCase())){toast('Pehle se maujood');return}I.items.push(v);save();INO=1;go('inv')}
-function invIDel(j){const I=invD(),it=I.items[j];if(I.tx.some(x=>x.item==it)){toast('Is item ki entries hain, delete nahi ho sakta');return}cf('"'+it+'" list se hata dein?',()=>{I.items.splice(j,1);save();INO=1;go('inv')},'Remove')}
+ if(!it){toast('Select an item');return}if(!(q>0)){toast('Enter quantity');return}
+ const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Only '+bal+' in stock');return}
+ I.tx.push({date:d,item:it,type:INT,qty:q,price:p,t:Date.now()});INF=INF&&INF!=it?'':INF;save();toast(INT=='in'?'Stock In added':'Stock Out added');go('inv')}
+function invDel(i){cf('Delete this entry?',()=>{invD().tx.splice(i,1);save();go('inv')})}
+function invIAdd(){const el=$('#ivn'),v=(el.value||'').trim();if(!v)return;const I=invD();if(I.items.some(x=>x.toLowerCase()==v.toLowerCase())){toast('Already in list');return}I.items.push(v);save();INO=1;go('inv')}
+function invIDel(j){const I=invD(),it=I.items[j];if(I.tx.some(x=>x.item==it)){toast('This item has entries, so it cannot be deleted');return}cf('Remove "'+it+'" from the list?',()=>{I.items.splice(j,1);save();INO=1;go('inv')},'Remove')}
 V.inv=function(){if(!costOK())return R8LOCK;const I=invD(),C=invCalc(),mt=x=>x.price?f(n(x.qty)*n(x.price)):'-';
  const sm={};I.tx.forEach(x=>{const s=sm[x.item]=sm[x.item]||{i:0,o:0,ci:0};if(x.type=='in'){s.i+=n(x.qty);s.ci+=n(x.qty)*n(x.price)}else s.o+=n(x.qty)});
  const ks=Object.keys(sm);let sv=0;const srows=ks.map(k=>{const s=sm[k],rem=s.i-s.o,av=s.i?s.ci/s.i:0,v=Math.round(rem*av);sv+=v;return '<tr><td>'+E(k)+'<td class=c>'+f(s.i)+'<td class=c>'+f(s.o)+'<td class=c style="'+(rem<=0?'color:#b3261e;font-weight:700':'font-weight:700')+'">'+f(rem)+'<td style="text-align:right">'+f(v)}).join('');
@@ -3040,8 +3040,8 @@ V.inv=function(){if(!costOK())return R8LOCK;const I=invD(),C=invCalc(),mt=x=>x.p
 <div class=oxg><input id=ivd type=date value="${today()}"><select id=ivi><option value="">- Item select -</option>${I.items.map(x=>'<option value="'+E(x)+'" '+(x==INF?'selected':'')+'>'+E(x)+'</option>').join('')}</select><input id=ivq type=number inputmode=decimal placeholder="Qty"><input id=ivp type=number inputmode=decimal placeholder="${INT=='in'?'Purchase cost (per unit)':'Sale price (per unit)'}"></div><button style="margin:8px 0 0;width:100%" onclick="invAdd()">${INT=='in'?'Add Stock In':'Add Stock Out'}</button></div>
 ${ks.length?`<details class=card><summary><b>Stock Summary</b> (${ks.length} items)</summary><table class="xl oxt"><tr><th>Item<th class=c>In<th class=c>Out<th class=c>Remaining<th style="text-align:right">Value</tr>${srows}</table></details>`:''}
 <div class="card" style="padding:0"><div style="padding:10px 12px 4px;display:flex;gap:6px;align-items:center"><b style="flex:1">Ledger</b><select style="margin:0;max-width:180px" onchange="INF=this.value;go('inv')"><option value="">All items</option>${I.items.map(x=>'<option value="'+E(x)+'" '+(x==INF?'selected':'')+'>'+E(x)+'</option>').join('')}</select></div>
-<div style="overflow:auto;max-height:55vh"><table class="xl oxt"><tr><th class=c>Sr#<th>Item<th class=c>Stock In<th class=c>Stock Out<th class=c>Remaining<th style="text-align:right">Purchase / Sale Amt<th style="text-align:right">Total<th></tr>${L.map((r,j)=>{const x=r.x,i_=x.type=='in';return '<tr><td class=c>'+(L.length-j)+'<td><b>'+E(x.item)+'</b><br><small>'+fd(x.date)+'</small><td class=c>'+(i_?f(x.qty):'')+'<td class=c>'+(i_?'':f(x.qty))+'<td class=c><b>'+f(r.rem)+'</b><td style="text-align:right">'+(x.price?f(x.price):'-')+'<br><small>'+(i_?'cost':'sale')+'</small><td style="text-align:right;color:'+(i_?'#b3261e':'#118a4a')+'">'+mt(x)+'<td><button class=r onclick="invDel('+r.i+')">x</button>'}).join('')||'<tr><td colspan=8 class=c>Abhi koi entry nahi</tr>'}</table></div></div>
-<details class=card ${INO?'open':''} ontoggle="INO=this.open?1:0"><summary><b>Manage Items</b></summary><div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">${I.items.map((x,j)=>'<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">'+E(x)+' <button type=button class=r style="margin:0;padding:0 6px" onclick="invIDel('+j+')">x</button></span>').join('')}</div><div style="display:flex;gap:6px"><input id=ivn placeholder="Naya item (e.g. Cable 6mm)" style="margin:0"><button type=button class=vb style="margin:0" onclick="invIAdd()">Add</button></div></details>`};
+<div style="overflow:auto;max-height:55vh"><table class="xl oxt"><tr><th class=c>Sr#<th>Item<th class=c>Stock In<th class=c>Stock Out<th class=c>Remaining<th style="text-align:right">Purchase / Sale Amt<th style="text-align:right">Total<th></tr>${L.map((r,j)=>{const x=r.x,i_=x.type=='in';return '<tr><td class=c>'+(L.length-j)+'<td><b>'+E(x.item)+'</b><br><small>'+fd(x.date)+'</small><td class=c>'+(i_?f(x.qty):'')+'<td class=c>'+(i_?'':f(x.qty))+'<td class=c><b>'+f(r.rem)+'</b><td style="text-align:right">'+(x.price?f(x.price):'-')+'<br><small>'+(i_?'cost':'sale')+'</small><td style="text-align:right;color:'+(i_?'#b3261e':'#118a4a')+'">'+mt(x)+'<td><button class=r onclick="invDel('+r.i+')">x</button>'}).join('')||'<tr><td colspan=8 class=c>No entries yet</tr>'}</table></div></div>
+<details class=card ${INO?'open':''} ontoggle="INO=this.open?1:0"><summary><b>Manage Items</b></summary><div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">${I.items.map((x,j)=>'<span style="background:#eef3f9;border-radius:16px;padding:4px 6px 4px 10px;font-size:12.5px">'+E(x)+' <button type=button class=r style="margin:0;padding:0 6px" onclick="invIDel('+j+')">x</button></span>').join('')}</div><div style="display:flex;gap:6px"><input id=ivn placeholder="New item (e.g. Cable 6mm)" style="margin:0"><button type=button class=vb style="margin:0" onclick="invIAdd()">Add</button></div></details>`};
 (function(){const g=go;go=function(t){if(t=='inv'&&!costOK())t='doc';g(t);try{if(!costOK())return;const nv=document.getElementById('nav');if(!nv||nv.querySelector('[data-inv]'))return;const b=[...nv.querySelectorAll('button')].find(x=>/go\('buy'\)/.test(x.getAttribute('onclick')||''));if(!b)return;b.insertAdjacentHTML('afterend','<button data-inv=1 class="'+(tab=='inv'?'on':'')+'" onclick="go(\'inv\')">Inventory</button>');if(tab=='inv'){nv.querySelectorAll('button.on').forEach(x=>{if(!x.hasAttribute('data-inv'))x.classList.remove('on')})}}catch(e){}}})();
 
 /* ===== Round 14: delete-sync + Recycle Bin on all devices, sync status, payment reminders, inventory<->project cost, low stock, pre-Done check, monthly summary, daily auto backup ===== */
@@ -3097,32 +3097,32 @@ const nsSnz=id=>{try{return +localStorage.getItem('nsrm_'+id)>Date.now()}catch(e
 function nsRemL(){const now=Date.now();return DB.docs.filter(d=>d.type=='Bill'&&!d.done&&r8rem(d)>0&&!nsSnz(d.id)).map(d=>{const pl=pbList(d),last=pl.length?pl.map(p=>p.d).filter(Boolean).sort().pop():d.date;return{d,rem:r8rem(d),last,days:Math.max(0,Math.floor((now-new Date(last||today()).getTime())/864e5))}}).sort((a,b)=>b.days-a.days||b.rem-a.rem)}
 var NSRA=0;
 function nsRemWa(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;const t=dt(d),msg='Assalam o Alaikum'+(d.cust?' '+d.cust:'')+',\nNS Solar Energy - Bill '+(d.no||'')+'\nTotal: Rs '+f(t)+'\nReceived: Rs '+f(n(d.recv))+'\nRemaining: Rs '+f(t-n(d.recv))+'\nKindly clear the remaining balance at your earliest convenience. Thank you.';
- let ph=String(d.phone||'').replace(/\D/g,'');if(!ph){toast('Is customer ka phone number nahi hai');return}if(ph[0]=='0')ph='92'+ph.slice(1);
+ let ph=String(d.phone||'').replace(/\D/g,'');if(!ph){toast('This customer has no phone number');return}if(ph[0]=='0')ph='92'+ph.slice(1);
  const a=document.createElement('a');a.href='https://wa.me/'+ph+'?text='+encodeURIComponent(msg);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
-function nsRemLater(id){try{localStorage.setItem('nsrm_'+id,String(Date.now()+3*864e5))}catch(e){}toast('3 din baad dobara yaad dilayenge');go('doc')}
+function nsRemLater(id){try{localStorage.setItem('nsrm_'+id,String(Date.now()+3*864e5))}catch(e){}toast('Will remind again in 3 days');go('doc')}
 function nsRemCard(){const L=nsRemL();if(!L.length)return'';const tot=L.reduce((s,x)=>s+x.rem,0),S=NSRA?L:L.slice(0,4);
- return`<div class=card id=nsrem style="border-left:5px solid #b7791f"><h4 style="margin-bottom:4px">Payment reminders (${L.length})</h4><div class=bkh style="margin:0 0 6px">Total pending: <b>Rs ${f(tot)}</b></div>${S.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-top:1px solid #e3e7ec;flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${E(x.d.cust||'No name')}</b><br><small>Bill ${E(x.d.no||'')} | Pending <b style="color:#b3261e">Rs ${f(x.rem)}</b> | ${x.days} din${x.last?' ('+fd(x.last)+')':''}</small></div><button class=wa style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemWa(${x.d.id})">WhatsApp</button><button class=r style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemLater(${x.d.id})">Later</button></div>`).join('')}${L.length>4?`<button class=r style="margin:8px 0 0" onclick="NSRA=${NSRA?0:1};go('doc')">${NSRA?'Show less':'Show all ('+L.length+')'}</button>`:''}</div>`}
+ return`<div class=card id=nsrem style="border-left:5px solid #b7791f"><h4 style="margin-bottom:4px">Payment reminders (${L.length})</h4><div class=bkh style="margin:0 0 6px">Total pending: <b>Rs ${f(tot)}</b></div>${S.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-top:1px solid #e3e7ec;flex-wrap:wrap"><div style="flex:1;min-width:150px"><b>${E(x.d.cust||'No name')}</b><br><small>Bill ${E(x.d.no||'')} | Pending <b style="color:#b3261e">Rs ${f(x.rem)}</b> | ${x.days} days${x.last?' ('+fd(x.last)+')':''}</small></div><button class=wa style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemWa(${x.d.id})">WhatsApp</button><button class=r style="margin:0;padding:6px 10px;font-size:12px" onclick="nsRemLater(${x.d.id})">Later</button></div>`).join('')}${L.length>4?`<button class=r style="margin:8px 0 0" onclick="NSRA=${NSRA?0:1};go('doc')">${NSRA?'Show less':'Show all ('+L.length+')'}</button>`:''}</div>`}
 
 /* ---------- 4) inventory: stock-out linked to project cost + low stock ---------- */
 function invAvg(item,upTo){let q=0,c=0;invD().tx.forEach(x=>{if(x.item==item&&x.type=='in'&&(!upTo||x.date<=upTo)){q+=n(x.qty);c+=n(x.qty)*n(x.price)}});return q?c/q:0}
 function invCostFor(id){let s=0;invD().tx.forEach(x=>{if(x.type=='out'&&x.pid==id)s+=n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date))});return Math.round(s)}
 function invAdd(){const I=invD(),it=$('#ivi').value,q=n($('#ivq').value),p=n($('#ivp').value),d=$('#ivd').value||today(),pj=$('#ivj')?+$('#ivj').value||0:0;
- if(!it){toast('Item select karein');return}if(!(q>0)){toast('Qty likhein');return}
- const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Stock sirf '+bal+' hai');return}
+ if(!it){toast('Select an item');return}if(!(q>0)){toast('Enter quantity');return}
+ const bal=invCalc().bal[it]||0;if(INT=='out'&&q>bal){toast('Only '+bal+' in stock');return}
  const tx={date:d,item:it,type:INT,qty:q,price:p,t:Date.now()};if(INT=='out'){tx.uc=Math.round(invAvg(it,d)*100)/100;if(pj)tx.pid=pj}
  I.tx.push(tx);INF=INF&&INF!=it?'':INF;save();
  const left=bal+(INT=='in'?q:-q),mn=n((I.min||{})[it]);
- toast(INT=='in'?'Stock In add hua':('Stock Out add hua'+(pj?' - project cost mein Rs '+f(q*tx.uc)+' judi':'')));
- if(INT=='out'&&left<=mn)setTimeout(()=>toast('Low stock: '+it+' - sirf '+f(left)+' bacha'),2400);
+ toast(INT=='in'?'Stock In added':('Stock Out added'+(pj?' - Rs '+f(q*tx.uc)+' added to project cost':'')));
+ if(INT=='out'&&left<=mn)setTimeout(()=>toast('Low stock: '+it+' - only '+f(left)+' left'),2400);
  go('inv')}
-function invDel(i){cf('Ye entry delete karni hai? Ye Recycle Bin mein jayegi.',()=>{const t=invD().tx[i];if(t)binAdd('inv',t);invD().tx.splice(i,1);save();go('inv')})}
+function invDel(i){cf('Delete this entry? It will move to the Recycle Bin.',()=>{const t=invD().tx[i];if(t)binAdd('inv',t);invD().tx.splice(i,1);save();go('inv')})}
 function invMin(it,v){const I=invD();I.min=I.min||{};if(v===''||v==null)delete I.min[it];else I.min[it]=n(v);save();toast('Low-stock limit save hui');go('inv')}
 function nsLow(){if(!costOK())return[];const I=invD(),C=invCalc(),has=new Set(I.tx.map(x=>x.item));return I.items.filter(it=>has.has(it)).map(it=>({it,rem:C.bal[it]||0,mn:n((I.min||{})[it])})).filter(x=>x.rem<=x.mn)}
-function nsLowCard(){const L=nsLow();if(!L.length)return'';return`<div class=card style="border-left:5px solid #b3261e"><h4 style="margin-bottom:4px">Low stock alert (${L.length})</h4>${L.map(x=>`<div style="padding:4px 0;border-top:1px solid #e3e7ec"><b>${E(x.it)}</b> - <span style="color:#b3261e;font-weight:700">${f(x.rem)} bacha</span> <small>(limit ${f(x.mn)})</small></div>`).join('')}${tab=='inv'?'':'<button class=o style="margin-top:8px" onclick="go(\'inv\')">Open Inventory</button>'}</div>`}
+function nsLowCard(){const L=nsLow();if(!L.length)return'';return`<div class=card style="border-left:5px solid #b3261e"><h4 style="margin-bottom:4px">Low stock alert (${L.length})</h4>${L.map(x=>`<div style="padding:4px 0;border-top:1px solid #e3e7ec"><b>${E(x.it)}</b> - <span style="color:#b3261e;font-weight:700">${f(x.rem)} left</span> <small>(limit ${f(x.mn)})</small></div>`).join('')}${tab=='inv'?'':'<button class=o style="margin-top:8px" onclick="go(\'inv\')">Open Inventory</button>'}</div>`}
 /* Stock Out: project dropdown, low-stock card, limits editor */
 (function(){const v=V.inv;V.inv=function(){let h=v.call(V);if(!costOK())return h;
  if(INT=='out'){const P=DB.docs.filter(d=>!d.done).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||b.id-a.id),o='<select id=ivj><option value="">- Project / client (optional) -</option>'+P.map(d=>'<option value="'+d.id+'">'+E(d.no||'-')+' | '+E(d.cust||'No name')+' | '+d.type+'</option>').join('')+'</select>';h=h.replace('<input id=ivp ',o+'<input id=ivp ')}
- const I=invD();h=nsLowCard()+h+`<details class=card><summary><b>Low-stock limits</b></summary><div class=bkh style="margin:6px 0">Jab remaining stock is limit ya us se kam ho jaye to alert aata hai (khali = sirf 0 par).</div>${I.items.map(x=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="flex:1">${E(x)}</span><input type=number inputmode=decimal value="${(I.min||{})[x]!=null?(I.min||{})[x]:''}" placeholder="0" style="width:90px;margin:0" onchange="invMin(this.dataset.i,this.value)" data-i="${E(x)}"></div>`).join('')}</details>`;return h}})();
+ const I=invD();h=nsLowCard()+h+`<details class=card><summary><b>Low-stock limits</b></summary><div class=bkh style="margin:6px 0">An alert appears when the remaining stock reaches this limit or lower (blank = alert only at 0).</div>${I.items.map(x=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="flex:1">${E(x)}</span><input type=number inputmode=decimal value="${(I.min||{})[x]!=null?(I.min||{})[x]:''}" placeholder="0" style="width:90px;margin:0" onchange="invMin(this.dataset.i,this.value)" data-i="${E(x)}"></div>`).join('')}</details>`;return h}})();
 /* ledger rows: show which project a stock-out went to */
 function nsInvRows(){if(tab!='inv')return;document.querySelectorAll('#app button[onclick^="invDel("]').forEach(b=>{const i=+/invDel\((\d+)\)/.exec(b.getAttribute('onclick'))[1],x=invD().tx[i];if(!x||!x.pid)return;const d=DB.docs.find(z=>z.id==x.pid),tr=b.closest('tr');if(!tr||!d)return;const td=tr.children[1];if(td&&!td.querySelector('.nspj'))td.insertAdjacentHTML('beforeend','<br><small class=nspj style="color:#0a5594">&rarr; '+E(d.cust||'No name')+' (cost Rs '+f(n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date)))+')</small>')})}
 /* project cost includes inventory stock used */
@@ -3135,12 +3135,12 @@ function nsInvRows(){if(tab!='inv')return;document.querySelectorAll('#app button
 /* ---------- 5) pre-Done cost check ---------- */
 (function(){const rd=r3done;r3done=function(id){const d=DB.docs.find(x=>x.id==id);if(!d)return;
  const it=r3items(d),sa=it.reduce((s,x)=>s+x.a,0),ca=r3ct(d),w=[];
- if(ca<=0)w.push('Cost bilkul enter nahi hui - profit sahi nahi dikhega.');
- else{const mi=it.filter(x=>x.a>0&&r3cv(d,x.k)<=0).map(x=>x.l);if(mi.length)w.push('In lines ki cost enter nahi: '+mi.slice(0,6).map(E).join(', ')+(mi.length>6?' ...':''));
-  if(sa>0&&ca>sa)w.push('Cost selling se zyada hai - nuqsan (loss) Rs '+f(ca-sa));else if(sa>0&&(sa-ca)/sa<0.05)w.push('Margin 5% se kam hai ('+(Math.round((sa-ca)/sa*1000)/10)+'%).')}
+ if(ca<=0)w.push('Cost has not been entered - profit will not be accurate.');
+ else{const mi=it.filter(x=>x.a>0&&r3cv(d,x.k)<=0).map(x=>x.l);if(mi.length)w.push('Cost not entered for: '+mi.slice(0,6).map(E).join(', ')+(mi.length>6?' ...':''));
+  if(sa>0&&ca>sa)w.push('Cost is higher than selling - loss of Rs '+f(ca-sa));else if(sa>0&&(sa-ca)/sa<0.05)w.push('Margin is below 5% ('+(Math.round((sa-ca)/sa*1000)/10)+'%).')}
  if(!w.length){rd(id);return}
  const o=document.createElement('div');o.className='cfm';o.style.zIndex=260;
- o.innerHTML='<div class=cfb style="max-width:420px;text-align:left"><p><b>Done se pehle cost check</b><br><small>'+E(d.cust||'')+' | Selling Rs '+f(sa)+' | Cost Rs '+f(ca)+' | Profit Rs '+f(sa-ca)+'</small></p><ul style="margin:6px 0 10px 18px;padding:0;font-size:13px;color:#b3261e">'+w.map(x=>'<li>'+x+'</li>').join('')+'</ul><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=nsdc>Cancel</button><button class=o id=nsde>Cost edit karein</button><button id=nsdg>Phir bhi Done</button></div></div>';
+ o.innerHTML='<div class=cfb style="max-width:420px;text-align:left"><p><b>Cost check before Done</b><br><small>'+E(d.cust||'')+' | Selling Rs '+f(sa)+' | Cost Rs '+f(ca)+' | Profit Rs '+f(sa-ca)+'</small></p><ul style="margin:6px 0 10px 18px;padding:0;font-size:13px;color:#b3261e">'+w.map(x=>'<li>'+x+'</li>').join('')+'</ul><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class=r id=nsdc>Cancel</button><button class=o id=nsde>Edit cost</button><button id=nsdg>Done anyway</button></div></div>';
  document.body.appendChild(o);o.querySelector('#nsdc').onclick=()=>o.remove();o.querySelector('#nsde').onclick=()=>{o.remove();r3cpd=id;r3ced=1;go('cpa')};o.querySelector('#nsdg').onclick=()=>{o.remove();rd(id)}}})();
 
 /* ---------- 6) monthly summary page ---------- */
@@ -3177,12 +3177,12 @@ async function nsDaily(force){try{if(!DB.docs.length&&!force)return;let last='';
  if(nsAF()||force==2){try{bk()}catch(e){}}
  if(tab=='bkp')go()}catch(e){}}
 function nsAFt(){try{localStorage.setItem('nsabf',nsAF()?'0':'1')}catch(e){}go('bkp')}
-async function nsBakNow(){toast('Backup ban raha hai...');await nsDaily(2);toast('Backup ho gaya')}
-async function nsBakRestore(d){const r=await nsBakReq('readonly',s=>s.get(d));if(!r)return;cf('Is backup ('+fd(d)+') se saara data replace hoga. Continue?',async()=>{try{const x=await dec(r.t);if(!x||!Array.isArray(x.docs))throw 0;DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1;save();go('cli');toast('Backup restore ho gaya')}catch(e){alert('Backup read nahi ho saka')}},'Restore')}
+async function nsBakNow(){toast('Creating backup...');await nsDaily(2);toast('Backup created')}
+async function nsBakRestore(d){const r=await nsBakReq('readonly',s=>s.get(d));if(!r)return;cf('All data will be replaced with this backup ('+fd(d)+'). Continue?',async()=>{try{const x=await dec(r.t);if(!x||!Array.isArray(x.docs))throw 0;DB=x;DB.buy=DB.buy||[];DB.exp=DB.exp||[];DB.bin=DB.bin||[];DB.inc=DB.inc||[];DB.seq=DB.seq||1;save();go('cli');toast('Backup restored')}catch(e){alert('Could not read the backup')}},'Restore')}
 async function nsBakFile(d){const r=await nsBakReq('readonly',s=>s.get(d));if(!r)return;try{const x=await dec(r.t),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(x)]));a.download='NS_backup_'+d+'.json';a.click()}catch(e){toast('Download fail')}}
 async function nsBakList(){const e=document.getElementById('nsbl');if(!e)return;let L=[];try{L=(await nsBakReq('readonly',s=>s.getAll()))||[]}catch(x){}L.sort((a,b)=>a.d<b.d?1:-1);
- e.innerHTML=L.length?L.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid #e3e7ec"><span style="flex:1"><b>${fd(x.d)}</b> <small>| ${x.n} docs</small></span><button class=o style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakFile('${x.d}')">File</button><button class=r style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakRestore('${x.d}')">Restore</button></div>`).join(''):'<small>Abhi koi daily backup nahi</small>'}
-(function(){const v=V.bkp;V.bkp=function(){setTimeout(nsBakList,0);return v.call(V)+`<div class=card><h4>Daily Auto Backup</h4><div class=bkh style="margin:0 0 8px">Har roz ek backup is device par khud ban jata hai (aakhri 10 din), cloud ke saath saath.</div><label class=ck style="display:flex;gap:8px;align-items:center"><input type=checkbox ${nsAF()?'checked':''} onchange="nsAFt()" style="width:auto;margin:0"> Roz backup file (.json) khud download ho</label><button class=o style="margin:8px 0" onclick="nsBakNow()">Backup abhi lein</button><div id=nsbl></div></div>`}})();
+ e.innerHTML=L.length?L.map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid #e3e7ec"><span style="flex:1"><b>${fd(x.d)}</b> <small>| ${x.n} docs</small></span><button class=o style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakFile('${x.d}')">File</button><button class=r style="margin:0;padding:5px 10px;font-size:12px" onclick="nsBakRestore('${x.d}')">Restore</button></div>`).join(''):'<small>No daily backups yet</small>'}
+(function(){const v=V.bkp;V.bkp=function(){setTimeout(nsBakList,0);return v.call(V)+`<div class=card><h4>Daily Auto Backup</h4><div class=bkh style="margin:0 0 8px">A backup is created on this device automatically every day (last 10 days), alongside the cloud backup.</div><label class=ck style="display:flex;gap:8px;align-items:center"><input type=checkbox ${nsAF()?'checked':''} onchange="nsAFt()" style="width:auto;margin:0"> Download the backup file (.json) automatically every day</label><button class=o style="margin:8px 0" onclick="nsBakNow()">Back up now</button><div id=nsbl></div></div>`}})();
 setTimeout(()=>nsDaily(),6000);setInterval(()=>nsDaily(),10*60*1000);
 
 /* ---------- 8) page hooks: nav tab, Home cards, sync pill ---------- */
@@ -3195,6 +3195,161 @@ setTimeout(()=>nsDaily(),6000);setInterval(()=>nsDaily(),10*60*1000);
  if(tab=='doc'&&!D){const a=document.getElementById('app');if(a&&!document.getElementById('nsrem')){const h=nsRemCard()+nsLowCard();if(h){const hero=document.getElementById('hero');if(hero)hero.insertAdjacentHTML('afterend',h);else a.insertAdjacentHTML('afterbegin',h)}}}
  nsInvRows();nsSyncUpd()}catch(e){}}})();
 try{nsSyncUpd()}catch(e){}
+
+
+/* ===== Round 15: modern sync pill, Office Expense refine, inventory <-> cost entry / direct sale ===== */
+(function(){const st=document.createElement('style');st.textContent=`
+#nssy.nsA{display:inline-flex;align-items:center;gap:6px;margin:0 8px 0 0;padding:6px 12px 6px 9px;border-radius:999px;font-weight:700;font-size:12px;line-height:1;white-space:nowrap;flex:none;cursor:pointer;box-shadow:none!important;transform:none!important;
+ border:1px solid color-mix(in srgb,var(--c) 30%,#fff);background:color-mix(in srgb,var(--c) 11%,#fff)!important;color:var(--c)!important}
+#nssy.nsA svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#nssy.nsA.sp svg{animation:nsSpin 1s linear infinite}@keyframes nsSpin{to{transform:rotate(360deg)}}
+@media(max-width:520px){#nssy.nsA{padding:6px 8px;font-size:11px;gap:4px;margin-right:4px}}
+.nxc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.nxc button{margin:0!important;padding:6px 12px!important;border-radius:999px!important;background:#eef3f9!important;color:#33516f!important;border:1px solid #dce5ef!important;font-size:12.5px!important;font-weight:600!important;box-shadow:none!important;transform:none!important}
+.nxc button.on{background:var(--r)!important;color:#fff!important;border-color:var(--r)!important}
+.nxk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.nxk>div{background:#f4f8fc;border:1px solid #e1e9f2;border-radius:12px;padding:9px 10px}
+.nxk span{display:block;font-size:10.5px;color:#64748b;text-transform:uppercase;letter-spacing:.3px}.nxk b{display:block;font-size:15px;margin-top:2px;color:#1f2933}
+@media(max-width:560px){.nxk{grid-template-columns:repeat(2,1fr)}}
+.nxf{display:grid;grid-template-columns:1fr 1fr;gap:8px}.nxf .full{grid-column:1/-1}.nxf input,.nxf select,.nxf textarea{margin:0!important;width:100%}
+.nxd{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#f1f6fb;border-top:1px solid #e1e9f2;font-size:12px;font-weight:700;color:#33516f}
+.nxe{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-top:1px solid #eef2f6}
+.nxe .h{display:inline-block;background:#e8f0f9;color:#0a5594;border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:700}
+.nxe .t{flex:1;min-width:0}.nxe .t div{font-size:13px;color:#33414f;margin-top:4px;white-space:pre-wrap;word-break:break-word}.nxe .a{font-weight:700;white-space:nowrap}
+.nxe button{margin:0!important}
+.nxb2{height:6px;border-radius:4px;background:#e8eef5;margin-top:5px;overflow:hidden}.nxb2 i{display:block;height:100%;background:var(--r);border-radius:4px}
+.nskb{margin:4px 0 0!important;padding:3px 9px!important;font-size:11px!important;border-radius:999px!important;background:#eef3f9!important;color:#0a5594!important;border:1px solid #cfdcec!important;box-shadow:none!important;transform:none!important;white-space:nowrap}
+.nskb.on{background:#e7f5ee!important;color:#118a4a!important;border-color:#b9e0c9!important}
+.nskr{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid #eef2f6}.nskr:first-child{border-top:0}
+.nskr select,.nskr input{margin:0!important;width:100%}.nskr .l{flex:1;min-width:0}.nskr .q{width:92px;flex:none}.nskr small{display:block;color:#64748b;font-size:11px;margin-top:3px}
+#nskm .cfb div{display:block}#nskm .cfb .nskr,#nskm .cfb .hd2,#nskm .cfb .ft2{display:flex}#nskm .cfb .hd2{align-items:center;gap:8px}#nskm .cfb .ft2{gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px;position:sticky;bottom:-22px;background:#fff;padding:8px 0 2px;border-top:1px solid #eef2f6}#nskm .cfb .nskr .l{flex:1;min-width:0}#nskm .cfb .nskr .q{width:92px;flex:none}#nskm .cfb button{flex:none;margin:0}#nskm .cfb .nskr{gap:8px}
+.nssg{display:grid;grid-template-columns:1fr 1fr;gap:6px}.nssg select{grid-column:1/-1}.nssg input,.nssg select{margin:0!important}.nssg button{margin:0!important;grid-column:1/-1}`;document.head.appendChild(st)})();
+
+/* ---------- 1) sync pill: Sample A (soft tinted pill + cloud icon) ---------- */
+const NSCL='<path d="M7 18a4.5 4.5 0 01-.5-9A6 6 0 0118 10a4 4 0 01-1 8z"/>';
+const NSSI={'Synced':['#118a4a',NSCL+'<path d="M9 13.5l2 2 4-4"/>'],'Pending':['#b7791f',NSCL+'<path d="M12 10v4M12 16.5v.01"/>'],'Offline - pending':['#b7791f',NSCL+'<path d="M12 10v4M12 16.5v.01"/>'],'Syncing...':['#0a5594','<path d="M20 12a8 8 0 01-14 5.3M4 12a8 8 0 0114-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>'],'Sync error':['#b3261e',NSCL+'<path d="M10 11l4 4M14 11l-4 4"/>'],'Local only':['#64748b','<path d="M3 3l18 18"/><path d="M7 18a4.5 4.5 0 01-.5-9c.2-.8.6-1.5 1.1-2.1M18 10a4 4 0 011 8H9"/>']};
+nsSyncUpd=function(){const tb=document.getElementById('tbar');if(!tb)return;let b=document.getElementById('nssy');
+ if(b&&b.dataset.v!='15'){b.remove();b=null}
+ if(!b){b=document.createElement('button');b.id='nssy';b.type='button';b.className='nsA';b.dataset.v='15';b.onclick=nsSyncClick;const sp=tb.querySelector('.tsp');if(sp)sp.insertAdjacentElement('afterend',b);else tb.appendChild(b)}
+ const s=nsSyncSt(),c=NSSI[s[0]]||NSSI['Pending'],k=s[0]+'|'+c[0];if(b.dataset.k!==k){b.dataset.k=k;b.style.setProperty('--c',c[0]);b.classList.toggle('sp',s[0]=='Syncing...');b.innerHTML='<svg viewBox="0 0 24 24">'+c[1]+'</svg>'+s[0].replace('Offline - pending','Offline').replace('...','')}};
+try{nsSyncUpd()}catch(e){}
+
+/* ---------- 2) Office Expense: cleaner page + detail box ---------- */
+var NXH='',NXF='';
+function nxPick(el,h){NXH=h;const i=document.getElementById('oxh');if(i)i.value=h;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el))}
+function nxF(v){NXF=v;go('buy')}
+(function(){const o=V.buy;V.buy=function(){if(!costOK())return R8LOCK;const L=oexHeads(),h0=o.call(V);
+ const ix=h0.indexOf('<summary><b>Manage Heads'),tail=ix>=0?h0.slice(h0.lastIndexOf('<details',ix)):'';
+ if(!NXH||!L.includes(NXH))NXH=L[0]||'Other';
+ const cur=today().slice(0,7),mt=new Date(OM+'-01T00:00:00').toLocaleString('en-GB',{month:'long',year:'numeric'});
+ const R=[];DB.exp.forEach((e,i)=>{if(String(e.date||'').slice(0,7)==OM)R.push({e,i})});
+ const tot=R.reduce((s,x)=>s+n(x.e.amt),0),C={};R.forEach(x=>{const k=x.e.cat||'Other';C[k]=(C[k]||0)+n(x.e.amt)});const ks=Object.keys(C).sort((a,b)=>C[b]-C[a]);
+ const dim=new Date(+OM.slice(0,4),+OM.slice(5,7),0).getDate(),days=OM==cur?new Date().getDate():dim;
+ const pr=DB.docs.filter(d=>!d.done&&d.type=='Bill').map(d=>`<option value="${d.id}">${E(d.cust)}`).join('');
+ const F=R.filter(x=>!NXF||(x.e.cat||'Other')==NXF).sort((a,b)=>a.e.date<b.e.date?1:a.e.date>b.e.date?-1:(b.e.t||0)-(a.e.t||0));
+ const G={};F.forEach(x=>{(G[x.e.date]=G[x.e.date]||[]).push(x)});
+ return `<div class=card><h4>Office Expense</h4><div class=oxr><button type=button class=vb onclick="oexShift(-1)">&#8249;</button><input type=month value="${OM}" onchange="OM=this.value||OM;go('buy')"><button type=button class=vb onclick="oexShift(1)">&#8250;</button><button type=button class=vb onclick="OM=today().slice(0,7);go('buy')">This month</button></div>
+<div class=nxk style="margin-top:10px"><div><span>Total - ${mt}</span><b style="color:#b3261e">Rs ${f(tot)}</b></div><div><span>Entries</span><b>${R.length}</b></div><div><span>Daily average</span><b>Rs ${f(tot/Math.max(days,1))}</b></div><div><span>Top head</span><b style="font-size:13px">${ks.length?E(ks[0]):'-'}</b></div></div></div>
+<div class=card><h4>Add Expense</h4><div class=bkh style="margin:0 0 6px">Select a head</div><div class=nxc>${L.map(x=>`<button type=button class="${x==NXH?'on':''}" onclick="nxPick(this,this.dataset.h)" data-h="${E(x)}">${E(x)}</button>`).join('')}</div><input type=hidden id=oxh value="${E(NXH)}">
+<div class=nxf><input id=oxd type=date value="${OM==cur?today():OM+'-01'}"><input id=oxm type=number inputmode=decimal placeholder="Amount (Rs)"><textarea id=oxs class=full rows=2 placeholder="Detail - purpose / paid to / bill no. (optional)"></textarea><select id=oxp class=full><option value="">No project</option>${pr}</select></div><button style="margin:10px 0 0;width:100%" onclick="oexAdd()">Add Expense</button></div>
+${ks.length?`<div class=card><h4>Head-wise - ${mt}</h4>${ks.map(k=>`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${E(k)}</span><b>${f(C[k])} <small style="color:#64748b;font-weight:600">${Math.round(C[k]/tot*100)}%</small></b></div><div class=nxb2><i style="width:${Math.round(C[k]/tot*100)}%"></i></div></div>`).join('')}</div>`:''}
+<div class=card style="padding:0;overflow:hidden"><div style="padding:12px 14px 10px;display:flex;gap:8px;align-items:center"><b style="flex:1">Entries - ${mt}</b><select style="margin:0;max-width:170px" onchange="nxF(this.value)"><option value="">All heads</option>${L.map(x=>`<option value="${E(x)}" ${x==NXF?'selected':''}>${E(x)}</option>`).join('')}</select></div>
+${Object.keys(G).map(d=>`<div class=nxd><span>${fd(d)}</span><span>Rs ${f(G[d].reduce((s,x)=>s+n(x.e.amt),0))}</span></div>${G[d].map(x=>`<div class=nxe><div class=t><span class=h>${E(x.e.cat||'Other')}</span>${x.e.d?'<div>'+E(x.e.d)+'</div>':''}</div><div class=a>Rs ${f(n(x.e.amt))}</div><button class=r onclick="oexDel(${x.i})">x</button></div>`).join('')}`).join('')||'<div style="padding:18px;text-align:center;color:#64748b">No expenses this month</div>'}</div>${tail}`}})();
+
+/* ---------- 3) inventory <-> cost entry / direct sale ---------- */
+(function(){const i0=invD;invD=function(){const I=i0();if(!I.v15){['Solar Panel','AC Wire (yards)','DC Wire (yards)'].forEach(x=>{if(!I.items.some(y=>y.toLowerCase()==x.toLowerCase()))I.items.push(x)});I.v15=1}return I}})();
+const nf=v=>Math.round(n(v)*100)/100;
+function nsInvPut(tx){const I=invD(),i=I.tx.findIndex(x=>x._id==tx._id);if(i>=0)Object.assign(I.tx[i],tx);else I.tx.push(tx);DB.del=DB.del||{};const k='inv:'+tx._id;if(DB.del[k])DB.del[k]={t:Date.now(),r:1}}
+function nsInvDrop(fn){const I=invD();for(let i=I.tx.length-1;i>=0;i--){const x=I.tx[i];if(fn(x)){DB.del=DB.del||{};if(x._id)DB.del['inv:'+x._id]={t:Date.now(),r:2};I.tx.splice(i,1)}}}
+invCostFor=function(id){let s=0;invD().tx.forEach(x=>{if(x.type=='out'&&x.pid==id&&!x.nc)s+=n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date))});return Math.round(s)};
+(function(){const o=invDel;invDel=function(i){const t=invD().tx[i];if(t&&(t.sid||t.src)){toast(t.sid?'This entry is linked to a bill - change it in the bill':'This entry is linked to a project cost - change it in Cost/Profit');return}o(i)}})();
+(function(){const o=r3set;r3set=function(id,k,v){const d=DB.docs.find(x=>x.id==id);if(d&&d.cost&&d.cost.a)delete d.cost.a[k];return o.apply(this,arguments)}})();
+/* bill rows picked from stock -> stock out (+ auto cost) */
+function nsSaleSync(){const I=invD(),want={},ctx={};
+ DB.docs.forEach(d=>{if(d.type!='Bill'||!Array.isArray(d.rows))return;d.rows.forEach((x,i)=>{if(!x.inv||!(n(x.q)>0))return;const id='S'+d.id+'-'+i;want[id]={_id:id,sid:d.id,date:d.date||today(),item:x.inv,type:'out',qty:n(x.q),price:nf(un(x)),src:'sale'};ctx[id]={d,i}})});
+ nsInvDrop(x=>x.sid&&!want[x._id]);
+ Object.keys(want).forEach(id=>{const w=want[id];let tx=I.tx.find(x=>x._id==id);
+  if(tx){if(tx.item!=w.item||tx.qty!=w.qty||tx.price!=w.price||tx.date!=w.date){Object.assign(tx,w);tx.uc=nf(invAvg(w.item,w.date))}}
+  else{w.t=Date.now();w.uc=nf(invAvg(w.item,w.date));nsInvPut(w);tx=w}
+  const {d,i}=ctx[id],k='r'+i;d.cost=d.cost||{v:{},s:{}};d.cost.v=d.cost.v||{};d.cost.s=d.cost.s||{};d.cost.a=d.cost.a||{};
+  if(d.cost.a[k]||!(n(d.cost.v[k])>0)){d.cost.v[k]=Math.round(n(tx.qty)*n(tx.uc));d.cost.s[k]='S';d.cost.a[k]=1}})}
+(function(){const s0=save;save=function(){try{nsSaleSync()}catch(e){}return s0.apply(this,arguments)}})();
+(function(){const b0=binAdd;binAdd=function(k,it){b0(k,it);if(k=='doc'&&it){try{nsInvDrop(x=>(x.src=='cost'&&x.pid==it.id)||x.sid==it.id)}catch(e){}}}})();
+/* ledger labels */
+nsInvRows=function(){if(tab!='inv')return;document.querySelectorAll('#app button[onclick^="invDel("]').forEach(b=>{const ix=+/invDel\((\d+)\)/.exec(b.getAttribute('onclick'))[1],x=invD().tx[ix];if(x&&!x.sid&&!x.src&&!b.parentNode.querySelector('.nsie'))b.insertAdjacentHTML('beforebegin','<button type=button class="o nsie" style="margin:0 4px 0 0;padding:3px 9px;font-size:11px" onclick="invEdit('+ix+')">Edit</button>');if(!x||!(x.pid||x.sid))return;const tr=b.closest('tr'),td=tr&&tr.children[1];if(!td||td.querySelector('.nspj'))return;
+ let lab='';if(x.sid){const d=DB.docs.find(z=>z.id==x.sid);lab='Bill '+(d?E(d.no||'')+' - '+E(d.cust||''):'')+' (counter sale)'}
+ else{const d=DB.docs.find(z=>z.id==x.pid);lab=(d?E(d.cust||'No name'):'')+(x.nc?' (project stock)':' (cost Rs '+f(n(x.qty)*(x.uc!=null?n(x.uc):invAvg(x.item,x.date)))+')')}
+ td.insertAdjacentHTML('beforeend','<br><small class=nspj style="color:#0a5594">&rarr; '+lab+'</small>')})};
+
+/* cost screen: "From stock" buttons next to Source */
+const ACM={'AC Breakers':['Breaker AC'],'DC Breakers':['Breaker DC'],'MC4':['MC4 Connector'],'Change Over':['Changeover'],'DC/AC Wire':['AC Wire (yards)','DC Wire (yards)'],'SPD':['SPD AC','SPD DC'],'Voltage Protection':['Voltage Protector'],'DP Box':['DP Box 4 Way'],'Fire Extinguisher':['Fire Extinguisher'],'Nut Bolts':['Nut Bolts']};
+(function(){const fix=(h,d)=>h.replace(/<select class=r3s onchange="r3src\((\d+),'(r\d+|ac)',this\.value\)">[\s\S]*?<\/select>/g,(m,id,k)=>{if(+id!=d.id)return m;
+  if(k!='ac'){const r=d.rows[+k.slice(1)];if(!r||r.inv)return m}
+  const c=invD().tx.filter(x=>x.src=='cost'&&x.pid==d.id&&x.key==k).length;
+  return m+'<br><button type=button class="nskb'+(c?' on':'')+'" onclick="nsStk('+d.id+',\''+k+'\')">'+(c?'✓ Stock ('+c+')':(k=='ac'?'Items from stock':'From stock'))+'</button>'});
+ const t0=r3tbl;r3tbl=function(d,e){return fix(t0(d,e),d)};const c0=r3cpDet;r3cpDet=function(d,e){return fix(c0(d,e),d)}})();
+var NSK=null;
+function nsAccSug(d){const out=[],a=d.ac||{off:[]};ACL.forEach((x,i)=>{if((a.off||[]).includes(i))return;const m=ACM[x];if(m&&m.length)m.forEach(it=>out.push({item:it,hint:x}));else out.push({item:'',hint:x})});xl(a).forEach(x=>{const m=invD().items.find(y=>y.toLowerCase()==x.toLowerCase());out.push({item:m||'',hint:x})});return out}
+function nsStk(did,key){const d=DB.docs.find(x=>x.id==did);if(!d)return;const I=invD(),cur=I.tx.filter(x=>x.src=='cost'&&x.pid==did&&x.key==key);let rows=[],nm='';
+ if(key=='ac'){rows=nsAccSug(d).map(s=>({item:s.item,hint:s.hint,qty:''}));cur.forEach(c=>{const r=rows.find(z=>z.item==c.item&&z.qty==='');if(r)r.qty=c.qty;else rows.push({item:c.item,hint:'',qty:c.qty})})}
+ else{const r=d.rows[+key.slice(1)]||{};nm=((r.b||'')+' '+(r.m||'')).trim()||r.c||'';const g={Inverter:'Inverter',Battery:'Battery',Panel:'Solar Panel'}[r.c]||'';if(cur.length)cur.forEach(c=>rows.push({item:c.item,hint:'',qty:c.qty}));else rows.push({item:g,hint:'',qty:n(r.q)||1})}
+ NSK={did,key,rows,cur,nm};nsStkR()}
+function nsStkX(){const o=document.getElementById('nskm');if(o)o.remove();NSK=null}
+function nsStkU(i,f2,v){NSK.rows[i][f2]=v}
+function nsStkAv(it){const C=invCalc().bal;return nf((C[it]||0)+NSK.cur.filter(c=>c.item==it).reduce((s,c)=>s+n(c.qty),0))}
+function nsStkR(){let o=document.getElementById('nskm');if(!o){o=document.createElement('div');o.id='nskm';o.className='cfm';o.style.zIndex=270;document.body.appendChild(o)}
+ const K=NSK,d=DB.docs.find(x=>x.id==K.did),ac=K.key=='ac',I=invD(),opt=s=>'<option value="">- Select item -</option>'+I.items.map(x=>'<option value="'+E(x)+'" '+(x==s?'selected':'')+'>'+E(x)+'</option>').join('');
+ o.innerHTML=`<div class=cfb style="width:min(480px,94vw);max-height:88vh;overflow:auto;text-align:left"><div class=hd2><b style="flex:1;font-size:15px">${ac?'Accessories from stock':'Take from stock'}</b><button class=r style="margin:0;padding:2px 10px" onclick="nsStkX()">&#10005;</button></div>
+ <div class=bkh style="margin:2px 0 8px">${E(d.cust||'')}${ac?' | accessories in this quotation':(K.nm?' | '+E(K.nm):'')}<br>Only the stock is reduced. The cost stays as you entered it.</div>
+ <div>${K.rows.map((r,i)=>`<div class=nskr><div class=l><select onchange="nsStkU(${i},'item',this.value);nsStkR()">${opt(r.item)}</select><small>${r.item?'Stock: <b>'+nsStkAv(r.item)+'</b>':''}${r.hint?(r.item?' | ':'')+'quotation: '+E(r.hint):''}</small></div><div class=q><input type=number inputmode=decimal min=0 placeholder="Qty" value="${r.qty===''?'':r.qty}" oninput="nsStkU(${i},'qty',this.value)"></div>${ac&&!r.hint?`<button class=r style="margin:0;padding:2px 9px" onclick="NSK.rows.splice(${i},1);nsStkR()">&#10005;</button>`:''}</div>`).join('')}</div>
+ <div class=ft2>${ac?'<button class=o style="margin:0 auto 0 0" onclick="NSK.rows.push({item:\'\',hint:\'\',qty:\'\'});nsStkR()">+ Add item</button>':''}<button class=r onclick="nsStkX()">Cancel</button><button onclick="nsStkSave()">Save</button></div></div>`}
+function nsStkSave(){const K=NSK;if(!K)return;const rows=K.rows.filter(r=>n(r.qty)>0),m={};
+ for(const r of rows){if(!r.item){toast('Select an item');return}m[r.item]=(m[r.item]||0)+n(r.qty)}
+ for(const it of Object.keys(m)){const av=nsStkAv(it);if(m[it]>av){toast(it+': only '+av+' in stock');return}}
+ nsInvDrop(x=>x.src=='cost'&&x.pid==K.did&&x.key==K.key&&!(x.item in m));
+ Object.keys(m).forEach(it=>{const id='K'+K.did+'-'+K.key+'-'+it,ex=invD().tx.find(x=>x._id==id);if(ex)ex.qty=m[it];else nsInvPut({_id:id,pid:K.did,src:'cost',key:K.key,item:it,type:'out',qty:m[it],price:0,nc:1,date:today(),uc:nf(invAvg(it,today())),t:Date.now()})});
+ save();nsStkX();toast(Object.keys(m).length?'Stock updated':'Stock link removed');go('cpa')}
+
+/* new bill: direct sale from stock */
+function nsSaleAv(){const e=document.getElementById('nssa'),it=(document.getElementById('nssi')||{}).value;if(!e)return;e.textContent=it?'In stock: '+nf(nsSaleAvail(it)):''}
+function nsSaleAvail(it){const bal=invCalc().bal[it]||0,saved=invD().tx.filter(x=>x.sid==D.id&&x.item==it).reduce((s,x)=>s+n(x.qty),0),used=D.rows.filter(r=>r.inv==it).reduce((s,r)=>s+n(r.q),0);return bal+saved-used}
+function nsSaleAdd(){const it=$('#nssi').value,q=n($('#nssq').value),p=n($('#nssp').value);
+ if(!it){toast('Select an item');return}if(!(q>0)){toast('Enter quantity');return}if(!(p>0)){toast('Enter sale price');return}
+ const av=nsSaleAvail(it);if(q>av){toast('Only '+nf(av)+' in stock');return}
+ const b=D.rows.length==1&&!D.rows[0].b&&!D.rows[0].m&&!n(D.rows[0].p)&&!n(D.rows[0].a)&&!D.rows[0].inv;if(b)D.rows=[];
+ D.rows.push({c:'Other',b:it,m:'',s:'',wy:'',q:q,p:p,a:0,w:0,rw:0,inv:it});toast(it+' added to the bill');go('doc')}
+function nsSaleCard(){const I=invD(),C=invCalc().bal;return `<div class=card><h4>Counter Sale</h4><div class=bkh style="margin:0 0 8px">To sell items from inventory directly, add them here. Stock goes out as soon as the bill is saved.</div><div class=nssg><select id=nssi onchange="nsSaleAv()"><option value="">- Select item -</option>${I.items.map(x=>'<option value="'+E(x)+'">'+E(x)+' (stock '+nf(C[x]||0)+')</option>').join('')}</select><input id=nssq type=number inputmode=decimal placeholder="Qty"><input id=nssp type=number inputmode=decimal placeholder="Sale price (per unit)"><button type=button class=o onclick="nsSaleAdd()">Add to bill</button></div><div id=nssa class=bkh style="margin-top:6px"></div></div>`}
+(function(){const v=V.doc;V.doc=function(){let h=v.call(V);if(D&&D.type=='Bill'&&costOK()){const i=h.indexOf('<h4>Customer Details</h4>');if(i>=0){const j=h.indexOf('<div class=card>',i);if(j>=0)h=h.slice(0,j)+nsSaleCard()+h.slice(j)}}return h}})();
+
+
+/* ---------- inventory: edit an entry (date, qty, price) ---------- */
+(function(){const st=document.createElement('style');st.textContent='#nsem .cfb div{display:block}#nsem .cfb .nsef{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}#nsem .cfb .nsef label{display:block;font-size:11px;color:#64748b}#nsem .cfb .nsef input{margin:3px 0 0!important;width:100%}#nsem .cfb .nsef .full{grid-column:1/-1}#nsem .cfb .ft3{display:flex;gap:6px;justify-content:flex-end}#nsem .cfb button{flex:none;margin:0}';document.head.appendChild(st)})();
+var NSE=-1;
+function invEdit(i){const x=invD().tx[i];if(!x)return;NSE=i;let o=document.getElementById('nsem');if(!o){o=document.createElement('div');o.id='nsem';o.className='cfm';o.style.zIndex=270;document.body.appendChild(o)}
+ o.innerHTML=`<div class=cfb style="width:min(380px,94vw);text-align:left"><b style="font-size:15px">Edit ${x.type=='in'?'Stock In':'Stock Out'} entry</b><div class=bkh style="margin:2px 0 0">${E(x.item)}</div><div class=nsef><div class=full><label>Date<input id=nse_d type=date value="${E(x.date)}"></label></div><div><label>Qty<input id=nse_q type=number inputmode=decimal value="${x.qty}"></label></div><div><label>${x.type=='in'?'Purchase cost (per unit)':'Sale price (per unit)'}<input id=nse_p type=number inputmode=decimal value="${x.price||''}"></label></div></div><div class=ft3><button class=r onclick="document.getElementById('nsem').remove()">Cancel</button><button onclick="invEditSave()">Save</button></div></div>`}
+function invEditSave(){const I=invD(),x=I.tx[NSE];if(!x)return;const q=n($('#nse_q').value),p=n($('#nse_p').value),d=$('#nse_d').value||x.date;if(!(q>0)){toast('Enter quantity');return}
+ const old={date:x.date,qty:x.qty,price:x.price,uc:x.uc};x.date=d;x.qty=q;x.price=p;
+ if(invCalc().rows.some(r=>r.x.item==x.item&&r.rem<0)){Object.assign(x,old);toast('This would make the stock negative - check the quantity');return}
+ if(x.type=='out'&&d!=old.date)x.uc=nf(invAvg(x.item,d));
+ save();document.getElementById('nsem').remove();toast('Entry updated');go('inv')}
+
+/* ===== Round 16: Done projects visible in Client List + data summary (nothing gets lost) ===== */
+var CDM='active';
+(function(){const st=document.createElement('style');st.textContent='.nsdn{display:inline-block;background:#e7f5ee;color:#118a4a;border-radius:999px;padding:1px 8px;font-size:10.5px;font-weight:700;margin-left:4px}.nsds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.nsds>div{background:#f4f8fc;border:1px solid #e1e9f2;border-radius:12px;padding:9px 10px}.nsds span{display:block;font-size:10.5px;color:#64748b;text-transform:uppercase;letter-spacing:.3px}.nsds b{display:block;font-size:17px;margin-top:2px}.nsds button{margin:6px 0 0!important;padding:3px 10px!important;font-size:11px!important}@media(max-width:560px){.nsds{grid-template-columns:repeat(2,1fr)}}';document.head.appendChild(st)})();
+const nsTotCli=()=>CDM=='done'?DB.docs.filter(d=>d.done).length:CDM=='all'?DB.docs.length:DB.docs.filter(d=>!d.done).length;
+(function(){const c=cliL;cliL=function(){if(CDM=='active')return c();const keep=DB.docs;
+ DB.docs=keep.filter(d=>CDM=='all'||d.done).map(d=>d.done?Object.assign({},d,{done:false,_dn:1}):d);
+ try{return c()}finally{DB.docs=keep}};
+ const u=cliUp;cliUp=function(){const t=document.getElementById('clit'),n=document.getElementById('clin');if(t)t.innerHTML=xlTbl(cliL(),'cli','No records found');if(n)n.textContent='Showing '+cliL().length+' of '+nsTotCli()};
+ const x=xlTbl;xlTbl=function(L,pf,emp){const out=x(L,pf,emp);if(!L.some(d=>d._dn))return out;const P=out.split('<tr class=hd ');for(let i=1;i<P.length;i++){const m=/viewDoc\((\d+),/.exec(P[i]);if(!m)continue;const d=L.find(z=>z.id==+m[1]);if(d&&d._dn)P[i]=P[i].replace('</b><br><small>','</b> <span class=nsdn>Done</span><br><small>')}return P.join('<tr class=hd ')};
+ const v=cliV;cliV=function(){let h=v();const nd=DB.docs.filter(d=>d.done).length,tot=nsTotCli();
+  const chips='<div class=cbar><div class=cseg>'+[['active','Active'],['done','Done ('+nd+')'],['all','All']].map(([k,l])=>'<button type=button class="'+(CDM==k?'on':'')+'" onclick="CDM=\''+k+'\';go(\'cli\')">'+l+'</button>').join('')+'</div></div>';
+  h=h.replace('<div class=cbar><button class=vb onclick="cliPdf()">',()=>chips+'<div class=cbar><button class=vb onclick="cliPdf()">');
+  h=h.replace(/(Showing \d+ of )\d+(<\/div>)/,'$1'+tot+'$2');
+  const pb=/<button type="button" class="[^"]*" onclick="CT='Bill';CP=!CP;go\('cli'\)">Pending<\/button>/g,pm=h.match(pb);if(pm&&pm.length>1){let k=0;h=h.replace(pb,m=>k++?'':m)}
+  return h};V.cli=cliV})();
+/* Backup tab: data summary so the user can see where everything is */
+(function(){const v=V.bkp;V.bkp=function(){const D2=DB.docs,q=D2.filter(d=>!d.done&&d.type=='Quotation').length,b=D2.filter(d=>!d.done&&d.type=='Bill').length,dn=D2.filter(d=>d.done).length,bn=(DB.bin||[]).length,bd=(DB.bin||[]).filter(x=>x.k=='doc').length;
+ return `<div class=card><h4>Your data</h4><div class=bkh style="margin:0 0 8px">Nothing is lost when a project is marked Done or deleted. Here is where everything is.</div><div class=nsds><div><span>Quotations</span><b>${q}</b></div><div><span>Bills</span><b>${b}</b></div><div><span>Done projects</span><b>${dn}</b><button class=o onclick="CDM='done';CT='';CQ='';go('cli')">Open</button></div><div><span>Recycle Bin</span><b>${bn}</b><button class=o onclick="go('bin')">Open</button></div><div><span>Deleted docs</span><b>${bd}</b></div><div><span>Expenses</span><b>${(DB.exp||[]).length}</b></div></div></div>`+v.call(V)}})();
 
 </script>
 </body></html>
