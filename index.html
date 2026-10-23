@@ -3446,9 +3446,10 @@ html[data-theme="dark"]{filter:invert(.88) hue-rotate(180deg) brightness(.92) co
 html[data-theme="dark"] :is(#sb,.hero,.pvc){filter:invert(.88) hue-rotate(180deg)!important}
 html[data-theme="dark"] :is(.lgb,img,canvas,video,iframe):not(:is(#sb,.hero,.pvc) *){filter:invert(.88) hue-rotate(180deg)!important}
 .nxb2,.oxb{display:none!important}
-.xb2{margin:8px 0 10px;background:#f6f8fb;border:1px solid #e3e9f1;box-shadow:none}
-.xb2 button{padding:9px 14px;font-size:13px;flex-direction:row}
-.xb2 button.on{background:#e6eefb;color:#1d4f9a}
+body.intabs #ptl{display:none}
+#tbar .xbar.xtb{flex:1 1 auto;min-width:0;height:48px;overflow-x:auto;gap:4px}
+#tbar .xbar.xtb button{flex:none!important;width:auto!important;min-width:58px;padding:4px 10px!important;font-size:11px!important;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
+#tbar .xbar.xtb button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media print{.lp::after{opacity:.16!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style><script>
 /* ===== Round 18: Office Expense replaces Daily Ledger, merged Reports, top-bar tabs, counter-sale cost, dedupe ===== */
@@ -3493,12 +3494,18 @@ function rmShift(k){const x=new Date(NSM+'-01T00:00:00Z');x.setUTCMonth(x.getUTC
   if(r3rp=='month')h=h.replace('<div class=card style="padding:0;overflow:hidden"><div id=r3rv>',()=>`<div class=card><div class=oxr><button type=button class=vb onclick="rmShift(-1)">&#8249;</button><input type=month value="${NSM}" onchange="NSM=this.value||NSM;go('rep')"><button type=button class=vb onclick="rmShift(1)">&#8250;</button><button type=button class=vb onclick="NSM=today().slice(0,7);go('rep')">This month</button></div></div><div class=card style="padding:0;overflow:hidden"><div id=r3rv>`);
   return h};V.msum=V.rep})();
 (function(){const g=go;go=function(t){if(t=='msum'){t='rep';r3rp='month'}g.call(this,t);try{document.querySelectorAll('#nav [data-ms]').forEach(x=>x.remove());nsTopBars()}catch(e){}}})();
-/* internal tabs of each page -> top bar in the preview-bar style */
-function nsTopBars(){if(!['cli','cpa','buy','bin','bkp','inv'].includes(tab))return;const a=document.getElementById('app');if(!a||a.querySelector(':scope>.xb2'))return;
- const gs=[...a.querySelectorAll('.cseg:not([data-keep]),.r3ch')].filter(g=>g.querySelectorAll('button').length>1);if(!gs.length)return;
- const bar=document.createElement('div');bar.className='xbar xb2';
- gs.forEach((g,i)=>{if(i)bar.appendChild(document.createElement('i'));[...g.querySelectorAll('button')].forEach(b=>bar.appendChild(b));const p=g.parentNode;g.remove();if(p&&p.classList&&p.classList.contains('cbar')&&!p.children.length)p.remove()});
- a.insertBefore(bar,a.firstChild)}
+/* internal tabs of each page -> real top bar (icon + label), same look as the preview bar */
+const NSTI={all:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',quot:'<path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/><path d="M9 13h6M9 17h6"/>',bill:'<path d="M5 21V4a1 1 0 011-1h12a1 1 0 011 1v17l-3-2-2 2-2-2-2 2-2-2z"/><path d="M9 8h6M9 12h6"/>',pend:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',act:'<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/>',done:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',day:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/><rect x="8" y="14" width="3" height="3"/>',month:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16M8 15h.01M12 15h.01M16 15h.01"/>',inn:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12l4 4 4-4"/>',out:'<circle cx="12" cy="12" r="9"/><path d="M12 16V8M8 12l4-4 4 4"/>',def:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/>'};
+function nsTi(l){l=l.toLowerCase();return /^all/.test(l)?'all':/quot/.test(l)?'quot':/bill/.test(l)?'bill':/pend/.test(l)?'pend':/active/.test(l)?'act':/done/.test(l)?'done':/^day/.test(l)?'day':/month/.test(l)?'month':/\bin\b/.test(l)?'inn':/out/.test(l)?'out':'def'}
+function nsTopBars(){const tb=document.getElementById('tbar');if(!tb)return;let bx=document.getElementById('tpgb');
+ const a=document.getElementById('app'),ok=['cli','cpa','buy','bin','bkp','inv','rep'].includes(tab),
+ gs=ok&&a?[...a.querySelectorAll('.cseg:not([data-keep]),.r3ch,.rpb')].filter(g=>g.querySelectorAll('button').length>1):[];
+ if(!gs.length){if(bx)bx.remove();document.body.classList.remove('intabs');return}
+ if(!bx){bx=document.createElement('div');bx.id='tpgb';bx.className='xbar xtb';tb.insertBefore(bx,tb.querySelector('.tsp')||document.getElementById('tnew'))}
+ bx.innerHTML='';
+ gs.forEach((g,i)=>{if(i)bx.appendChild(document.createElement('i'));[...g.children].forEach(c=>{if(c.tagName=='BUTTON'){if(!c.querySelector('svg')){const l=c.textContent.trim();c.innerHTML='<svg viewBox="0 0 24 24">'+NSTI[nsTi(l)]+'</svg>'+l}bx.appendChild(c)}else if(c.tagName=='I')bx.appendChild(c)});
+  const p=g.parentNode;g.remove();if(p&&p.classList&&p.classList.contains('cbar')&&!p.children.length)p.remove()});
+ document.body.classList.add('intabs')}
 /* counter-sale bills: cost comes from stock, so no separate Cost / Profit button in the editor */
 (function(){const o=V.doc;V.doc=function(){let h=o.call(V);if(D&&D.cs)h=h.replace(/<button class=o onclick="sv\(1\);r3bd=D\.id;go\('buy'\)">(Cost \/ Profit|Purchase Cost)<\/button>/,'');return h}})();
 
