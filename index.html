@@ -3342,7 +3342,7 @@ const nsTotCli=()=>CDM=='done'?DB.docs.filter(d=>d.done).length:CDM=='all'?DB.do
  const u=cliUp;cliUp=function(){const t=document.getElementById('clit'),n=document.getElementById('clin');if(t)t.innerHTML=xlTbl(cliL(),'cli','No records found');if(n)n.textContent='Showing '+cliL().length+' of '+nsTotCli()};
  const x=xlTbl;xlTbl=function(L,pf,emp){const out=x(L,pf,emp);if(!L.some(d=>d._dn))return out;const P=out.split('<tr class=hd ');for(let i=1;i<P.length;i++){const m=/viewDoc\((\d+),/.exec(P[i]);if(!m)continue;const d=L.find(z=>z.id==+m[1]);if(d&&d._dn)P[i]=P[i].replace('</b><br><small>','</b> <span class=nsdn>Done</span><br><small>')}return P.join('<tr class=hd ')};
  const v=cliV;cliV=function(){let h=v();const nd=DB.docs.filter(d=>d.done).length,tot=nsTotCli();
-  const chips='<div class=cbar><div class=cseg>'+[['active','Active'],['done','Done ('+nd+')'],['all','All']].map(([k,l])=>'<button type=button class="'+(CDM==k?'on':'')+'" onclick="CDM=\''+k+'\';go(\'cli\')">'+l+'</button>').join('')+'</div></div>';
+  const chips='<div class=cbar><div class=cseg>'+[['active','Active'],['done','Done ('+nd+')'],['all','Both']].map(([k,l])=>'<button type=button class="'+(CDM==k?'on':'')+'" onclick="CDM=\''+k+'\';go(\'cli\')">'+l+'</button>').join('')+'</div></div>';
   h=h.replace('<div class=cbar><button class=vb onclick="cliPdf()">',()=>chips+'<div class=cbar><button class=vb onclick="cliPdf()">');
   h=h.replace(/(Showing \d+ of )\d+(<\/div>)/,'$1'+tot+'$2');
   const pb=/<button type="button" class="[^"]*" onclick="CT='Bill';CP=!CP;go\('cli'\)">Pending<\/button>/g,pm=h.match(pb);if(pm&&pm.length>1){let k=0;h=h.replace(pb,m=>k++?'':m)}
@@ -3619,5 +3619,24 @@ function invEditSave(i){const I=invD(),x=I.tx[i];if(!x)return;const d=$('#ied').
   if(!has[BKS])BKS='sum';
   [...t.content.children].forEach(c=>{if(c.dataset.bs!==BKS)c.classList.add('nsbh');c.removeAttribute('data-bs')});
   return '<div class=cseg>'+BKM.filter(x=>has[x[1]]).map(x=>'<button type=button class="'+(BKS==x[1]?'on':'')+'" onclick="BKS=\''+x[1]+'\';go(\'bkp\')">'+x[2]+'</button>').join('')+'</div>'+t.innerHTML}})();
+</script>
+<style>/* Round 20 */
+#app details>summary,.nsmb details>summary{position:relative;list-style:none;cursor:pointer;padding-right:84px}
+#app details>summary::-webkit-details-marker,.nsmb details>summary::-webkit-details-marker{display:none}
+#app details>summary::marker{content:''}
+#app details>summary::after,.nsmb details>summary::after{content:'Unhide';position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:11.5px;font-weight:700;line-height:1;color:var(--r);background:#e6f3ee;border:1px solid #cfe5dc;border-radius:999px;padding:6px 12px}
+#app details[open]>summary::after,.nsmb details[open]>summary::after{content:'Hide'}
+#app details>summary.nsbs{padding:12px 96px 12px 14px}#app details>summary.nsbs::after{right:12px}
+</style>
+<script>
+/* ===== Round 20: Hide/Unhide, Recycle Bin dashboard, counter-sale warranty line ===== */
+(function(){const o=binV;binV=function(){let h=o.apply(this,arguments);if(typeof h!='string')return h;
+ const B=DB.bin||[],c={q:0,b:0,cs:0,e:0,i:0,s:0,p:0};
+ B.forEach(x=>{const k=x&&x.k,t=x&&x.it||{};if(k=='doc'){if(t.type=='Quotation')c.q++;else if(t.cs)c.cs++;else c.b++}else if(k=='exp')c.e++;else if(k=='inc')c.i++;else if(k=='inv')c.s++;else if(k=='buy')c.p++});
+ const bx=(a,v)=>'<div><span>'+a+'</span><b>'+v+'</b></div>';
+ const dash='<div class=card><h4>Recycle Bin Summary</h4><div class=nxk>'+bx('Total deleted',B.length)+bx('Quotations',c.q)+bx('Bills',c.b)+bx('Counter Sales',c.cs)+bx('Expenses',c.e)+bx('Cash In',c.i)+bx('Stock entries',c.s)+(c.p?bx('Purchases',c.p):'')+'</div></div>';
+ h=h.replace(/<div class=card style="padding:0;overflow-x:auto"><h4 style="margin:10px 12px 8px">(Recycle Bin \(\d+\))<\/h4>([\s\S]*?<\/table>)<\/div>/,(m,t,r)=>'<details class=card open style="padding:0;overflow-x:auto"><summary class=nsbs><b>'+t+'</b></summary>'+r+'</details>');
+ return dash+h}})();
+(function(){const o=docHTML;docHTML=function(m){let h=o.apply(this,arguments);if(D&&D.cs&&typeof h=='string')h=h.replace(/E\. &amp; O\.E\. \| Warranty as per manufacturer's official warranty policy\./,"Warranty is provided by the manufacturer only, as per their terms. Physical damage, wrong wiring or misuse voids the warranty.");return h}})();
 </script>
 </body></html>
