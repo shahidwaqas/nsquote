@@ -3442,9 +3442,9 @@ V.sync=function(){const s=nsSyncSt(),c=NSSI[s[0]]||NSSI['Pending'],tm=x=>x?new D
 
 </script>
 <style>/* Round 18 */
-html[data-theme="dark"]{filter:invert(.88) hue-rotate(180deg) brightness(.92) contrast(.9)!important;background:#fff}
-html[data-theme="dark"] :is(#sb,.hero,.pvc){filter:invert(.88) hue-rotate(180deg)!important}
-html[data-theme="dark"] :is(.lgb,img,canvas,video,iframe):not(:is(#sb,.hero,.pvc) *){filter:invert(.88) hue-rotate(180deg)!important}
+html[data-theme="dark"]{filter:invert(1) hue-rotate(180deg) brightness(.94) contrast(.96)!important;background:#fff}
+html[data-theme="dark"] :is(#sb,.hero,.pvc){filter:invert(1) hue-rotate(180deg)!important}
+html[data-theme="dark"] :is(.lgb,img,canvas,video,iframe):not(:is(#sb,.hero,.pvc) *){filter:invert(1) hue-rotate(180deg)!important}
 .nxb2,.oxb{display:none!important}
 body.intabs #ptl{display:none}
 #tbar .xbar.xtb{flex:1 1 auto;min-width:0;height:48px;overflow-x:auto;gap:4px}
@@ -3538,5 +3538,86 @@ function nsRsn(){const tb=document.getElementById('tbar');if(!tb)return;let b=do
  if(b.dataset.t!==m){b.dataset.t=m;b.style.cssText='padding:7px 16px;font-size:12.5px;line-height:1.4;cursor:pointer;background:'+c[0]+';color:'+c[1]+';border-bottom:1px solid rgba(0,0,0,.08)';b.innerHTML='<b>'+(s=='Sync error'?'Sync error':s.startsWith('Offline')?'Offline':'Local only')+':</b> '+E(m)+' <u>Details</u>'}}
 setInterval(()=>{try{nsRsn()}catch(e){}},1500);try{nsRsn()}catch(e){}
 
+</script>
+<style>/* Round 19 */
+@media(max-width:899px){
+ body.intabs{--tbh:106px}
+ body.intabs #tbar{flex-wrap:wrap;height:auto;align-content:flex-start;padding:0 10px}
+ body.intabs #tbar>*:not(#tpgb){margin-top:5px;margin-bottom:5px}
+ body.intabs #tbar #tpgb{order:30;flex:0 0 100%;width:100%;max-width:100%;margin:0 0 6px;height:46px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ body.intabs #tbar #tpgb::-webkit-scrollbar{display:none}
+}
+#tbar #tpgb button.adx{color:var(--r);font-weight:700}
+.nsbh{position:absolute!important;left:-9999px;top:0;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0;pointer-events:none}
+.nsmd{position:fixed;inset:0;z-index:450;background:rgba(10,25,45,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+.nsmb{position:relative;background:#fff;width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:12px 12px 18px;box-shadow:0 -10px 40px #0a1a3055}
+@media(min-width:700px){.nsmd{align-items:center}.nsmb{border-radius:20px}}
+.nsmb>.card{margin:0;box-shadow:none;border:0;padding:6px 2px;background:none}
+.nsmb>.card h4{padding-right:40px}
+.nsmx{position:absolute;right:10px;top:8px;width:34px;height:34px;margin:0!important;padding:0!important;border-radius:50%!important;background:#eef3f9!important;color:#33516f!important;font-size:22px;line-height:1;z-index:2;box-shadow:none!important;background-image:none!important;animation:none!important}
+.oxbb{margin:11px 0}.oxbb .t{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:4px}.oxbb .t small{color:#64748b;font-weight:600}.oxbb .s{height:7px;border-radius:99px;background:#e6edf5;overflow:hidden}.oxbb .s i{display:block;height:100%;border-radius:99px;background:var(--r)}
+html[data-theme="dark"] :is(#app button:not(.r):not(.vb):not(.bp):not(.nsmx),#fab,.nxc button.on,.nsmb button:not(.r):not(.vb):not(.bp):not(.nsmx)){filter:invert(1) hue-rotate(180deg)!important;background-image:none!important;text-shadow:none!important;animation:none!important}
+html[data-theme="dark"] #fab{background-color:#d9830b!important;color:#fff!important}
+html[data-theme="dark"] .hero{background-image:linear-gradient(120deg,#053b2e,#047857)!important}
+html[data-theme="dark"] .hero.dawn{background-image:linear-gradient(120deg,#2f2561,#c5593b)!important}
+html[data-theme="dark"] .hero.dusk{background-image:linear-gradient(120deg,#2a2255,#b0453a)!important}
+html[data-theme="dark"] .hero.night{background-image:linear-gradient(120deg,#040b20,#15306d)!important}
+</style>
+<script>
+/* ===== Round 19: back button, mobile top bar, expense dashboard, inventory add/edit, backup sections ===== */
+var NSH=[],NSBACKING=false,NSBK=['cli','clp','cpa','buy','rep','bin','bkp','inv','sync'],OXF='',IVF='',BKS='sum';
+(function(){const g=go;go=function(t){const p=tab;g.apply(this,arguments);try{if(!NSBACKING&&p&&tab!==p){if(NSH.length&&NSH[NSH.length-1]===tab)NSH.pop();else{NSH.push(p);if(NSH.length>25)NSH.shift()}}}catch(e){}}})();
+function nsBackGo(){let t='';NSBACKING=true;try{while(NSH.length){t=NSH.pop();if(t&&t!==tab&&t!=='pv')break;t=''}if(t==='doc'||!t)goHome();else go(t)}catch(e){try{goHome()}catch(_){}}NSBACKING=false;window.scrollTo(0,0)}
+NSTI.back='<path d="M15 6l-6 6 6 6"/>';NSTI.sum='<path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/>';NSTI.lock='<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>';NSTI.usr='<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 5a3 3 0 010 6M21 20a6 6 0 00-4-5.6"/>';NSTI.cld='<path d="M7 18a4.6 4.4 0 010-9 5 4.5 0 0111 2h1a3.5 3.5 0 010 7z"/>';
+(function(){const o=nsTi,M={Back:'back',Summary:'sum',Cloud:'cld',Security:'lock',Users:'usr',Export:'xls'};nsTi=function(l){return M[l]||o(l)}})();
+NSL['Download Excel']='Export';NSL['Excel Format']='Format';NSL['Import Excel']='Import';NSL['Back up now']='Backup';
+(function(){const o=nsTopBars;nsTopBars=function(){o.apply(this,arguments);try{if(!NSBK.includes(tab))return;const tb=document.getElementById('tbar');if(!tb)return;let bx=document.getElementById('tpgb');
+ if(!bx){bx=document.createElement('div');bx.id='tpgb';bx.className='xbar xtb';tb.insertBefore(bx,tb.querySelector('.tsp')||document.getElementById('tnew'))}
+ if(!bx.querySelector('[data-bk]'))bx.insertAdjacentHTML('afterbegin','<button type=button data-bk=1 onclick="nsBackGo()"><svg viewBox="0 0 24 24">'+NSTI.back+'</svg>Back</button><i></i>');
+ bx.querySelectorAll('button').forEach(b=>{if(/^(Expense|Cash In|Stock In|Stock Out)$/.test(b.textContent.trim())&&(tab=='buy'||tab=='inv'))b.classList.add('adx')});
+ document.body.classList.add('intabs')}catch(e){}}})();
+/* ---- modal ---- */
+function nsModalX(){const o=document.getElementById('nsmd');if(o)o.remove()}
+function nsModal(html){nsModalX();const o=document.createElement('div');o.id='nsmd';o.className='nsmd';o.innerHTML='<div class=nsmb><button type=button class=nsmx onclick="nsModalX()" aria-label="Close">&times;</button>'+html+'</div>';o.addEventListener('click',e=>{if(e.target===o)nsModalX()});document.body.appendChild(o)}
+/* ---- Office Expense: Add Expense / Cash In in top bar (opens form), page = expense dashboard ---- */
+function oxOpen(t){OT=t;go('buy');if(OXF)nsModal(OXF)}
+(function(){const a=oxAdd;oxAdd=function(){const c0=DB.exp.length+DB.inc.length;a.apply(this,arguments);if(DB.exp.length+DB.inc.length>c0||document.querySelector('#nsmd')&&!document.querySelector('#nsmd #oxm'))nsModalX()}})();
+(function(){const o=V.buy;V.buy=function(){let h=o.call(V);if(typeof h!='string'||h.indexOf('<h4>Add Entry</h4>')<0){OXF='';return h}
+ const s=h.indexOf('<div class=card><h4>Add Entry</h4>'),c=[h.indexOf('<details class=card><summary><b>Head-wise',s),h.indexOf('<div class=card style="padding:0;overflow:hidden">',s)].filter(x=>x>s);
+ if(s<0||!c.length){OXF='';return h}
+ const e=Math.min(...c);let F=h.slice(s,e);h=h.slice(0,s)+h.slice(e);
+ F=F.replace(/<div class="cseg" style="margin-bottom:8px">[\s\S]*?<\/button><\/div>/,'').replace('<h4>Add Entry</h4>','<h4>'+(OT=='in'?'Add Cash In':'Add Expense')+'</h4>');OXF=F;
+ h=h.replace(/<details class=card><summary><b>(Head-wise[^<]*)<\/b> \((\d+)\)<\/summary>([\s\S]*?)<\/details>/,(m,t,k,body)=>'<div class=card><h4>'+t+'</h4>'+body.replace(/<div style="display:flex;justify-content:space-between;font-size:13px;margin:8px 0"><span>([\s\S]*?)<\/span><b>([\s\S]*?) <small style="color:#64748b;font-weight:600">(\d+)%<\/small><\/b><\/div>/g,(x,hd,am,pc)=>'<div class=oxbb><div class=t><span>'+hd+'</span><b>'+am+' <small>'+pc+'%</small></b></div><div class=s><i style="width:'+Math.min(+pc,100)+'%"></i></div></div>')+'</div>');
+ return h+'<div class=cseg id=oxadd><button type=button onclick="oxOpen(\'out\')">Expense</button><button type=button onclick="oxOpen(\'in\')">Cash In</button></div>'}})();
+/* ---- Inventory: Stock In/Out in top bar (opens form), stock summary on page, Edit ---- */
+function invOpen(t){INT=t;go('inv');if(IVF)nsModal(IVF)}
+(function(){const a=invAdd;invAdd=function(){const c0=invD().tx.length;a.apply(this,arguments);if(invD().tx.length>c0)nsModalX()}})();
+function invEdit(i){const I=invD(),x=I.tx[i];if(!x)return;const out=x.type=='out',its=I.items.includes(x.item)?I.items:I.items.concat([x.item]);
+ const P=out?DB.docs.filter(d=>!d.done||d.id==x.pid).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||b.id-a.id):[];
+ nsModal('<div class=card><h4>Edit Stock '+(out?'Out':'In')+'</h4><div class=oxg><input id=ied type=date value="'+E(x.date)+'"><select id=iei>'+its.map(z=>'<option value="'+E(z)+'" '+(z==x.item?'selected':'')+'>'+E(z)+'</option>').join('')+'</select><input id=ieq type=number inputmode=decimal value="'+E(String(x.qty))+'" placeholder="Qty"><input id=iep type=number inputmode=decimal value="'+E(x.price?String(x.price):'')+'" placeholder="'+(out?'Sale price (per unit)':'Purchase cost (per unit)')+'">'+(out?'<select id=iej style="grid-column:1/-1"><option value="">- Project / client (optional) -</option>'+P.map(d=>'<option value="'+d.id+'" '+(d.id==x.pid?'selected':'')+'>'+E(d.no||'-')+' | '+E(d.cust||'No name')+' | '+d.type+'</option>').join('')+'</select>':'')+'</div><button style="margin:10px 0 0;width:100%" onclick="invEditSave('+i+')">Save Changes</button></div>')}
+function invEditSave(i){const I=invD(),x=I.tx[i];if(!x)return;const d=$('#ied').value||today(),it=$('#iei').value,q=n($('#ieq').value),p=n($('#iep').value),pj=+(($('#iej')||{}).value)||0;
+ if(!it){toast('Select an item');return}if(!(q>0)){toast('Enter quantity');return}
+ const y=Object.assign({},x,{date:d,item:it,qty:q,price:p});delete y._id;if(x.type=='out'){if(pj)y.pid=pj;else delete y.pid}
+ const T=I.tx.slice();T[i]=y;const bal={};let bad='';T.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0)).forEach(z=>{bal[z.item]=(bal[z.item]||0)+(z.type=='in'?n(z.qty):-n(z.qty));if(bal[z.item]<0&&!bad)bad=z.item});
+ if(bad){toast('Stock of '+bad+' would go below zero');return}
+ if(x.type=='out'){const sv=I.tx[i];I.tx[i]=y;y.uc=Math.round(invAvg(it,d)*100)/100;I.tx[i]=sv}
+ if(x._id){DB.del=DB.del||{};DB.del['inv:'+x._id]={t:Date.now(),r:2}}
+ I.tx[i]=y;save();nsModalX();toast('Stock entry updated');go('inv')}
+(function(){const o=V.inv;V.inv=function(){let h=o.call(V);if(typeof h!='string'||h.indexOf('<h4>Stock Entry</h4>')<0){IVF='';return h}
+ const s=h.indexOf('<div class=card><h4>Stock Entry</h4>'),c=[h.indexOf('<details class=card><summary><b>Stock Summary',s),h.indexOf('<div class="card" style="padding:0">',s)].filter(x=>x>s);
+ if(s<0||!c.length){IVF='';return h}
+ const e=Math.min(...c);let F=h.slice(s,e);h=h.slice(0,s)+h.slice(e);
+ F=F.replace(/<div class=oxr style="margin-bottom:8px">[\s\S]*?<\/button><\/div>/,'').replace('<h4>Stock Entry</h4>','<h4>'+(INT=='out'?'Add Stock Out':'Add Stock In')+'</h4>');IVF=F;
+ h=h.replace(/<details class=card><summary><b>Stock Summary<\/b> \((\d+) items?\)<\/summary>([\s\S]*?)<\/table><\/details>/,(m,k,b)=>'<div class=card style="padding:0 0 4px;overflow:auto"><h4 style="margin:12px 14px 8px">Stock Summary ('+k+' items)</h4>'+b+'</table></div>');
+ h=h.replace(/<button class=r onclick="invDel\((\d+)\)">x<\/button>/g,(m,i)=>{const z=invD().tx[+i];return(z&&z.src!='cost'?'<button class=vb type=button onclick="invEdit('+i+')" style="margin:0 4px 0 0">Edit</button>':'')+m});
+ if(h.indexOf('Stock Summary (')<0)h=h.replace('<div class="card" style="padding:0">','<div class=card><h4>Stock Summary (0 items)</h4><div class=bkh>No stock yet. Use Stock In to add.</div></div><div class="card" style="padding:0">');
+ return h+'<div class=cseg id=ivadd><button type=button onclick="invOpen(\'in\')">Stock In</button><button type=button onclick="invOpen(\'out\')">Stock Out</button></div>'}})();
+/* ---- Backup: sections as top-bar tabs, summary on page ---- */
+(function(){const o=V.bkp,BKM=[[/^Your data/,'sum','Summary'],[/^Cloud Sync/,'cld','Cloud'],[/^Users/,'usr','Users'],[/^Excel/,'xl','Excel'],[/^Daily Auto Backup/,'bak','Daily Backup'],[/^(Security|My Account)/,'sec','Security']];
+ V.bkp=function(){let h=o.call(V);if(typeof h!='string')return h;const t=document.createElement('template');t.innerHTML=h;let cur='sum';const has={};
+  [...t.content.children].forEach(c=>{const h4=c.querySelector('h4'),ti=h4?h4.textContent.trim():'',m=BKM.find(x=>x[0].test(ti));if(m)cur=m[1];c.dataset.bs=cur;has[cur]=1});
+  if(!has[BKS])BKS='sum';
+  [...t.content.children].forEach(c=>{if(c.dataset.bs!==BKS)c.classList.add('nsbh');c.removeAttribute('data-bs')});
+  return '<div class=cseg>'+BKM.filter(x=>has[x[1]]).map(x=>'<button type=button class="'+(BKS==x[1]?'on':'')+'" onclick="BKS=\''+x[1]+'\';go(\'bkp\')">'+x[2]+'</button>').join('')+'</div>'+t.innerHTML}})();
 </script>
 </body></html>
