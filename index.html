@@ -3639,4 +3639,111 @@ function invEditSave(i){const I=invD(),x=I.tx[i];if(!x)return;const d=$('#ied').
  return dash+h}})();
 (function(){const o=docHTML;docHTML=function(m){let h=o.apply(this,arguments);if(D&&D.cs&&typeof h=='string')h=h.replace(/E\. &amp; O\.E\. \| Warranty as per manufacturer's official warranty policy\./,"Warranty is provided by the manufacturer only, as per their terms. Physical damage, wrong wiring or misuse voids the warranty.");return h}})();
 </script>
+<style>/* Round 21: bill scanner */
+#nssc{position:fixed;inset:0;z-index:600;background:#101418;color:#fff;display:flex;flex-direction:column}
+#nssc .sch{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 8px;font-weight:700;font-size:15px}
+#nssc .sch button{margin:0!important;width:36px;height:36px;padding:0!important;border-radius:50%!important;background:#ffffff22!important;color:#fff!important;font-size:22px;line-height:1;box-shadow:none!important;background-image:none!important}
+#nssc .sct{padding:0 14px 6px;font-size:12px;color:#b8c2cc;text-align:center}
+#nssc .scb{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 10px}
+#nssc canvas{touch-action:none;border-radius:4px;background:#222;display:block}
+#nssc .scf{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 14px)}
+#nssc .scf button{margin:0!important;flex:1 1 80px;max-width:170px;padding:11px 8px!important;border-radius:12px!important;background:#ffffff1f!important;color:#fff!important;font-weight:700;font-size:13px;box-shadow:none!important;background-image:none!important;animation:none!important;transform:none!important}
+#nssc .scf button.pri{background:#18a37a!important}
+#nssc .scf button.on{background:#fff!important;color:#101418!important}
+.nsscw{margin:10px 0 0}.nsscw .nsrow{display:flex;gap:8px}.nsscw .nsrow button{flex:1;margin:0}
+.nsscw .nsth{display:flex;gap:10px;align-items:center;background:#f4f8fc;border:1px solid #e1e9f2;border-radius:12px;padding:8px}
+.nsscw .nsth img{width:54px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #d5dde8;flex:none}
+.nsscw .nsth>div{flex:1;display:flex;flex-direction:column;gap:6px}.nsscw .nsth button{margin:0;padding:6px 10px}
+html[data-theme="dark"] #nssc{filter:invert(1) hue-rotate(180deg)!important}
+html[data-theme="dark"][data-theme] #nssc :is(img,canvas){filter:none!important}
+</style>
+<script>
+/* ===== Round 21: scan bill / invoice (Stock In + Office Expense) ===== */
+var NSS=null,NSPEND=null,NSIDB=null;
+function nsIdb(){return new Promise((res,rej)=>{if(NSIDB)return res(NSIDB);try{const r=indexedDB.open('nsimgs',1);r.onupgradeneeded=()=>r.result.createObjectStore('i');r.onsuccess=()=>{NSIDB=r.result;res(NSIDB)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
+function nsImgPut(id,b){return nsIdb().then(db=>new Promise((res,rej)=>{const t=db.transaction('i','readwrite');t.objectStore('i').put(b,id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)}))}
+function nsImgGet(id){return nsIdb().then(db=>new Promise((res,rej)=>{const r=db.transaction('i').objectStore('i').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error)}))}
+function nsImgDel(id){return nsIdb().then(db=>new Promise(res=>{const t=db.transaction('i','readwrite');t.objectStore('i').delete(id);t.oncomplete=()=>res();t.onerror=()=>res()})).catch(()=>{})}
+function nsScPick(cam){const i=document.createElement('input');i.type='file';i.accept='image/*';if(cam)i.setAttribute('capture','environment');i.onchange=()=>{if(i.files&&i.files[0])nsScOpen(i.files[0])};i.click()}
+function nsScOpen(file){const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);nsScStart(im)};im.onerror=()=>{URL.revokeObjectURL(u);toast('Could not open this photo')};im.src=u}
+function nsScStart(im){const M=1800,k=Math.min(1,M/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.round(im.naturalWidth*k),h=Math.round(im.naturalHeight*k),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);
+ NSS={src:c,pts:nsDetect(c),mode:'scan',stage:'crop',cache:{}};nsScUI()}
+/* --- auto detect the paper (brightest big blob) --- */
+function nsDetect(c){const w=c.width,h=c.height,def=()=>{const mx=w*.04,my=h*.04;return[{x:mx,y:my},{x:w-mx,y:my},{x:w-mx,y:h-my},{x:mx,y:h-my}]};
+ try{const k=Math.min(1,260/Math.max(w,h)),sw=Math.max(16,Math.round(w*k)),sh=Math.max(16,Math.round(h*k)),t=document.createElement('canvas');t.width=sw;t.height=sh;const g=t.getContext('2d');g.drawImage(c,0,0,sw,sh);const d=g.getImageData(0,0,sw,sh).data,N=sw*sh;let L=new Float32Array(N);
+ for(let i=0;i<N;i++)L[i]=.299*d[i*4]+.587*d[i*4+1]+.114*d[i*4+2];
+ const B=new Float32Array(N);for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let s=0,q=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<sw&&yy<sh){s+=L[yy*sw+xx];q++}}B[y*sw+x]=s/q}L=B;
+ const hist=new Float64Array(256);for(let i=0;i<N;i++)hist[Math.min(255,L[i]|0)]++;let tot=N,sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];let wb=0,sb=0,best=0,th=128;for(let i=0;i<256;i++){wb+=hist[i];if(!wb)continue;const wf=tot-wb;if(!wf)break;sb+=i*hist[i];const mb=sb/wb,mf=(sum-sb)/wf,v=wb*wf*(mb-mf)*(mb-mf);if(v>best){best=v;th=i}}
+ let m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=L[i]>th?1:0;
+ const bx=Math.max(2,Math.round(sw*.04)),by=Math.max(2,Math.round(sh*.04));let bs=0,bn=0;for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){if(x<bx||y<by||x>=sw-bx||y>=sh-by){bs+=m[y*sw+x];bn++}}
+ if(bs/bn>.5)for(let i=0;i<N;i++)m[i]=m[i]?0:1;
+ const lab=new Int32Array(N);let bestC=0,bestN=0,cur=0;const st=new Int32Array(N);
+ for(let i=0;i<N;i++){if(!m[i]||lab[i])continue;cur++;let sp=0,cnt=0;st[sp++]=i;lab[i]=cur;while(sp){const p=st[--sp];cnt++;const x=p%sw,y=(p/sw)|0;if(x>0&&m[p-1]&&!lab[p-1]){lab[p-1]=cur;st[sp++]=p-1}if(x<sw-1&&m[p+1]&&!lab[p+1]){lab[p+1]=cur;st[sp++]=p+1}if(y>0&&m[p-sw]&&!lab[p-sw]){lab[p-sw]=cur;st[sp++]=p-sw}if(y<sh-1&&m[p+sw]&&!lab[p+sw]){lab[p+sw]=cur;st[sp++]=p+sw}}if(cnt>bestN){bestN=cnt;bestC=cur}}
+ if(bestN<N*.12||bestN>N*.97)return def();
+ let tl=null,tr=null,br=null,bl=null,a=1e9,b2=-1e9,c2=-1e9,d2=1e9;
+ for(let i=0;i<N;i++){if(lab[i]!==bestC)continue;const x=i%sw,y=(i/sw)|0,s=x+y,df=x-y;if(s<a){a=s;tl={x,y}}if(s>b2){b2=s;br={x,y}}if(df>c2){c2=df;tr={x,y}}if(df<d2){d2=df;bl={x,y}}}
+ const P=[tl,tr,br,bl].map(p=>({x:(p.x+.5)/sw*w,y:(p.y+.5)/sh*h}));let ar=0;for(let i=0;i<4;i++){const p=P[i],q=P[(i+1)%4];ar+=p.x*q.y-q.x*p.y}ar=Math.abs(ar)/2;if(ar<w*h*.15)return def();return P}catch(e){return def()}}
+/* --- perspective warp --- */
+function nsHomo(s,d){const A=[];for(let i=0;i<4;i++){const x=d[i].x,y=d[i].y,u=s[i].x,v=s[i].y;A.push([x,y,1,0,0,0,-u*x,-u*y,u]);A.push([0,0,0,x,y,1,-v*x,-v*y,v])}
+ for(let i=0;i<8;i++){let mx=i;for(let r=i+1;r<8;r++)if(Math.abs(A[r][i])>Math.abs(A[mx][i]))mx=r;const t=A[i];A[i]=A[mx];A[mx]=t;const pv=A[i][i]||1e-9;for(let r=0;r<8;r++){if(r==i)continue;const f=A[r][i]/pv;for(let c=i;c<9;c++)A[r][c]-=f*A[i][c]}}
+ return A.map((r,i)=>r[8]/(r[i]||1e-9))}
+function nsWarp(c,p){const di=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);let W=Math.round(Math.max(di(p[0],p[1]),di(p[3],p[2]))),H=Math.round(Math.max(di(p[0],p[3]),di(p[1],p[2])));const mx=Math.max(W,H);if(mx>1700){const s=1700/mx;W=Math.round(W*s);H=Math.round(H*s)}W=Math.max(W,60);H=Math.max(H,60);
+ const hm=nsHomo(p,[{x:0,y:0},{x:W,y:0},{x:W,y:H},{x:0,y:H}]),sw=c.width,sh=c.height,S=c.getContext('2d').getImageData(0,0,sw,sh).data,o=document.createElement('canvas');o.width=W;o.height=H;const og=o.getContext('2d'),od=og.createImageData(W,H),O=od.data;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const z=hm[6]*x+hm[7]*y+1,u=(hm[0]*x+hm[1]*y+hm[2])/z,v=(hm[3]*x+hm[4]*y+hm[5])/z,o4=(y*W+x)*4;if(u<0||v<0||u>=sw-1||v>=sh-1){O[o4]=O[o4+1]=O[o4+2]=255;O[o4+3]=255;continue}
+  const x0=u|0,y0=v|0,fx=u-x0,fy=v-y0,i0=(y0*sw+x0)*4,i1=i0+4,i2=i0+sw*4,i3=i2+4,w0=(1-fx)*(1-fy),w1=fx*(1-fy),w2=(1-fx)*fy,w3=fx*fy;
+  O[o4]=S[i0]*w0+S[i1]*w1+S[i2]*w2+S[i3]*w3;O[o4+1]=S[i0+1]*w0+S[i1+1]*w1+S[i2+1]*w2+S[i3+1]*w3;O[o4+2]=S[i0+2]*w0+S[i1+2]*w1+S[i2+2]*w2+S[i3+2]*w3;O[o4+3]=255}
+ og.putImageData(od,0,0);return o}
+/* --- refine: even out light / shadows, white paper, dark crisp text --- */
+function nsEnh(c,mode){const W=c.width,H=c.height,o=document.createElement('canvas');o.width=W;o.height=H;const og=o.getContext('2d');if(mode=='orig'){og.drawImage(c,0,0);return o}
+ const id=c.getContext('2d').getImageData(0,0,W,H),D=id.data;
+ if(mode=='color'){const hs=new Float64Array(256);for(let i=0;i<D.length;i+=4)hs[(.299*D[i]+.587*D[i+1]+.114*D[i+2])|0]++;const n=W*H;let a=0,lo=0,hi=255;for(let i=0;i<256;i++){a+=hs[i];if(a>=n*.01){lo=i;break}}a=0;for(let i=255;i>=0;i--){a+=hs[i];if(a>=n*.02){hi=i;break}}const sc=255/Math.max(40,hi-lo);for(let i=0;i<D.length;i+=4){D[i]=Math.max(0,Math.min(255,(D[i]-lo)*sc));D[i+1]=Math.max(0,Math.min(255,(D[i+1]-lo)*sc));D[i+2]=Math.max(0,Math.min(255,(D[i+2]-lo)*sc))}og.putImageData(id,0,0);return o}
+ const BK=Math.max(8,Math.round(Math.max(W,H)/80)),bw=Math.ceil(W/BK),bh=Math.ceil(H/BK);let bg=new Float32Array(bw*bh*3);
+ for(let by=0;by<bh;by++)for(let bx=0;bx<bw;bx++){let r=1,g=1,b=1;const x1=Math.min(W,(bx+1)*BK),y1=Math.min(H,(by+1)*BK);for(let y=by*BK;y<y1;y++)for(let x=bx*BK;x<x1;x++){const i=(y*W+x)*4;if(D[i]>r)r=D[i];if(D[i+1]>g)g=D[i+1];if(D[i+2]>b)b=D[i+2]}const j=(by*bw+bx)*3;bg[j]=r;bg[j+1]=g;bg[j+2]=b}
+ for(let p=0;p<2;p++){const nb=new Float32Array(bg.length);for(let y=0;y<bh;y++)for(let x=0;x<bw;x++)for(let ch=0;ch<3;ch++){let s=0,q=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<bw&&yy<bh){s+=bg[(yy*bw+xx)*3+ch];q++}}nb[(y*bw+x)*3+ch]=s/q}bg=nb}
+ const bil=(fx,fy,ch)=>{fx=Math.max(0,Math.min(bw-1,fx));fy=Math.max(0,Math.min(bh-1,fy));const x0=fx|0,y0=fy|0,x1=Math.min(bw-1,x0+1),y1=Math.min(bh-1,y0+1),ax=fx-x0,ay=fy-y0;return(bg[(y0*bw+x0)*3+ch]*(1-ax)+bg[(y0*bw+x1)*3+ch]*ax)*(1-ay)+(bg[(y1*bw+x0)*3+ch]*(1-ax)+bg[(y1*bw+x1)*3+ch]*ax)*ay};
+ const bwm=mode=='bw',ss=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
+ for(let y=0;y<H;y++){const fy=y/BK-.5;for(let x=0;x<W;x++){const fx=x/BK-.5,i=(y*W+x)*4,r=D[i]/Math.max(30,bil(fx,fy,0)),g=D[i+1]/Math.max(30,bil(fx,fy,1)),b=D[i+2]/Math.max(30,bil(fx,fy,2));
+  if(bwm){const l=.299*r+.587*g+.114*b,v=255*ss(.5,.8,l);D[i]=D[i+1]=D[i+2]=v}else{D[i]=255*ss(.12,.93,r);D[i+1]=255*ss(.12,.93,g);D[i+2]=255*ss(.12,.93,b)}}}
+ og.putImageData(id,0,0);return o}
+function nsRot(c){const o=document.createElement('canvas');o.width=c.height;o.height=c.width;const g=o.getContext('2d');g.translate(o.width,0);g.rotate(Math.PI/2);g.drawImage(c,0,0);return o}
+/* --- scanner screen --- */
+function nsScClose(){const e=document.getElementById('nssc');if(e)e.remove();NSS=null;window.removeEventListener('resize',nsScResize)}
+function nsScResize(){if(NSS)nsScUI()}
+function nsScUI(){const S=NSS;if(!S)return;let o=document.getElementById('nssc');if(!o){o=document.createElement('div');o.id='nssc';document.body.appendChild(o);window.addEventListener('resize',nsScResize)}
+ const crop=S.stage=='crop',chips=[['scan','Scan'],['bw','B&amp;W'],['color','Color'],['orig','Original']];
+ o.innerHTML='<div class=sch><span>'+(crop?'Crop bill':'Refine')+'</span><button type=button onclick="nsScClose()" aria-label=Close>&times;</button></div><div class=sct>'+(crop?'Drag the 4 corners to fit the bill edges':'Choose the best look, then Save')+'</div><div class=scb id=scb><canvas id=sccv></canvas></div><div class=scf>'+
+  (crop?'<button type=button onclick="nsScRotC()">Rotate</button><button type=button onclick="nsScAuto()">Auto</button><button type=button class=pri onclick="nsScNext()">Next</button>':
+  chips.map(x=>'<button type=button class="'+(S.mode==x[0]?'on':'')+'" onclick="nsScMode(\''+x[0]+'\')">'+x[1]+'</button>').join('')+'<button type=button onclick="nsScBack()">Re-crop</button><button type=button onclick="nsScRotF()">Rotate</button><button type=button class=pri onclick="nsScSave()">Save</button>')+'</div>';
+ const bx=document.getElementById('scb'),cv=document.getElementById('sccv'),srcW=crop?S.src.width:S.res.width,srcH=crop?S.src.height:S.res.height,aw=bx.clientWidth-20,ah=bx.clientHeight-4,k=Math.min(aw/srcW,ah/srcH,1.5);cv.width=Math.max(40,Math.round(srcW*k));cv.height=Math.max(40,Math.round(srcH*k));S.cv=cv;
+ if(crop){nsScDraw();cv.onpointerdown=e=>{const r=cv.getBoundingClientRect(),sc=S.src.width/r.width,x=(e.clientX-r.left)*sc,y=(e.clientY-r.top)*sc;let bi=-1,bd=1e9;S.pts.forEach((p,i)=>{const d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;bi=i}});if(bd<50*sc){S.drag=bi;try{cv.setPointerCapture(e.pointerId)}catch(_){}}};
+  cv.onpointermove=e=>{if(S.drag==null||S.drag<0)return;const r=cv.getBoundingClientRect(),sc=S.src.width/r.width;S.pts[S.drag]={x:Math.max(0,Math.min(S.src.width,(e.clientX-r.left)*sc)),y:Math.max(0,Math.min(S.src.height,(e.clientY-r.top)*sc))};nsScDraw()};cv.onpointerup=cv.onpointercancel=()=>{S.drag=null}}
+ else cv.getContext('2d').drawImage(S.res,0,0,cv.width,cv.height)}
+function nsScDraw(){const S=NSS,cv=S.cv,g=cv.getContext('2d'),sc=cv.width/S.src.width;g.clearRect(0,0,cv.width,cv.height);g.drawImage(S.src,0,0,cv.width,cv.height);const P=S.pts.map(p=>({x:p.x*sc,y:p.y*sc}));
+ g.save();g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.rect(0,0,cv.width,cv.height);g.moveTo(P[0].x,P[0].y);g.lineTo(P[1].x,P[1].y);g.lineTo(P[2].x,P[2].y);g.lineTo(P[3].x,P[3].y);g.closePath();g.fill('evenodd');g.restore();
+ g.strokeStyle='#27d3a0';g.lineWidth=2.5;g.beginPath();P.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.closePath();g.stroke();P.forEach(p=>{g.fillStyle='#fff';g.beginPath();g.arc(p.x,p.y,11,0,7);g.fill();g.strokeStyle='#18a37a';g.lineWidth=3;g.stroke()})}
+function nsScAuto(){NSS.pts=nsDetect(NSS.src);nsScDraw()}
+function nsScRotC(){const S=NSS,h=S.src.height;S.src=nsRot(S.src);S.pts=S.pts.map(p=>({x:h-p.y,y:p.x}));nsScUI()}
+function nsScNext(){const S=NSS;S.warp=nsWarp(S.src,S.pts);S.cache={};S.res=S.cache[S.mode]=nsEnh(S.warp,S.mode);S.stage='filter';nsScUI()}
+function nsScMode(m){const S=NSS;S.mode=m;S.res=S.cache[m]||(S.cache[m]=nsEnh(S.warp,m));nsScUI()}
+function nsScBack(){NSS.stage='crop';nsScUI()}
+function nsScRotF(){const S=NSS;S.warp=nsRot(S.warp);S.cache={};S.res=S.cache[S.mode]=nsEnh(S.warp,S.mode);nsScUI()}
+function nsScSave(){const S=NSS;S.res.toBlob(b=>{if(!b){toast('Could not save the scan');return}const id='B'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);nsImgPut(id,b).then(()=>{if(NSPEND&&NSPEND.id)nsImgDel(NSPEND.id);NSPEND={id,url:URL.createObjectURL(b)};nsScClose();nsScW();toast('Bill scanned')}).catch(()=>toast('Could not store the picture on this device'))},'image/jpeg',.72)}
+/* --- scan area inside the Add forms --- */
+function nsScW(){const e=document.getElementById('nsscw');if(!e)return;e.innerHTML=NSPEND?'<div class=nsth><img src="'+NSPEND.url+'" alt=""><div><b>Bill scanned</b><div style="display:flex;gap:6px"><button type=button class=vb onclick="nsScPick(1)">Retake</button><button type=button class=r onclick="nsScClear()">Remove</button></div></div></div>':'<div class=nsrow><button type=button class=vb onclick="nsScPick(1)">Scan Bill</button><button type=button class=vb onclick="nsScPick(0)">Gallery</button></div>'}
+function nsScClear(){if(NSPEND&&NSPEND.id)nsImgDel(NSPEND.id);NSPEND=null;nsScW()}
+(function(){const o=nsModal;nsModal=function(h){o(h);NSPEND=null;nsScW()}})();
+(function(){const o=nsModalX;nsModalX=function(){if(NSPEND&&NSPEND.id)nsImgDel(NSPEND.id);NSPEND=null;o()}})();
+(function(){const a=oxAdd;oxAdd=function(){const p=NSPEND,A=DB.exp,n0=A.length;NSPEND=null;a.apply(this,arguments);if(p&&A.length>n0){A[A.length-1].img=p.id;save();go(tab)}else NSPEND=p}})();
+(function(){const a=invAdd;invAdd=function(){const p=NSPEND,A=invD().tx,n0=A.length;NSPEND=null;a.apply(this,arguments);if(p&&A.length>n0){A[A.length-1].img=p.id;save();go(tab)}else NSPEND=p}})();
+(function(){const o=V.buy;V.buy=function(){let h=o.call(V);if(typeof h!='string')return h;
+ if(OXF&&OT=='out'&&OXF.indexOf('id=nsscw')<0)OXF=OXF.replace('<button style="margin:10px 0 0;width:100%" onclick="oxAdd()">','<div id=nsscw class=nsscw></div><button style="margin:10px 0 0;width:100%" onclick="oxAdd()">');
+ return h.replace(/<button class=r onclick="oxDel\('(\w+)',(\d+)\)">x<\/button>/g,(m,k,i)=>{const e=(DB[k]||[])[+i];return(e&&e.img?'<button class=vb type=button onclick="nsBillView(\''+k+'\','+i+')" style="margin:0 4px 0 0">Bill</button>':'')+m})}})();
+(function(){const o=V.inv;V.inv=function(){let h=o.call(V);if(typeof h!='string')return h;
+ if(IVF&&INT=='in'&&IVF.indexOf('id=nsscw')<0)IVF=IVF.replace('<button style="margin:8px 0 0;width:100%" onclick="invAdd()">','<div id=nsscw class=nsscw></div><button style="margin:8px 0 0;width:100%" onclick="invAdd()">');
+ return h.replace(/<button class=r onclick="invDel\((\d+)\)">x<\/button>/g,(m,i)=>{const e=invD().tx[+i];return(e&&e.img?'<button class=vb type=button onclick="nsBillView(\'inv\','+i+')" style="margin:0 4px 0 0">Bill</button>':'')+m})}})();
+/* --- view / download / remove a saved bill picture --- */
+function nsBillView(k,i){const e=k=='inv'?invD().tx[i]:(DB[k]||[])[i];if(!e||!e.img)return;nsImgGet(e.img).then(b=>{if(!b){toast('Bill picture is not on this device');return}const u=URL.createObjectURL(b);nsModal('<div class=card><h4>Scanned Bill</h4><img src="'+u+'" alt="" style="width:100%;border-radius:10px;border:1px solid #e1e9f2"><div style="display:flex;gap:8px;margin-top:10px"><button class=vb type=button onclick="nsBillDl(\''+e.img+'\')">Download</button><button class=r type=button onclick="nsBillRm(\''+k+'\','+i+')">Remove</button></div></div>')}).catch(()=>toast('Could not open the picture'))}
+function nsBillDl(id){nsImgGet(id).then(b=>{if(!b)return;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='bill-'+today()+'.jpg';document.body.appendChild(a);a.click();a.remove()})}
+function nsBillRm(k,i){if(!confirm('Remove this bill picture?'))return;const e=k=='inv'?invD().tx[i]:(DB[k]||[])[i];if(!e||!e.img)return;nsImgDel(e.img);delete e.img;save();nsModalX();go(tab)}
+</script>
 </body></html>
