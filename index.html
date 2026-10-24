@@ -3746,4 +3746,34 @@ function nsBillView(k,i){const e=k=='inv'?invD().tx[i]:(DB[k]||[])[i];if(!e||!e.
 function nsBillDl(id){nsImgGet(id).then(b=>{if(!b)return;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='bill-'+today()+'.jpg';document.body.appendChild(a);a.click();a.remove()})}
 function nsBillRm(k,i){if(!confirm('Remove this bill picture?'))return;const e=k=='inv'?invD().tx[i]:(DB[k]||[])[i];if(!e||!e.img)return;nsImgDel(e.img);delete e.img;save();nsModalX();go(tab)}
 </script>
+<style>/* Round 22: zoom everywhere */
+#tpgb button[data-zm] svg{stroke-width:2}
+#cpb,#r3rv{touch-action:pan-x pan-y}
+</style>
+<script>
+/* ===== Round 22: zoom in/out (magnifier icons) in the top bar + pinch / Ctrl+wheel on every preview ===== */
+var NSZ=1;NSBK.push('ldp');
+NSTI.zin='<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6M11 8v6"/>';NSTI.zout='<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/>';
+function nsZView(){return tab=='pv'||tab=='ldp'||tab=='clp'||(tab=='rep'&&!!document.getElementById('r3rv'))}
+function nsZGet(){if(tab=='pv')return r3zm;if(tab=='ldp'){const b=document.getElementById('cpb');return LZ||Math.min(b?b.clientWidth/794:1,.62)}return NSZ}
+function nsZSet(v){if(tab=='pv'){r3zm=Math.min(3,Math.max(.5,Math.round(v*100)/100));fitView();const e=document.getElementById('r3zl');if(e)e.textContent=Math.round(r3zm*100)+'%';return}
+ if(tab=='ldp'){const c=nsZGet();ldZ(Math.max(.3,Math.min(1.5,v))-c);return}
+ NSZ=Math.min(3,Math.max(.5,Math.round(v*100)/100));if(tab=='clp')cliFit();else if(tab=='rep')r3rfit()}
+function nsZoom(d){if(tab=='pv')return r3z(d*.25);if(tab=='ldp')return ldZ(d*.1);nsZSet(NSZ+d*.25)}
+(function(){const o=cliFit;cliFit=function(){o.apply(this,arguments);if(tab!=='clp'||NSZ==1)return;const el=document.getElementById('cpv'),box=document.getElementById('cpb');if(!el||!box)return;const k=Math.min(1,box.clientWidth/794)*NSZ;el.style.width='794px';el.style.transformOrigin='0 0';el.style.transform='scale('+k+')';box.style.height=Math.ceil(el.offsetHeight*k)+'px';box.style.overflowX=NSZ>1?'auto':''}})();
+(function(){const o=r3rfit;r3rfit=function(){o.apply(this,arguments);if(NSZ==1)return;const e=document.getElementById('r3rv');if(!e)return;const b=e.parentNode,k=Math.min(1,b.clientWidth/794)*NSZ;e.style.width='794px';e.style.transformOrigin='0 0';e.style.transform='scale('+k+')';b.style.height=Math.ceil(e.offsetHeight*k)+'px';b.style.overflowX=NSZ>1?'auto':''}})();
+(function(){const g=go;go=function(t){if(t&&t!==tab)NSZ=1;g.apply(this,arguments)}})();
+/* top bar buttons for preview screens other than the bill preview (which already has them) */
+(function(){const o=nsTopBars;nsTopBars=function(){o.apply(this,arguments);try{if(!(tab=='clp'||tab=='ldp'||(tab=='rep'&&document.getElementById('r3rv'))))return;const bx=document.getElementById('tpgb');if(!bx||bx.querySelector('[data-zm]'))return;
+ bx.insertAdjacentHTML('beforeend','<i></i><button type=button data-zm=1 onclick="nsZoom(1)"><svg viewBox="0 0 24 24">'+NSTI.zin+'</svg>Zoom In</button><button type=button data-zm=1 onclick="nsZoom(-1)"><svg viewBox="0 0 24 24">'+NSTI.zout+'</svg>Zoom Out</button>')}catch(e){}}})();
+/* bill preview: bring Zoom In / Zoom Out next to Back so they are always visible (also on phones) */
+(function(){const o=V.pv;V.pv=function(){let h=o.call(V);if(typeof h!='string')return h;const m=h.match(/<button type=button class="" onclick="r3z\(\.25\)">[\s\S]*?<\/button><button type=button class="" onclick="r3z\(-\.25\)">[\s\S]*?<\/button>/);if(!m)return h;
+ h=h.replace(m[0]+'<i></i>','');return h.replace('<i></i>','<i></i>'+m[0]+'<i></i>')}})();
+/* pinch (phone/tablet) + Ctrl/trackpad-pinch wheel (Mac/Windows) on the preview area */
+(function(){const area=t=>t&&t.closest&&t.closest('.pvc,#cpb,#r3rv,.pvs'),dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);let st=null;
+ document.addEventListener('touchstart',e=>{if(e.touches.length==2&&nsZView()&&area(e.target))st={d:dist(e.touches),z:nsZGet()};else st=null},{passive:true});
+ document.addEventListener('touchmove',e=>{if(st&&e.touches.length==2){e.preventDefault();nsZSet(st.z*dist(e.touches)/st.d)}},{passive:false});
+ document.addEventListener('touchend',e=>{if(e.touches.length<2)st=null},{passive:true});
+ document.addEventListener('wheel',e=>{if(e.ctrlKey&&nsZView()&&area(e.target)){e.preventDefault();nsZSet(nsZGet()*(e.deltaY<0?1.08:1/1.08))}},{passive:false})})();
+</script>
 </body></html>
